@@ -1,0 +1,438 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// MULTI-TENANT SYSTEM
+model Organization {
+  id               String         @id @default(uuid())
+  name             String
+  subscriptionTier String         @default("FREE_TRIAL")
+  isActive         Boolean        @default(true)
+  featureFlags     Json? // E.g., { "canteenPOS": false }
+  branches         Branch[]
+  users            User[] // Users associated with org
+  subscriptions    Subscription[]
+  fraudAlerts      FraudAlert[]
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
+  roles            Role[]
+}
+
+model Branch {
+  id                   String                @id @default(uuid())
+  organizationId       String
+  name                 String
+  address              String?
+  tables               Table[]
+  pricingRules         PricingRule[]
+  sessions             Session[]
+  users                User[]
+  inventoryItems       InventoryItem[]
+  orders               Order[]
+  shiftReconciliations ShiftReconciliation[]
+  expenses             Expense[]
+  assetMaintenances    AssetMaintenance[]
+  fraudAlerts          FraudAlert[]
+  organization         Organization          @relation(fields: [organizationId], references: [id])
+}
+
+model User {
+  id               String                @id @default(uuid()) // Links to Supabase/Auth provider
+  email            String                @unique
+  fullName         String?
+  roleId           String?
+  organizationId   String?
+  branchId         String?
+  role             Role?                 @relation(fields: [roleId], references: [id])
+  organization     Organization?         @relation(fields: [organizationId], references: [id])
+  branch           Branch?               @relation(fields: [branchId], references: [id])
+  sessionsPlayed   SessionPlayer[]
+  paymentsMade     Payment[]
+  walletTxns       WalletTransaction[]
+  dues             Due[]
+  profile          PlayerProfile?
+  matchesAsA       Match[]               @relation("MatchPlayerA")
+  matchesAsB       Match[]               @relation("MatchPlayerB")
+  matchesWon       Match[]               @relation("MatchWinner")
+  orders           Order[]
+  shifts           ShiftReconciliation[]
+  expensesRecorded Expense[]
+}
+
+model Role {
+  id             String       @id @default(uuid())
+  organizationId String
+  name           String // ADMIN, STORE_OWNER, STAFF
+  permissions    String[] // Array of permission strings (e.g. "START_SESSION", "EDIT_PRICING")
+  users          User[]
+  organization   Organization @relation(fields: [organizationId], references: [id])
+}
+
+// TABLE + SESSION ENGINE
+model Table {
+  id               String      @id @default(uuid())
+  branchId         String
+  nameOrNumber     String
+  status           TableStatus @default(AVAILABLE) // AVAILABLE, PLAYING, RESERVED, MAINTENANCE
+  customHourlyRate Decimal?    // Optional override rate just for this specific table (e.g. VIP table)
+  branch           Branch      @relation(fields: [branchId], references: [id])
+  sessions         Session[]
+}
+
+enum TableStatus {
+  AVAILABLE
+  PLAYING
+  RESERVED
+  MAINTENANCE
+}
+
+model Session {
+  id                 String        @id @default(uuid())
+  tableId            String
+  branchId           String
+  status             SessionStatus @default(ACTIVE)
+  startedAt          DateTime      @default(now())
+  endedAt            DateTime?
+  hourlyRateApplied  Decimal
+  pausedDurationSecs Int           @default(0)
+  durationMinutes    Int?
+  totalAmount        Decimal?
+  gameType           GameType?
+  winnerIds          String[]      @default([])
+
+  table    Table           @relation(fields: [tableId], references: [id])
+  branch   Branch          @relation(fields: [branchId], references: [id])
+  players  SessionPlayer[]
+  pauses   SessionPause[]
+  payments Payment[]
+  dues     Due[]
+  matches  Match[]
+  orders   Order[]
+}
+
+enum GameType {
+  LTP
+  SPLIT
+  SOLO
+  CUSTOM
+}
+
+enum SessionStatus {
+  ACTIVE
+  PAUSED
+  COMPLETED
+  CANCELLED
+}
+
+model SessionPause {
+  id        String    @id @default(uuid())
+  sessionId String
+  pausedAt  DateTime  @default(now())
+  resumedAt DateTime?
+  session   Session   @relation(fields: [sessionId], references: [id])
+}
+
+model SessionPlayer {
+  sessionId String
+  playerId  String
+  splitPct  Decimal @default(100) // Percentage of bill
+  session   Session @relation(fields: [sessionId], references: [id])
+  player    User    @relation(fields: [playerId], references: [id])
+
+  @@id([sessionId, playerId])
+}
+
+model PricingRule {
+  id         String  @id @default(uuid())
+  branchId   String
+  dayOfWeek  Int[] // 0=Sun, 6=Sat
+  startTime  String // HH:mm
+  endTime    String // HH:mm
+  hourlyRate Decimal
+  branch     Branch  @relation(fields: [branchId], references: [id])
+}
+
+// FINANCIAL CORE (DOUBLE ENTRY)
+model Payment {
+  id             String        @id @default(uuid())
+  idempotencyKey String?       @unique // Prevent duplicate charges
+  sessionId      String?
+  payerId        String
+  amount         Decimal
+  method         PaymentMethod // CASH, UPI, CARD, WALLET
+  status         PaymentStatus @default(PENDING) // SUCCESS, FAILED
+  session        Session?      @relation(fields: [sessionId], references: [id])
+  payer          User          @relation(fields: [payerId], references: [id])
+  createdAt      DateTime      @default(now())
+}
+
+enum PaymentMethod {
+  CASH
+  UPI
+  CARD
+  WALLET
+}
+
+enum PaymentStatus {
+  SUCCESS
+  FAILED
+  PENDING
+}
+
+model WalletTransaction {
+  id          String        @id @default(uuid())
+  playerId    String
+  amount      Decimal // + for CREDIT, - for DEBIT
+  type        WalletTxnType
+  referenceId String? // SessionId or PaymentId
+  player      User          @relation(fields: [playerId], references: [id])
+  createdAt   DateTime      @default(now())
+}
+
+enum WalletTxnType {
+  DEPOSIT
+  WITHDRAWAL
+  SESSION_PAYMENT
+  REFUND
+}
+
+model Due {
+  id        String    @id @default(uuid())
+  sessionId String?
+  playerId  String
+  amount    Decimal
+  status    DueStatus @default(PENDING)
+  session   Session?  @relation(fields: [sessionId], references: [id])
+  player    User      @relation(fields: [playerId], references: [id])
+  createdAt DateTime  @default(now())
+}
+
+enum DueStatus {
+  PENDING
+  SETTLED
+}
+
+model LedgerEntry {
+  id             String   @id @default(uuid())
+  organizationId String
+  accountId      String // E.g. 'SessionRevenue', 'CashInHand', 'AccountsReceivable'
+  debit          Decimal  @default(0)
+  credit         Decimal  @default(0)
+  referenceType  String // 'SESSION', 'EXPENSE', 'DUES_SETTLEMENT'
+  referenceId    String
+  createdAt      DateTime @default(now())
+}
+
+// PLAYER ECOSYSTEM
+model PlayerProfile {
+  id            String  @id @default(uuid())
+  userId        String  @unique
+  nickname      String?
+  eloRating     Int     @default(1200)
+  matchesPlayed Int     @default(0)
+  matchesWon    Int     @default(0)
+  walletBalance Decimal @default(0.0) // Materialized balance
+  user          User    @relation(fields: [userId], references: [id])
+}
+
+model Match {
+  id        String      @id @default(uuid())
+  sessionId String?
+  playerAId String
+  playerBId String
+  winnerId  String?
+  scoreA    Int         @default(0)
+  scoreB    Int         @default(0)
+  status    MatchStatus @default(PENDING)
+  createdAt DateTime    @default(now())
+
+  session Session? @relation(fields: [sessionId], references: [id])
+  playerA User     @relation("MatchPlayerA", fields: [playerAId], references: [id])
+  playerB User     @relation("MatchPlayerB", fields: [playerBId], references: [id])
+  winner  User?    @relation("MatchWinner", fields: [winnerId], references: [id])
+}
+
+enum MatchStatus {
+  PENDING
+  ONGOING
+  COMPLETED
+}
+
+// ==========================================
+// PHASE 3: STORE OWNER OPERATIONS OS
+// ==========================================
+
+model InventoryItem {
+  id            String   @id @default(uuid())
+  branchId      String
+  name          String
+  category      String // E.g., 'Beverages', 'Snacks', 'Equipment'
+  sku           String?
+  price         Decimal // Selling price
+  cost          Decimal? // Cost price for P&L
+  stockQuantity Int      @default(0)
+  reorderLevel  Int      @default(10)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  branch     Branch      @relation(fields: [branchId], references: [id])
+  orderItems OrderItem[]
+}
+
+model Order {
+  id            String        @id @default(uuid())
+  branchId      String
+  sessionId     String? // Make it nullable if folks just walk in to buy a Coke
+  playerId      String?
+  totalAmount   Decimal
+  status        OrderStatus   @default(COMPLETED)
+  paymentMethod PaymentMethod @default(CASH)
+  createdAt     DateTime      @default(now())
+
+  branch  Branch      @relation(fields: [branchId], references: [id])
+  session Session?    @relation(fields: [sessionId], references: [id])
+  player  User?       @relation(fields: [playerId], references: [id])
+  items   OrderItem[]
+}
+
+enum OrderStatus {
+  COMPLETED
+  CANCELLED
+  REFUNDED
+}
+
+model OrderItem {
+  id              String  @id @default(uuid())
+  orderId         String
+  inventoryItemId String
+  quantity        Int
+  unitPrice       Decimal
+  totalPrice      Decimal
+
+  order         Order         @relation(fields: [orderId], references: [id])
+  inventoryItem InventoryItem @relation(fields: [inventoryItemId], references: [id])
+}
+
+model ShiftReconciliation {
+  id           String    @id @default(uuid())
+  branchId     String
+  staffId      String
+  openedAt     DateTime  @default(now())
+  closedAt     DateTime?
+  openingCash  Decimal
+  expectedCash Decimal?
+  actualCash   Decimal?
+  discrepancy  Decimal?
+  notes        String?
+
+  branch Branch @relation(fields: [branchId], references: [id])
+  staff  User   @relation(fields: [staffId], references: [id])
+}
+
+model Expense {
+  id           String          @id @default(uuid())
+  branchId     String
+  recordedById String
+  amount       Decimal
+  category     ExpenseCategory
+  description  String?
+  receiptUrl   String?
+  incurredAt   DateTime        @default(now())
+
+  branch     Branch @relation(fields: [branchId], references: [id])
+  recordedBy User   @relation(fields: [recordedById], references: [id])
+}
+
+enum ExpenseCategory {
+  MAINTENANCE
+  UTILITIES
+  SUPPLIES
+  SALARIES
+  MISC
+}
+
+model AssetMaintenance {
+  id          String    @id @default(uuid())
+  branchId    String
+  assetName   String // E.g., 'Table 1 Cloth', 'AC Unit'
+  cost        Decimal
+  performedAt DateTime  @default(now())
+  nextDueDate DateTime?
+  branch      Branch    @relation(fields: [branchId], references: [id])
+}
+
+// ==========================================
+// ==========================================
+// PHASE 4: ADMIN SAAS CONTROL PANEL
+// ==========================================
+
+model SubscriptionPlan {
+  id            String         @id @default(uuid())
+  name          String // E.g., 'STARTER', 'PRO', 'ENTERPRISE'
+  price         Decimal
+  features      Json // E.g., { "canteenPOS": true, "maxTables": 10 }
+  subscriptions Subscription[]
+}
+
+model Subscription {
+  id                 String    @id @default(uuid())
+  organizationId     String    @unique
+  planId             String
+  status             SubStatus @default(ACTIVE)
+  currentPeriodStart DateTime
+  currentPeriodEnd   DateTime
+  cancelAtPeriodEnd  Boolean   @default(false)
+
+  organization Organization     @relation(fields: [organizationId], references: [id])
+  plan         SubscriptionPlan @relation(fields: [planId], references: [id])
+  invoices     Invoice[]
+}
+
+enum SubStatus {
+  ACTIVE
+  PAST_DUE
+  CANCELED
+}
+
+model Invoice {
+  id             String        @id @default(uuid())
+  subscriptionId String
+  amount         Decimal
+  status         InvoiceStatus @default(OPEN)
+  dueDate        DateTime
+  paidAt         DateTime?
+
+  subscription Subscription @relation(fields: [subscriptionId], references: [id])
+}
+
+enum InvoiceStatus {
+  OPEN
+  PAID
+  VOID
+  UNCOLLECTIBLE
+}
+
+model FraudAlert {
+  id             String        @id @default(uuid())
+  organizationId String
+  branchId       String?
+  severity       AlertSeverity @default(LOW)
+  description    String
+  resolved       Boolean       @default(false)
+  createdAt      DateTime      @default(now())
+
+  organization Organization @relation(fields: [organizationId], references: [id])
+  branch       Branch?      @relation(fields: [branchId], references: [id])
+}
+
+enum AlertSeverity {
+  LOW
+  MEDIUM
+  HIGH
+  CRITICAL
+}

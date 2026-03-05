@@ -1,0 +1,21 @@
+S:\SnookerSaaS\server\node_modules\ts-node\src\index.ts:859
+    return new TSError(diagnosticText, diagnosticCodes, diagnostics);
+           ^
+TSError: ⨯ Unable to compile TypeScript:
+controllers/paymentController.ts(180,36): error TS2339: Property 'user' does not exist on type 'Request<ParamsDictionary, any, any, ParsedQs, Record<string, any>>'.
+controllers/paymentController.ts(182,36): error TS2339: Property 'user' does not exist on type 'Request<ParamsDictionary, any, any, ParsedQs, Record<string, any>>'.
+controllers/paymentController.ts(195,40): error TS2339: Property 'user' does not exist on type 'Request<ParamsDictionary, any, any, ParsedQs, Record<string, any>>'.
+controllers/paymentController.ts(199,36): error TS2339: Property 'user' does not exist on type 'Request<ParamsDictionary, any, any, ParsedQs, Record<string, any>>'.
+
+    at createTSError (S:\SnookerSaaS\server\node_modules\ts-node\src\index.ts:859:12)
+    at reportTSError (S:\SnookerSaaS\server\node_modules\ts-node\src\index.ts:863:19)
+    at getOutput (S:\SnookerSaaS\server\node_modules\ts-node\src\index.ts:1077:36)
+    at Object.compile (S:\SnookerSaaS\server\node_modules\ts-node\src\index.ts:1433:41)
+    at Module.m._compile (S:\SnookerSaaS\server\node_modules\ts-node\src\index.ts:1617:30)
+    at Module._extensions..js (node:internal/modules/cjs/loader:1548:10)
+    at Object.require.extensions.<computed> [as .ts] (S:\SnookerSaaS\server\node_modules\ts-node\src\index.ts:1621:12)
+    at Module.load (node:internal/modules/cjs/loader:1288:32)
+    at Function.Module._load (node:internal/modules/cjs/loader:1104:12)
+    at Module.require (node:internal/modules/cjs/loader:1311:19) {
+  diagnosticCodes: [ 2339, 2339, 2339, 2339 ]
+}

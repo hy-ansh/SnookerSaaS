@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#059467",
+                        "background-light": "#f5f8f7",
+                        "background-dark": "#0f231d",
+                    },
+                    fontFamily: {
+                        "display": ["Manrope"]
+                    },
+                    borderRadius: {"DEFAULT": "0.5rem", "lg": "1rem", "xl": "1.5rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<title>PoolMaster Pro - Floor Layout</title>
+</head>
+<body class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-slate-100 overflow-hidden">
+<div class="relative flex h-screen w-full flex-col">
+<!-- Top Navigation -->
+<header class="flex items-center justify-between border-b border-primary/10 bg-white/80 dark:bg-background-dark/80 backdrop-blur-md px-8 py-3 z-20">
+<div class="flex items-center gap-8">
+<div class="flex items-center gap-3 text-primary">
+<span class="material-symbols-outlined text-3xl font-bold">pool</span>
+<h2 class="text-slate-900 dark:text-white text-xl font-extrabold tracking-tight">PoolMaster <span class="text-primary">Pro</span></h2>
+</div>
+<nav class="hidden md:flex items-center gap-6">
+<a class="text-primary text-sm font-semibold border-b-2 border-primary pb-1" href="#">Floor Plan</a>
+<a class="text-slate-500 hover:text-primary transition-colors text-sm font-medium" href="#">Active Sessions</a>
+<a class="text-slate-500 hover:text-primary transition-colors text-sm font-medium" href="#">Staff Management</a>
+<a class="text-slate-500 hover:text-primary transition-colors text-sm font-medium" href="#">Revenue Analytics</a>
+</nav>
+</div>
+<div class="flex items-center gap-4">
+<div class="relative hidden sm:block">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-primary/60 text-xl">search</span>
+<input class="bg-primary/5 border-none rounded-lg pl-10 pr-4 py-2 text-sm focus:ring-2 focus:ring-primary/50 w-64" placeholder="Search tables or members..."/>
+</div>
+<button class="p-2 rounded-lg bg-primary/5 text-primary hover:bg-primary/10 transition-colors">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<button class="p-2 rounded-lg bg-primary/5 text-primary hover:bg-primary/10 transition-colors">
+<span class="material-symbols-outlined">settings</span>
+</button>
+<div class="size-10 rounded-full border-2 border-primary/20 bg-primary/10 overflow-hidden">
+<img alt="User Profile" class="w-full h-full object-cover" data-alt="Manager profile avatar photo" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCJQW4ZKwMcYoIr_rTc2V0YyucADLHAiINPWMu8tvzk5lIivPcZhwZoNxupF7LobvWM13ZaSUFm1h4nwn40Y9A4n4wvO3uP7i4wgP8sgyELqy9nZtFYIgkPJwzst88fFCdP0CbpzI1bcliIK49rFwdthdmzffTLMVjunVKDSKbL3iJQ2FbEKszKbBIbIfuJJn08OjvM7wibOZH1A3_DnShCOZ5aD2N4FmR_l2Kc4hLcG79EhUIStEleassVfW_TQzTOlwdy5Db4_wV7"/>
+</div>
+</div>
+</header>
+<main class="flex flex-1 overflow-hidden relative">
+<!-- Sidebar (Details Panel) -->
+<aside class="w-80 bg-white dark:bg-slate-900 border-r border-primary/10 flex flex-col z-10 shadow-xl overflow-y-auto">
+<div class="p-6 border-b border-primary/5">
+<div class="flex justify-between items-center mb-6">
+<h3 class="font-bold text-lg">Table Details</h3>
+<span class="px-2 py-1 rounded text-[10px] font-bold uppercase tracking-wider bg-red-100 text-red-600 dark:bg-red-900/30">In Use</span>
+</div>
+<div class="space-y-4">
+<div>
+<label class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-1 block">Table Name</label>
+<input class="w-full bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 rounded-lg font-semibold text-primary focus:ring-primary" type="text" value="Table 04 - VIP"/>
+</div>
+<div class="grid grid-cols-2 gap-4 pt-2">
+<div class="p-3 bg-primary/5 rounded-lg">
+<p class="text-[10px] text-slate-500 font-bold uppercase">Timer</p>
+<p class="text-lg font-mono font-bold text-primary">01:42:15</p>
+</div>
+<div class="p-3 bg-primary/5 rounded-lg">
+<p class="text-[10px] text-slate-500 font-bold uppercase">Rate/Hr</p>
+<p class="text-lg font-bold text-slate-700 dark:text-slate-200">$24.00</p>
+</div>
+</div>
+</div>
+</div>
+<div class="p-6 space-y-6">
+<div>
+<h4 class="text-sm font-bold flex items-center gap-2 mb-4">
+<span class="material-symbols-outlined text-primary text-sm">person</span>
+                            Current Session
+                        </h4>
+<div class="flex items-center gap-3 p-3 rounded-xl border border-slate-100 dark:border-slate-800">
+<img alt="Member" class="size-10 rounded-full" data-alt="Client profile picture" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCyOvH36Mj983tGyitDMv8sPjY0Py1wBTcusZz3Gwlhiavn93lyYw37T3m56K2y5wiDNmXF6i3diFqO4OotcKdHnst0tLWbS81cc0IJGWTkmjbOEbqUs8nyhbZKxT1Xusat5IxZedgL0kl4Ky2LjLWlLHdqODUlgAHgTmCho1KeSETOJRTdqtHdiOoUCErWBpRGTG57CFS3cpWo0wRLicyrARE7gfTzDZT5sRTb3fQ9RLXp7DSSpVvKkqiCWzKmuQ3kdD2lS118OHOq"/>
+<div>
+<p class="text-sm font-bold">Alex Rivera</p>
+<p class="text-xs text-slate-500">Gold Member</p>
+</div>
+</div>
+</div>
+<div class="space-y-3">
+<button class="w-full flex items-center justify-between p-3 rounded-xl bg-slate-50 dark:bg-slate-800 hover:bg-primary/10 transition-colors group">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-slate-400 group-hover:text-primary">receipt_long</span>
+<span class="text-sm font-medium">Add Order</span>
+</div>
+<span class="material-symbols-outlined text-slate-300">chevron_right</span>
+</button>
+<button class="w-full flex items-center justify-between p-3 rounded-xl bg-slate-50 dark:bg-slate-800 hover:bg-primary/10 transition-colors group">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-slate-400 group-hover:text-primary">timer</span>
+<span class="text-sm font-medium">Extend Session</span>
+</div>
+<span class="material-symbols-outlined text-slate-300">chevron_right</span>
+</button>
+</div>
+<div class="pt-4 mt-4 border-t border-primary/5">
+<div class="flex justify-between items-end mb-4">
+<p class="text-xs text-slate-500 font-bold uppercase">Accrued Total</p>
+<p class="text-2xl font-black text-slate-900 dark:text-white">$48.50</p>
+</div>
+<button class="w-full bg-primary text-white py-3 rounded-xl font-bold hover:bg-primary/90 shadow-lg shadow-primary/20 transition-all flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-xl">payments</span>
+                            End &amp; Checkout
+                        </button>
+</div>
+</div>
+</aside>
+<!-- Floor Layout Area -->
+<section class="flex-1 relative bg-[#e2e8e4] dark:bg-slate-950 overflow-hidden">
+<!-- Grid Overlay -->
+<div class="absolute inset-0 opacity-10 pointer-events-none" style="background-image: radial-gradient(circle, #059467 1px, transparent 1px); background-size: 40px 40px;"></div>
+<!-- Floor Navigation / Controls -->
+<div class="absolute top-6 left-1/2 -translate-x-1/2 z-20 flex items-center gap-4 bg-white/90 dark:bg-slate-900/90 backdrop-blur rounded-2xl p-1.5 shadow-xl border border-primary/10">
+<div class="flex p-1 bg-slate-100 dark:bg-slate-800 rounded-xl">
+<button class="px-4 py-1.5 rounded-lg text-xs font-bold bg-white dark:bg-slate-700 shadow-sm text-primary">Main Hall</button>
+<button class="px-4 py-1.5 rounded-lg text-xs font-bold text-slate-500 hover:text-slate-700">VIP Lounge</button>
+<button class="px-4 py-1.5 rounded-lg text-xs font-bold text-slate-500 hover:text-slate-700">Bar Tables</button>
+</div>
+<div class="h-6 w-px bg-slate-200 dark:bg-slate-700 mx-1"></div>
+<div class="flex p-1 bg-slate-100 dark:bg-slate-800 rounded-xl">
+<button class="flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-bold bg-white dark:bg-slate-700 shadow-sm text-primary">
+<span class="material-symbols-outlined text-sm">grid_view</span>
+                            Grid Snap
+                        </button>
+<button class="flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-bold text-slate-500 hover:text-slate-700">
+<span class="material-symbols-outlined text-sm">ads_click</span>
+                            Free Drag
+                        </button>
+</div>
+</div>
+<!-- Status Legend -->
+<div class="absolute bottom-6 left-6 z-20 flex items-center gap-6 bg-white/80 dark:bg-slate-900/80 backdrop-blur-sm px-4 py-2 rounded-full border border-primary/5 text-xs font-bold text-slate-600 dark:text-slate-400">
+<div class="flex items-center gap-2">
+<span class="size-2.5 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]"></span> Available
+                    </div>
+<div class="flex items-center gap-2">
+<span class="size-2.5 rounded-full bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.5)]"></span> In Use
+                    </div>
+<div class="flex items-center gap-2">
+<span class="size-2.5 rounded-full bg-amber-500 shadow-[0_0_8px_rgba(245,158,11,0.5)]"></span> Maintenance
+                    </div>
+</div>
+<!-- Visual Floor Layout Container -->
+<div class="w-full h-full p-20 flex flex-wrap content-start gap-12 justify-center">
+<!-- Table Component: Available -->
+<div class="group relative w-64 h-36 bg-emerald-900 rounded-xl shadow-2xl border-4 border-[#3d2b1f] ring-1 ring-black/20 hover:scale-105 transition-transform cursor-pointer">
+<div class="absolute inset-1 rounded-lg bg-emerald-700 shadow-inner flex flex-col items-center justify-center border border-white/10">
+<!-- Status Dot -->
+<div class="absolute top-2 right-2 size-3 rounded-full bg-emerald-500 border-2 border-emerald-900 shadow-[0_0_10px_#10b981]"></div>
+<span class="text-emerald-300/50 font-black text-2xl select-none">T1</span>
+</div>
+<div class="absolute -bottom-8 left-1/2 -translate-x-1/2 whitespace-nowrap text-xs font-bold text-slate-600 dark:text-slate-400">Table 01 (Std)</div>
+</div>
+<!-- Table Component: In Use -->
+<div class="group relative w-64 h-36 bg-emerald-900 rounded-xl shadow-2xl border-4 border-[#3d2b1f] ring-2 ring-primary/50 hover:scale-105 transition-transform cursor-pointer">
+<div class="absolute inset-1 rounded-lg bg-emerald-700 shadow-inner flex flex-col items-center justify-center border border-white/10">
+<!-- Status Dot -->
+<div class="absolute top-2 right-2 size-3 rounded-full bg-red-500 border-2 border-emerald-900 shadow-[0_0_10px_#ef4444]"></div>
+<div class="text-white text-center">
+<span class="font-black text-2xl block">T2</span>
+<span class="text-[10px] font-mono bg-black/30 px-2 py-0.5 rounded-full">00:45:10</span>
+</div>
+</div>
+<div class="absolute -bottom-8 left-1/2 -translate-x-1/2 whitespace-nowrap text-xs font-bold text-slate-600 dark:text-slate-400">Table 02 (Std)</div>
+</div>
+<!-- Table Component: Maintenance -->
+<div class="group relative w-64 h-36 bg-emerald-900/40 rounded-xl shadow-lg border-4 border-slate-700 ring-1 ring-black/10 opacity-60 hover:scale-105 transition-transform cursor-pointer">
+<div class="absolute inset-1 rounded-lg bg-slate-800 shadow-inner flex flex-col items-center justify-center border border-white/5">
+<!-- Status Dot -->
+<div class="absolute top-2 right-2 size-3 rounded-full bg-amber-500 border-2 border-slate-800 shadow-[0_0_10px_#f59e0b]"></div>
+<span class="material-symbols-outlined text-slate-500 text-3xl">build</span>
+</div>
+<div class="absolute -bottom-8 left-1/2 -translate-x-1/2 whitespace-nowrap text-xs font-bold text-slate-600 dark:text-slate-400">Table 03 (Std)</div>
+</div>
+<!-- Table Component: VIP (Selected/Active) -->
+<div class="group relative w-80 h-44 bg-emerald-900 rounded-xl shadow-2xl border-4 border-[#2c1e15] ring-4 ring-primary hover:scale-105 transition-transform cursor-pointer">
+<div class="absolute inset-1 rounded-lg bg-emerald-800 shadow-inner flex flex-col items-center justify-center border border-white/20">
+<!-- Status Dot -->
+<div class="absolute top-3 right-3 size-4 rounded-full bg-red-500 border-2 border-emerald-900 shadow-[0_0_15px_#ef4444]"></div>
+<div class="text-white text-center">
+<span class="text-xs uppercase font-bold text-emerald-400 tracking-widest block mb-1">VIP</span>
+<span class="font-black text-4xl block leading-none">T4</span>
+<span class="text-xs font-mono bg-black/40 px-3 py-1 rounded-full mt-2 inline-block">01:42:15</span>
+</div>
+</div>
+<div class="absolute -bottom-8 left-1/2 -translate-x-1/2 whitespace-nowrap text-xs font-bold text-primary">Table 04 (VIP Table)</div>
+</div>
+<!-- Table Component: Available -->
+<div class="group relative w-64 h-36 bg-emerald-900 rounded-xl shadow-2xl border-4 border-[#3d2b1f] ring-1 ring-black/20 hover:scale-105 transition-transform cursor-pointer">
+<div class="absolute inset-1 rounded-lg bg-emerald-700 shadow-inner flex flex-col items-center justify-center border border-white/10">
+<div class="absolute top-2 right-2 size-3 rounded-full bg-emerald-500 border-2 border-emerald-900 shadow-[0_0_10px_#10b981]"></div>
+<span class="text-emerald-300/50 font-black text-2xl select-none">T5</span>
+</div>
+<div class="absolute -bottom-8 left-1/2 -translate-x-1/2 whitespace-nowrap text-xs font-bold text-slate-600 dark:text-slate-400">Table 05 (Std)</div>
+</div>
+<!-- Table Component: Available -->
+<div class="group relative w-64 h-36 bg-emerald-900 rounded-xl shadow-2xl border-4 border-[#3d2b1f] ring-1 ring-black/20 hover:scale-105 transition-transform cursor-pointer">
+<div class="absolute inset-1 rounded-lg bg-emerald-700 shadow-inner flex flex-col items-center justify-center border border-white/10">
+<div class="absolute top-2 right-2 size-3 rounded-full bg-emerald-500 border-2 border-emerald-900 shadow-[0_0_10px_#10b981]"></div>
+<span class="text-emerald-300/50 font-black text-2xl select-none">T6</span>
+</div>
+<div class="absolute -bottom-8 left-1/2 -translate-x-1/2 whitespace-nowrap text-xs font-bold text-slate-600 dark:text-slate-400">Table 06 (Std)</div>
+</div>
+</div>
+<!-- Floating Action Button -->
+<button class="absolute bottom-8 right-8 size-16 bg-primary text-white rounded-full shadow-2xl shadow-primary/40 flex items-center justify-center hover:scale-110 hover:rotate-90 transition-all active:scale-95 group">
+<span class="material-symbols-outlined text-4xl">add</span>
+<span class="absolute right-full mr-4 bg-slate-900 text-white px-3 py-1.5 rounded-lg text-xs font-bold whitespace-nowrap opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity">Add New Table</span>
+</button>
+</section>
+</main>
+</div>
+</body></html>

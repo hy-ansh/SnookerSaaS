@@ -1,0 +1,31 @@
+﻿src/controllers/matchController.ts(38,64): error TS2322: Type 'string | string[]' is not assignable to type 'string | undefined'.
+  Type 'string[]' is not assignable to type 'string'.
+src/controllers/matchController.ts(56,26): error TS2322: Type 'string | string[]' is not assignable to type 'string | undefined'.
+  Type 'string[]' is not assignable to type 'string'.
+src/controllers/matchController.ts(104,22): error TS2322: Type 'string | string[]' is not assignable to type 'string | undefined'.
+  Type 'string[]' is not assignable to type 'string'.
+src/controllers/sessionController.ts(80,22): error TS2322: Type 'string | string[]' is not assignable to type 'string | undefined'.
+  Type 'string[]' is not assignable to type 'string'.
+src/controllers/sessionController.ts(91,43): error TS2551: Property 'branch' does not exist on type '{ id: string; branchId: string; status: SessionStatus; tableId: string; startedAt: Date; endedAt: Date | null; hourlyRateApplied: Decimal; pausedDurationSecs: number; durationMinutes: number | null; totalAmount: Decimal | null; }'. Did you mean 'branchId'?
+src/controllers/sessionController.ts(103,26): error TS2322: Type 'string | string[]' is not assignable to type 'string | undefined'.
+  Type 'string[]' is not assignable to type 'string'.
+src/controllers/sessionController.ts(107,25): error TS2322: Type 'string | string[]' is not assignable to type 'string | undefined'.
+  Type 'string[]' is not assignable to type 'string'.
+src/controllers/sessionController.ts(127,22): error TS2322: Type 'string | string[]' is not assignable to type 'string | undefined'.
+  Type 'string[]' is not assignable to type 'string'.
+src/controllers/sessionController.ts(138,43): error TS2551: Property 'branch' does not exist on type '{ id: string; branchId: string; status: SessionStatus; tableId: string; startedAt: Date; endedAt: Date | null; hourlyRateApplied: Decimal; pausedDurationSecs: number; durationMinutes: number | null; totalAmount: Decimal | null; }'. Did you mean 'branchId'?
+src/controllers/sessionController.ts(149,22): error TS2322: Type 'string | string[]' is not assignable to type 'string | StringFilter<"SessionPause"> | undefined'.
+  Type 'string[]' is not assignable to type 'string | StringFilter<"SessionPause"> | undefined'.
+src/controllers/sessionController.ts(154,26): error TS2322: Type 'string | string[]' is not assignable to type 'string | undefined'.
+  Type 'string[]' is not assignable to type 'string'.
+src/controllers/sessionController.ts(170,26): error TS2322: Type 'string | string[]' is not assignable to type 'string | undefined'.
+  Type 'string[]' is not assignable to type 'string'.
+src/controllers/sessionController.ts(194,22): error TS2322: Type 'string | string[]' is not assignable to type 'string | undefined'.
+  Type 'string[]' is not assignable to type 'string'.
+src/controllers/sessionController.ts(212,26): error TS2322: Type 'string | string[]' is not assignable to type 'string | StringFilter<"SessionPause"> | undefined'.
+  Type 'string[]' is not assignable to type 'string | StringFilter<"SessionPause"> | undefined'.
+src/controllers/sessionController.ts(236,26): error TS2322: Type 'string | string[]' is not assignable to type 'string | undefined'.
+  Type 'string[]' is not assignable to type 'string'.
+src/controllers/sessionController.ts(254,45): error TS2551: Property 'branch' does not exist on type '{ id: string; branchId: string; status: SessionStatus; tableId: string; startedAt: Date; endedAt: Date | null; hourlyRateApplied: Decimal; pausedDurationSecs: number; durationMinutes: number | null; totalAmount: Decimal | null; }'. Did you mean 'branchId'?
+src/controllers/sessionController.ts(259,21): error TS2322: Type 'string | string[]' is not assignable to type 'string'.
+  Type 'string[]' is not assignable to type 'string'.

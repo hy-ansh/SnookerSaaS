@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@200..800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#059467",
+                        "secondary": "#334155",
+                        "background-light": "#f8fafc",
+                        "background-dark": "#0f172a",
+                        "danger-light": "#fee2e2",
+                        "danger-dark": "#991b1b",
+                    },
+                    fontFamily: {
+                        "display": ["Manrope", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.5rem",
+                        "lg": "1rem",
+                        "xl": "1.5rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+<style>
+        body { font-family: 'Manrope', sans-serif; }
+        .soft-shadow { box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.05); }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark min-h-screen text-slate-900 dark:text-slate-100">
+<div class="flex h-screen overflow-hidden">
+<!-- Sidebar Navigation (Reused logic from TopNavBar component) -->
+<aside class="w-72 bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 flex flex-col p-6 gap-8">
+<div class="flex items-center gap-3 px-2">
+<div class="size-10 bg-primary rounded-lg flex items-center justify-center text-white">
+<span class="material-symbols-outlined">pool</span>
+</div>
+<h2 class="text-xl font-bold tracking-tight text-primary">Emerald Cue</h2>
+</div>
+<nav class="flex flex-col gap-2">
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-slate-500 hover:bg-slate-100 transition-colors" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="font-medium">Dashboard</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-slate-500 hover:bg-slate-100 transition-colors" href="#">
+<span class="material-symbols-outlined">groups</span>
+<span class="font-medium">Players</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg bg-primary/10 text-primary" href="#">
+<span class="material-symbols-outlined">payments</span>
+<span class="font-medium">Dues Management</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-slate-500 hover:bg-slate-100 transition-colors" href="#">
+<span class="material-symbols-outlined">table_restaurant</span>
+<span class="font-medium">Tables</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-slate-500 hover:bg-slate-100 transition-colors" href="#">
+<span class="material-symbols-outlined">analytics</span>
+<span class="font-medium">Reporting</span>
+</a>
+</nav>
+<div class="mt-auto pt-6 border-t border-slate-100 dark:border-slate-800">
+<div class="flex items-center gap-3 px-2">
+<div class="size-10 rounded-full bg-slate-200" data-alt="User profile avatar placeholder">
+<img alt="Admin" class="rounded-full" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCS04nS1uj8tuh-gVhJrtSmnGUh7k-iHUuTI_PTZvPVk0yKsLmNTGEwRs3a0e47pRgWjWuxksJEFP3b8bN7Gfx8HiOvUhoY4DuvwJvNY1IvcoIOnt0eNLMzL6N-0yGB6lcMJwt78FejC4wM_qsewCmvVAD2Gg7Xy9PMWefAtMeyzmqIB0Ya7T42YAtFZRX05Cy8fLooBFzl_vkg5VfuAFaWqmGuAc8hdy7AR7rhIMeuTWW6yQLOzqx51rK_PaF87MUXaxFX3d247bzQ"/>
+</div>
+<div>
+<p class="text-sm font-bold">Alex Thompson</p>
+<p class="text-xs text-slate-500">Hall Manager</p>
+</div>
+</div>
+</div>
+</aside>
+<!-- Main Content Area -->
+<main class="flex-1 overflow-y-auto flex flex-col">
+<!-- Header -->
+<header class="sticky top-0 z-10 bg-background-light/80 dark:bg-background-dark/80 backdrop-blur-md px-8 py-6 flex items-center justify-between border-b border-slate-200 dark:border-slate-800">
+<div>
+<h1 class="text-2xl font-black tracking-tight text-slate-900 dark:text-white">Dues Management</h1>
+<p class="text-slate-500 text-sm">Review and settle outstanding session balances</p>
+</div>
+<div class="flex items-center gap-4">
+<div class="relative w-80">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">search</span>
+<input class="w-full pl-10 pr-4 py-2 bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 rounded-lg focus:ring-primary focus:border-primary" placeholder="Search players by name or ID..." type="text"/>
+</div>
+<button class="bg-primary text-white px-4 py-2 rounded-lg font-bold flex items-center gap-2 hover:bg-primary/90 transition-colors">
+<span class="material-symbols-outlined text-sm">add</span>
+                        Manual Entry
+                    </button>
+</div>
+</header>
+<!-- Filters -->
+<div class="px-8 pt-6">
+<div class="flex gap-4 border-b border-slate-200 dark:border-slate-800">
+<button class="pb-4 px-2 text-primary border-b-2 border-primary font-bold text-sm tracking-wide">ALL PLAYERS</button>
+<button class="pb-4 px-2 text-slate-500 font-bold text-sm tracking-wide hover:text-slate-700">OVERDUE</button>
+<button class="pb-4 px-2 text-slate-500 font-bold text-sm tracking-wide hover:text-slate-700">SETTLED</button>
+<button class="pb-4 px-2 text-slate-500 font-bold text-sm tracking-wide hover:text-slate-700">VIP MEMBERS</button>
+</div>
+</div>
+<!-- Player Grid -->
+<div class="p-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+<!-- Player Card 1 (Active/Selected State Example) -->
+<div class="bg-white dark:bg-slate-900 p-5 rounded-lg border-2 border-primary soft-shadow cursor-pointer relative">
+<div class="absolute top-4 right-4 bg-danger-light text-danger-dark px-2 py-1 rounded text-[10px] font-black uppercase tracking-wider">Overdue</div>
+<div class="flex items-center gap-4 mb-6">
+<div class="size-14 rounded-xl overflow-hidden bg-slate-100" data-alt="Professional portrait of Marcus Chen">
+<img alt="Marcus Chen" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDLyx-cvY9nkvjKL2UKNxBxujVruf1V70RDSuODlLmCNne7e9b25CmOVewgb8DnfAsRFfQ-05bwGVzozcu7cLxN7CL0CF2t-ODDSC4aEQb_UniZ5IsGSVvHsVZmyoGmpc2S6w5Dp6J9kHzJxTOy2RprylK1jO0BvLwEtfyKdpN7xYWAh7iXkWvTSISnLVnn6XhXEXkpjdpg9H_KNdszHdgS-8EGTK_CmWrGnTvXvwnedVipwbKMlVNNdU7xKF20Z3-SE5YdovbFg0Ru"/>
+</div>
+<div>
+<h3 class="font-bold text-slate-900 dark:text-white">Marcus Chen</h3>
+<p class="text-xs text-slate-400 uppercase font-medium">ID: #PC-8821</p>
+</div>
+</div>
+<div class="space-y-3">
+<div class="flex justify-between items-end">
+<span class="text-sm text-slate-500">Pending Amount</span>
+<span class="text-xl font-black text-slate-900 dark:text-white">$145.50</span>
+</div>
+<div class="flex items-center gap-2 pt-3 border-t border-slate-50 dark:border-slate-800">
+<span class="material-symbols-outlined text-sm text-slate-400">schedule</span>
+<span class="text-xs text-slate-500">Last session: Oct 24, 8:30 PM</span>
+</div>
+</div>
+</div>
+<!-- Player Card 2 -->
+<div class="bg-white dark:bg-slate-900 p-5 rounded-lg border border-slate-200 dark:border-slate-800 soft-shadow hover:border-primary/50 transition-all cursor-pointer">
+<div class="absolute top-4 right-4 bg-danger-light text-danger-dark px-2 py-1 rounded text-[10px] font-black uppercase tracking-wider">Overdue</div>
+<div class="flex items-center gap-4 mb-6">
+<div class="size-14 rounded-xl overflow-hidden bg-slate-100" data-alt="Portrait of Sarah Jenkins">
+<img alt="Sarah Jenkins" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDtaiFy3TOsQCjMKCLnhY1q2f-WIjjd5kUUW4MZJiOTMuQXiXlDRy8O8za5aPcqG1eR-Pv4fy9jjpKuKiyOmrQwJuIoe73HhUOoQtLdudXn6jSANGKR0Uc-4SciuIwR3GR7oRKQHaF6IfiJZdF6_gnwIB0EBnZB-54yCFF7A_CQKUDsrNIa2vW7eVXWh1AKeQFJ7Oi_W-0G8uuZ6wjkMrGXBMt1Aj1_d2RDe4Yv02WJHsydLVnBc0IsSkeeK9zI5KzD5BhboujKLNZS"/>
+</div>
+<div>
+<h3 class="font-bold text-slate-900 dark:text-white">Sarah Jenkins</h3>
+<p class="text-xs text-slate-400 uppercase font-medium">ID: #PC-4102</p>
+</div>
+</div>
+<div class="space-y-3">
+<div class="flex justify-between items-end">
+<span class="text-sm text-slate-500">Pending Amount</span>
+<span class="text-xl font-black text-slate-900 dark:text-white">$42.00</span>
+</div>
+<div class="flex items-center gap-2 pt-3 border-t border-slate-50 dark:border-slate-800">
+<span class="material-symbols-outlined text-sm text-slate-400">schedule</span>
+<span class="text-xs text-slate-500">Last session: Oct 26, 6:15 PM</span>
+</div>
+</div>
+</div>
+<!-- Player Card 3 -->
+<div class="bg-white dark:bg-slate-900 p-5 rounded-lg border border-slate-200 dark:border-slate-800 soft-shadow hover:border-primary/50 transition-all cursor-pointer">
+<div class="flex items-center gap-4 mb-6">
+<div class="size-14 rounded-xl overflow-hidden bg-slate-100" data-alt="Portrait of David Miller">
+<img alt="David Miller" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA1Tq9A23taZx8wdu9QWGKHAXonJNFeGwJgHfGKwwYEze4B1LE_S1wmGJmfdL8p7kjioQfzbE01I5YmvBh-s4JZ_A4wUjJ7PvPycwlWG99K_33q-NaAbXfcJO8EDjVonfMJzas9tP1cheVX2MgT6cmzRCtsHcHQIgL_cLlAuahfHE6hsseEpsMTWD4c0GYqVyFsCraEIRUgqZAvlWG86aYtUE_FbNvlTh_d-opOxyBtvBBoL4kT0s8YvpjlHmM7cyLiyEhRKRoJv6JY"/>
+</div>
+<div>
+<h3 class="font-bold text-slate-900 dark:text-white">David Miller</h3>
+<p class="text-xs text-slate-400 uppercase font-medium">ID: #PC-9901</p>
+</div>
+</div>
+<div class="space-y-3">
+<div class="flex justify-between items-end">
+<span class="text-sm text-slate-500">Pending Amount</span>
+<span class="text-xl font-black text-slate-900 dark:text-white">$12.50</span>
+</div>
+<div class="flex items-center gap-2 pt-3 border-t border-slate-50 dark:border-slate-800">
+<span class="material-symbols-outlined text-sm text-slate-400">schedule</span>
+<span class="text-xs text-slate-500">Last session: Oct 27, 2:00 PM</span>
+</div>
+</div>
+</div>
+<!-- Player Card 4 -->
+<div class="bg-white dark:bg-slate-900 p-5 rounded-lg border border-slate-200 dark:border-slate-800 soft-shadow hover:border-primary/50 transition-all cursor-pointer">
+<div class="absolute top-4 right-4 bg-danger-light text-danger-dark px-2 py-1 rounded text-[10px] font-black uppercase tracking-wider">Overdue</div>
+<div class="flex items-center gap-4 mb-6">
+<div class="size-14 rounded-xl overflow-hidden bg-slate-100" data-alt="Portrait of Elena Rodriguez">
+<img alt="Elena Rodriguez" src="https://lh3.googleusercontent.com/aida-public/AB6AXuADyTMCXd_-h3nRnwwjMiErd2CEQgLdB5wi3696_Zr5ydzMkn_tzkkgPJEwnjMDGC6yeF0rEiZGhCWRf3nRQXo6LBgRgjf16iTwEGw8rgxB07NeWlfSOoXgxJZM_gu0pqomtxGqcHme52frhwq7pAcsKOozGWne9n3iVADA7_D4vv9RfDWD9KZfCdVmh-jLBQIXC0dA4qSeLk-1vqwYDrKMB5oFLdHXZl6QhvNRuw87N_YwcUxmgKMOvWKFKGWLy1Ux-vodJZez3sPn"/>
+</div>
+<div>
+<h3 class="font-bold text-slate-900 dark:text-white">Elena Rodriguez</h3>
+<p class="text-xs text-slate-400 uppercase font-medium">ID: #PC-3315</p>
+</div>
+</div>
+<div class="space-y-3">
+<div class="flex justify-between items-end">
+<span class="text-sm text-slate-500">Pending Amount</span>
+<span class="text-xl font-black text-slate-900 dark:text-white">$88.75</span>
+</div>
+<div class="flex items-center gap-2 pt-3 border-t border-slate-50 dark:border-slate-800">
+<span class="material-symbols-outlined text-sm text-slate-400">schedule</span>
+<span class="text-xs text-slate-500">Last session: Oct 23, 9:45 PM</span>
+</div>
+</div>
+</div>
+<!-- Additional cards to fill grid -->
+<div class="bg-white dark:bg-slate-900 p-5 rounded-lg border border-slate-200 dark:border-slate-800 soft-shadow opacity-60">
+<div class="flex items-center gap-4 mb-6">
+<div class="size-14 rounded-xl overflow-hidden bg-slate-200 animate-pulse"></div>
+<div class="flex-1 space-y-2">
+<div class="h-4 bg-slate-200 rounded w-2/3 animate-pulse"></div>
+<div class="h-3 bg-slate-100 rounded w-1/3 animate-pulse"></div>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- Slide-in Interaction Side Panel -->
+<aside class="w-[450px] bg-white dark:bg-slate-900 border-l border-slate-200 dark:border-slate-800 flex flex-col shadow-2xl relative z-20">
+<div class="p-8 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between">
+<h2 class="text-xl font-black text-slate-900 dark:text-white uppercase tracking-tight">Session Summary</h2>
+<button class="size-10 rounded-full hover:bg-slate-100 flex items-center justify-center text-slate-400">
+<span class="material-symbols-outlined">close</span>
+</button>
+</div>
+<div class="flex-1 overflow-y-auto p-8">
+<!-- Selected Player Header -->
+<div class="flex items-center gap-4 p-4 bg-primary/5 rounded-xl border border-primary/10 mb-8">
+<div class="size-16 rounded-xl overflow-hidden" data-alt="Detail view of Marcus Chen's avatar">
+<img alt="Marcus Chen" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCOjwcv33HDN8MfRQdoNcwKIq9C01Erp0PFIHiOzuCeU1gtie_FDyOofQicDdx2n7SQ34DaW5ys_3itSKKMQRqqTVzH9LFjZWt6QFqh13q-QnZMFtTiPl5yOiB7SMzmw_NtKYKsRv56X7idoZrtue_au26Htp24JQuT-qcv0Iq-gTphAgYpa2t0Nw-e0aofB867vlLY7XPoJ5r7_UMb7uk6bdL4AXdl83bGfqQqNcCaK1MQEnlmg8bvCNzUOQbo-YyRYegjowAI1nGP"/>
+</div>
+<div>
+<h3 class="text-lg font-bold text-primary">Marcus Chen</h3>
+<p class="text-sm text-slate-500 font-medium">Regular Member • Pro League</p>
+</div>
+</div>
+<!-- Balance Breakdown -->
+<div class="mb-8">
+<h4 class="text-xs font-black text-slate-400 uppercase tracking-widest mb-4">Unpaid Sessions</h4>
+<div class="space-y-3">
+<div class="p-4 bg-slate-50 dark:bg-slate-800 rounded-lg flex justify-between items-center border border-slate-100 dark:border-slate-700">
+<div>
+<p class="text-sm font-bold">Table #4 - 2h 15m</p>
+<p class="text-xs text-slate-500">Oct 24, 2023 • 8:30 PM</p>
+</div>
+<span class="font-bold text-slate-900 dark:text-white">$65.00</span>
+</div>
+<div class="p-4 bg-slate-50 dark:bg-slate-800 rounded-lg flex justify-between items-center border border-slate-100 dark:border-slate-700">
+<div>
+<p class="text-sm font-bold">Snooker Table - 1h 45m</p>
+<p class="text-xs text-slate-500">Oct 22, 2023 • 7:00 PM</p>
+</div>
+<span class="font-bold text-slate-900 dark:text-white">$45.50</span>
+</div>
+<div class="p-4 bg-slate-50 dark:bg-slate-800 rounded-lg flex justify-between items-center border border-slate-100 dark:border-slate-700">
+<div>
+<p class="text-sm font-bold">Table #2 - 1h 20m</p>
+<p class="text-xs text-slate-500">Oct 19, 2023 • 9:15 PM</p>
+</div>
+<span class="font-bold text-slate-900 dark:text-white">$35.00</span>
+</div>
+</div>
+</div>
+<!-- Payment Summary -->
+<div class="p-6 bg-slate-900 dark:bg-black rounded-xl text-white mb-8">
+<div class="flex justify-between items-center mb-4">
+<span class="text-slate-400 text-sm">Subtotal</span>
+<span class="font-medium">$145.50</span>
+</div>
+<div class="flex justify-between items-center mb-6">
+<span class="text-slate-400 text-sm">Late Fee (Auto-Applied)</span>
+<span class="text-danger-light font-medium">+$0.00</span>
+</div>
+<div class="h-px bg-slate-800 mb-6"></div>
+<div class="flex justify-between items-center">
+<span class="text-lg font-bold">Total Due</span>
+<div class="text-right">
+<!-- Animated Pending Balance state simulation via text -->
+<span class="text-3xl font-black text-primary">$145.50</span>
+<p class="text-[10px] text-slate-400 uppercase tracking-tighter mt-1">Settle to clear balance</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Action Area -->
+<div class="p-8 border-t border-slate-100 dark:border-slate-800">
+<div class="flex flex-col gap-3">
+<button class="w-full bg-primary text-white py-4 rounded-xl font-black text-lg shadow-lg shadow-primary/20 hover:shadow-primary/30 transition-all flex items-center justify-center gap-3">
+<span class="material-symbols-outlined">account_balance_wallet</span>
+                        SETTLE DUES
+                    </button>
+<!-- Simulation of "Paying..." state shown in UI notes -->
+<div class="hidden flex items-center justify-center gap-3 py-4 text-primary font-bold animate-pulse">
+<span class="material-symbols-outlined animate-spin">refresh</span>
+                        Processing Settlement...
+                    </div>
+<p class="text-center text-xs text-slate-400 italic">This will mark all sessions above as 'Paid' and send a receipt to the player.</p>
+</div>
+</div>
+</aside>
+</div>
+</body></html>

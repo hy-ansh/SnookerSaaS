@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>CueMaster Pro - Floor Map</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@200..800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#059467",
+                        "background-light": "#f8fafc",
+                        "background-dark": "#0f231d",
+                        "surface-light": "#ffffff",
+                        "accent-emerald": "#10b981",
+                    },
+                    fontFamily: {
+                        "display": ["Manrope", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.5rem",
+                        "lg": "1rem",
+                        "xl": "1.5rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+<style>
+        .pool-table-felt {
+            background: radial-gradient(circle at 50% 50%, #065f46 0%, #064e3b 100%);
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.3);
+        }
+        .floor-grid {
+            background-image: radial-gradient(#e2e8f0 1px, transparent 1px);
+            background-size: 40px 40px;
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-slate-100 antialiased">
+<div class="relative flex min-h-screen flex-col">
+<!-- TopNavBar -->
+<header class="sticky top-0 z-50 flex items-center justify-between border-b border-slate-200 dark:border-slate-800 bg-surface-light/80 dark:bg-background-dark/80 backdrop-blur-md px-8 py-3">
+<div class="flex items-center gap-8">
+<div class="flex items-center gap-3">
+<div class="flex h-10 w-10 items-center justify-center rounded-lg bg-primary text-white">
+<span class="material-symbols-outlined">sports_score</span>
+</div>
+<div>
+<h2 class="text-lg font-bold leading-tight tracking-tight">CueMaster Pro</h2>
+<p class="text-xs font-medium text-slate-500">Downtown Branch • Floor 1</p>
+</div>
+</div>
+<div class="hidden md:flex items-center gap-1 bg-slate-100 dark:bg-slate-800 p-1 rounded-lg">
+<button class="flex items-center gap-2 px-4 py-1.5 rounded-md bg-white dark:bg-slate-700 shadow-sm text-sm font-semibold">
+<span class="material-symbols-outlined text-sm">map</span> Map View
+                    </button>
+<button class="flex items-center gap-2 px-4 py-1.5 rounded-md text-slate-500 hover:text-slate-900 dark:hover:text-slate-100 text-sm font-semibold transition-colors">
+<span class="material-symbols-outlined text-sm">list_alt</span> Table List
+                    </button>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<div class="relative">
+<span class="absolute left-3 top-1/2 -translate-y-1/2 material-symbols-outlined text-slate-400 text-xl">search</span>
+<input class="h-10 w-64 rounded-xl border-none bg-slate-100 dark:bg-slate-800 pl-10 pr-4 text-sm focus:ring-2 focus:ring-primary transition-all" placeholder="Find table or member..." type="text"/>
+</div>
+<div class="flex gap-2 border-l border-slate-200 dark:border-slate-800 pl-4">
+<button class="flex h-10 w-10 items-center justify-center rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 transition-colors">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<button class="flex h-10 w-10 items-center justify-center rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 transition-colors">
+<span class="material-symbols-outlined">settings</span>
+</button>
+<div class="h-10 w-10 rounded-full bg-slate-200 overflow-hidden border-2 border-white shadow-sm">
+<img class="h-full w-full object-cover" data-alt="User profile avatar of the manager" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBTdRD9BgZGRT0aDy1Tr8Z3ommweXLzOWLJK22OPwmrDmgMotDlVVzL3DTpG4SmP8_zXyEK4_x9Rt9OOqz5-66JO1_SGwnK-PZP56_XexWhwLofvc7Ex0nGaddbamV2PqIQthB2ojU5sZbGz5a0WR06ot-88iES7W4c7kMJXzM29ZxxqG92kje70ubOym0GCqy1BlsC30MVXu55KrBOK9HZ1DUJsMcuui7q9Vft78_dUytS1N-H2D9naGplPs1wJtpl2qqHBh7UMTqO"/>
+</div>
+</div>
+</div>
+</header>
+<main class="flex flex-1 overflow-hidden">
+<!-- Floor Map Canvas -->
+<div class="relative flex-1 bg-background-light dark:bg-background-dark floor-grid p-12 overflow-auto">
+<!-- Layout Mode Bar -->
+<div class="absolute top-6 left-1/2 -translate-x-1/2 z-10 flex items-center gap-4 bg-white/90 dark:bg-slate-900/90 backdrop-blur px-6 py-3 rounded-full shadow-xl border border-slate-200 dark:border-slate-700">
+<div class="flex items-center gap-2 text-primary font-bold">
+<span class="material-symbols-outlined">edit_road</span>
+<span class="text-sm">Layout Mode Active</span>
+</div>
+<div class="h-4 w-px bg-slate-300 dark:bg-slate-700"></div>
+<button class="text-xs font-bold text-slate-500 hover:text-slate-900">Cancel</button>
+<button class="px-4 py-1.5 bg-primary text-white text-xs font-bold rounded-full hover:shadow-lg transition-all">Save Layout</button>
+</div>
+<!-- Graphical Map Container -->
+<div class="relative w-[1200px] h-[800px] mx-auto border-2 border-dashed border-slate-200 dark:border-slate-800 rounded-3xl p-8">
+<!-- Table 1 - Active -->
+<div class="absolute left-20 top-20 group cursor-pointer transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl">
+<div class="relative w-48 h-28 bg-amber-900 rounded-lg p-2 shadow-lg border-b-4 border-amber-950">
+<div class="pool-table-felt w-full h-full rounded-sm flex items-center justify-center relative overflow-hidden">
+<span class="text-white/20 text-4xl font-black">1</span>
+<!-- Balls -->
+<div class="absolute top-4 left-6 h-2 w-2 rounded-full bg-white shadow-sm"></div>
+<div class="absolute bottom-6 right-10 h-2 w-2 rounded-full bg-red-500 shadow-sm"></div>
+<div class="absolute bottom-10 left-12 h-2 w-2 rounded-full bg-yellow-400 shadow-sm"></div>
+</div>
+<!-- Status Indicators -->
+<div class="absolute -top-1 -right-1 flex h-4 w-4">
+<span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+<span class="relative inline-flex rounded-full h-4 w-4 bg-red-500 border-2 border-white"></span>
+</div>
+</div>
+<div class="mt-3 text-center">
+<p class="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-widest">Table 01</p>
+<p class="text-[10px] font-medium text-red-500">Occupied • 01:24:10</p>
+</div>
+</div>
+<!-- Table 2 - Available -->
+<div class="absolute left-80 top-20 group cursor-pointer transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl">
+<div class="relative w-48 h-28 bg-amber-900 rounded-lg p-2 shadow-lg border-b-4 border-amber-950">
+<div class="pool-table-felt w-full h-full rounded-sm flex items-center justify-center">
+<span class="text-white/20 text-4xl font-black">2</span>
+</div>
+<div class="absolute -top-1 -right-1 h-4 w-4 rounded-full bg-primary border-2 border-white shadow-sm"></div>
+</div>
+<div class="mt-3 text-center">
+<p class="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-widest">Table 02</p>
+<p class="text-[10px] font-medium text-primary">Available</p>
+</div>
+</div>
+<!-- Table 3 - Reserved -->
+<div class="absolute left-20 top-60 group cursor-pointer transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl">
+<div class="relative w-48 h-28 bg-amber-900 rounded-lg p-2 shadow-lg border-b-4 border-amber-950 opacity-80">
+<div class="pool-table-felt w-full h-full rounded-sm flex items-center justify-center">
+<span class="text-white/20 text-4xl font-black">3</span>
+</div>
+<div class="absolute -top-1 -right-1 h-4 w-4 rounded-full bg-amber-400 border-2 border-white shadow-sm"></div>
+</div>
+<div class="mt-3 text-center">
+<p class="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-widest">Table 03</p>
+<p class="text-[10px] font-medium text-amber-500">Reserved • 19:30</p>
+</div>
+</div>
+<!-- Table 4 - Maintenance -->
+<div class="absolute left-80 top-60 group cursor-pointer transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl">
+<div class="relative w-48 h-28 bg-slate-700 rounded-lg p-2 shadow-lg border-b-4 border-slate-900">
+<div class="bg-slate-800 w-full h-full rounded-sm flex items-center justify-center">
+<span class="material-symbols-outlined text-slate-600 text-3xl">build</span>
+</div>
+<div class="absolute -top-1 -right-1 h-4 w-4 rounded-full bg-slate-400 border-2 border-white shadow-sm"></div>
+</div>
+<div class="mt-3 text-center">
+<p class="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-widest">Table 04</p>
+<p class="text-[10px] font-medium text-slate-500">Maintenance</p>
+</div>
+</div>
+<!-- Bar Counter Area -->
+<div class="absolute right-20 bottom-20 w-80 h-32 bg-slate-200 dark:bg-slate-800 rounded-xl border-2 border-slate-300 dark:border-slate-700 flex items-center justify-center">
+<p class="text-slate-400 font-bold text-sm tracking-widest">MAIN BAR AREA</p>
+</div>
+<!-- Sofa/Lounge Area -->
+<div class="absolute left-20 bottom-20 flex gap-4">
+<div class="w-16 h-32 bg-slate-200 dark:bg-slate-800 rounded-lg border border-slate-300 dark:border-slate-700"></div>
+<div class="w-32 h-32 bg-slate-100 dark:bg-slate-800/50 rounded-xl flex items-center justify-center">
+<span class="material-symbols-outlined text-slate-300">weekend</span>
+</div>
+</div>
+</div>
+<!-- Floating Action Button -->
+<button class="fixed bottom-10 right-[420px] h-14 w-14 bg-primary text-white rounded-full shadow-2xl flex items-center justify-center hover:scale-110 active:scale-95 transition-all z-20">
+<span class="material-symbols-outlined text-3xl">add</span>
+</button>
+</div>
+<!-- Side Panel - Table Management -->
+<aside class="w-[400px] border-l border-slate-200 dark:border-slate-800 bg-surface-light dark:bg-background-dark p-6 flex flex-col gap-6">
+<!-- Selected Table Header -->
+<div class="flex items-center justify-between">
+<div>
+<h3 class="text-2xl font-black text-slate-900 dark:text-slate-100">Table 01</h3>
+<div class="flex items-center gap-2">
+<span class="h-2 w-2 rounded-full bg-red-500"></span>
+<span class="text-sm font-semibold text-red-500">Currently Active</span>
+</div>
+</div>
+<button class="h-10 w-10 flex items-center justify-center rounded-xl bg-slate-100 dark:bg-slate-800">
+<span class="material-symbols-outlined">more_vert</span>
+</button>
+</div>
+<!-- Session Progress Card -->
+<div class="rounded-2xl bg-slate-50 dark:bg-slate-800/50 p-6 border border-slate-100 dark:border-slate-800">
+<div class="flex justify-between mb-4">
+<span class="text-sm font-medium text-slate-500 tracking-tight">Current Session</span>
+<span class="text-sm font-bold text-slate-900 dark:text-slate-100">01:24:10</span>
+</div>
+<div class="w-full bg-slate-200 dark:bg-slate-700 h-3 rounded-full overflow-hidden">
+<div class="bg-primary h-full rounded-full" style="width: 65%;"></div>
+</div>
+<div class="flex justify-between mt-4">
+<div class="text-center">
+<p class="text-[10px] uppercase text-slate-400 font-bold">Rate</p>
+<p class="text-sm font-bold">$12.00/hr</p>
+</div>
+<div class="text-center">
+<p class="text-[10px] uppercase text-slate-400 font-bold">Total Cost</p>
+<p class="text-sm font-bold text-primary">$16.82</p>
+</div>
+<div class="text-center">
+<p class="text-[10px] uppercase text-slate-400 font-bold">Players</p>
+<p class="text-sm font-bold">2</p>
+</div>
+</div>
+</div>
+<!-- Current Players -->
+<div class="flex flex-col gap-3">
+<div class="flex items-center justify-between">
+<h4 class="text-sm font-bold uppercase tracking-wider text-slate-500">Players</h4>
+<button class="text-xs font-bold text-primary hover:underline">+ Add Player</button>
+</div>
+<div class="space-y-2">
+<div class="flex items-center justify-between p-3 rounded-xl bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 shadow-sm">
+<div class="flex items-center gap-3">
+<img class="h-8 w-8 rounded-full border border-slate-200" data-alt="Portrait of Alex Thompson" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDR8acsyOL7e9VzjkiflbxUZLRJHCyRFYVg4IR0tgj9o36QDFkPXhnVHUesdRfIwmqmfKQ4NJJZ6QUU3xPk1DhefhruPlayKD7AHK0bR9l_CXgJHqqSO8momRd0b3F1veU4m0ZeErHEGxdUYJJd1yaoBhvNCOmKgt9PPUOpHNIzG6WR-Koh8mLw3pIHBEetcFzFqVyM-cf2tVjxGLd2IUPGBobakr7XEk0rh-hxQUGs4oMKSREyXk40bQ12WwycVoAcSMP-ILCwt3YL"/>
+<span class="text-sm font-semibold">Alex Thompson</span>
+</div>
+<span class="material-symbols-outlined text-slate-400 text-lg">cancel</span>
+</div>
+<div class="flex items-center justify-between p-3 rounded-xl bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 shadow-sm">
+<div class="flex items-center gap-3">
+<img class="h-8 w-8 rounded-full border border-slate-200" data-alt="Portrait of Sarah Jenkins" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC8AqG3-8zTtjzr4j16VGizqtMyoMDSdcfz-eIi4_0y2Ag_ocYOHjphWRmXYDLYDYhDdepaD8bCxUjZOtzY9U4VEsHEsKcK8WiKbdK2wsd3Yh-HBpQ2pAN_WZ5CXjn2nQap70W3mmM5j3b_cJqU2Otuh8SpFTdgsUg0euJjC6Zxg-whln8RyIQVhurRVLR-50NKkyBIXYNmQv58V5ge27Tqzu7oY2KN4fYHFsmp5YPT0E4mEYBKrszPNsuaizqWvpXSy_jOq_4B_R7H"/>
+<span class="text-sm font-semibold">Sarah Jenkins</span>
+</div>
+<span class="material-symbols-outlined text-slate-400 text-lg">cancel</span>
+</div>
+</div>
+</div>
+<!-- Quick Actions -->
+<div class="mt-auto grid grid-cols-2 gap-3">
+<button class="flex items-center justify-center gap-2 py-3 rounded-xl bg-slate-100 dark:bg-slate-800 font-bold text-sm hover:bg-slate-200 transition-colors">
+<span class="material-symbols-outlined text-lg">receipt_long</span> Bill
+                    </button>
+<button class="flex items-center justify-center gap-2 py-3 rounded-xl bg-slate-100 dark:bg-slate-800 font-bold text-sm hover:bg-slate-200 transition-colors">
+<span class="material-symbols-outlined text-lg">coffee</span> Orders
+                    </button>
+<button class="col-span-2 flex items-center justify-center gap-2 py-4 rounded-xl bg-red-500 text-white font-bold text-sm hover:bg-red-600 transition-colors shadow-lg shadow-red-200 dark:shadow-none">
+<span class="material-symbols-outlined">stop_circle</span> End Session &amp; Checkout
+                    </button>
+</div>
+</aside>
+</main>
+</div>
+</body></html>

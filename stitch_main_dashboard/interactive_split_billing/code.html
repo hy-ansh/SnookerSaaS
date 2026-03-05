@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#059467",
+                        "background-light": "#f5f8f7",
+                        "background-dark": "#0f231d",
+                        "slate-custom": "#334155",
+                    },
+                    fontFamily: {
+                        "display": ["Manrope", "sans-serif"]
+                    },
+                    borderRadius: {"DEFAULT": "0.5rem", "lg": "1rem", "xl": "1.5rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        .curved-slider {
+            stroke-dasharray: 283;
+            stroke-dashoffset: 70; /* 75% fill example */
+            transform: rotate(-90 deg);
+            transform-origin: 50% 50%;
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-slate-100 min-h-screen">
+<div class="relative flex h-auto min-h-screen w-full flex-col overflow-x-hidden">
+<div class="layout-container flex h-full grow flex-col">
+<!-- Top Navigation Bar -->
+<header class="flex items-center justify-between border-b border-primary/10 px-6 py-4 md:px-20 lg:px-40 bg-white/80 dark:bg-background-dark/80 backdrop-blur-md sticky top-0 z-50">
+<div class="flex items-center gap-3">
+<div class="bg-primary p-2 rounded-lg text-white">
+<span class="material-symbols-outlined text-2xl">pool</span>
+</div>
+<h2 class="text-slate-900 dark:text-white text-xl font-extrabold tracking-tight">RackShare <span class="text-primary text-sm font-medium ml-1">v2.0</span></h2>
+</div>
+<div class="flex gap-3">
+<button class="flex h-10 w-10 items-center justify-center rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-primary/10 hover:text-primary transition-colors">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<button class="flex h-10 w-10 items-center justify-center rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-primary/10 hover:text-primary transition-colors">
+<span class="material-symbols-outlined">account_circle</span>
+</button>
+</div>
+</header>
+<main class="flex-1 flex flex-col max-w-[1200px] mx-auto w-full px-6 py-8">
+<!-- Page Title Area -->
+<div class="mb-10 text-center">
+<h1 class="text-4xl font-extrabold text-slate-900 dark:text-white mb-2">Split the Bill</h1>
+<p class="text-slate-custom dark:text-slate-400">Table 08 • The Hustler's Lounge</p>
+</div>
+<!-- Circular Visual Metaphor Section -->
+<div class="relative flex flex-col items-center justify-center py-12 mb-12">
+<!-- Main Circle Container -->
+<div class="relative w-[320px] h-[320px] md:w-[450px] md:h-[450px] flex items-center justify-center">
+<!-- Center Total Amount Card -->
+<div class="absolute z-10 w-48 h-48 md:w-64 md:h-64 rounded-full bg-white dark:bg-slate-800 shadow-2xl flex flex-col items-center justify-center border-8 border-background-light dark:border-background-dark">
+<span class="text-slate-custom dark:text-slate-400 text-sm font-semibold uppercase tracking-widest">Total Bill</span>
+<span class="text-4xl md:text-5xl font-extrabold text-slate-900 dark:text-white mt-1">$85.50</span>
+<div class="mt-4 px-3 py-1 bg-primary/10 rounded-full text-primary text-xs font-bold flex items-center gap-1">
+<span class="material-symbols-outlined text-sm">check_circle</span>
+                                Fully Allocated
+                            </div>
+</div>
+<!-- Player 1 (Top Left) -->
+<div class="absolute -top-4 -left-4 md:-top-10 md:-left-10 group cursor-pointer">
+<div class="relative p-2 bg-white dark:bg-slate-800 rounded-2xl shadow-lg border border-slate-100 dark:border-slate-700 w-32 md:w-40 flex flex-col items-center">
+<div class="relative w-16 h-16 md:w-20 md:h-20 mb-2">
+<svg class="absolute inset-0 w-full h-full transform -rotate-90" viewbox="0 0 100 100">
+<circle class="dark:stroke-slate-700" cx="50" cy="50" fill="none" r="45" stroke="#e2e8f0" stroke-width="4"></circle>
+<circle class="transition-all duration-300" cx="50" cy="50" fill="none" r="45" stroke="#059467" stroke-dasharray="283" stroke-dashoffset="140" stroke-width="5"></circle>
+</svg>
+<div class="absolute inset-2 overflow-hidden rounded-full bg-slate-200">
+<img alt="Avatar" class="w-full h-full object-cover" data-alt="Cartoon avatar of a young man with glasses" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC1H94_EvhdHdaVBM-BJ1OU2yCvlOKHNW3jq5GWk4LxgHDNYAa0zN4Hm0u1Zb84T4-RzNhwtBD0RlxAdzojiVKNIIlpWESpPTpYvVDcN5AYIaHRBb9JUXoNe0YSirGjXsbSTcFinIKga2YxACxDjgZNBlVak41EJv-SSAATuxnixS-rHEQEXLZMwQAPV71Mp0mbIYVon3RMZzP5Jq5g0I9Pprr9FIbDo2BSN4_5mJB4MP4e80cL05O_SSMaKuapOPSy_KWY5qsXGm1A"/>
+</div>
+<div class="absolute -bottom-1 -right-1 bg-primary text-white text-[10px] font-bold px-2 py-0.5 rounded-full border-2 border-white dark:border-slate-800">50%</div>
+</div>
+<span class="font-bold text-slate-800 dark:text-white text-sm">Alex R.</span>
+<span class="text-primary font-extrabold text-lg">$42.75</span>
+</div>
+</div>
+<!-- Player 2 (Top Right) -->
+<div class="absolute -top-4 -right-4 md:-top-10 md:-right-10 group cursor-pointer">
+<div class="relative p-2 bg-white dark:bg-slate-800 rounded-2xl shadow-lg border border-slate-100 dark:border-slate-700 w-32 md:w-40 flex flex-col items-center">
+<div class="relative w-16 h-16 md:w-20 md:h-20 mb-2">
+<svg class="absolute inset-0 w-full h-full transform -rotate-90" viewbox="0 0 100 100">
+<circle class="dark:stroke-slate-700" cx="50" cy="50" fill="none" r="45" stroke="#e2e8f0" stroke-width="4"></circle>
+<circle class="transition-all duration-300" cx="50" cy="50" fill="none" r="45" stroke="#059467" stroke-dasharray="283" stroke-dashoffset="210" stroke-width="5"></circle>
+</svg>
+<div class="absolute inset-2 overflow-hidden rounded-full bg-slate-200">
+<img alt="Avatar" class="w-full h-full object-cover" data-alt="Cartoon avatar of a young woman with long hair" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD2_xEoPKq_NG6BywbzJkUB2Ic-oQqW-R0F2acnp2EN1-DhvuIJ9mvNiSHFctxEKNM-hL1_JbJCRO9jF6YQ9U-JWlcmwnzLrUCDBTfQRwitvIYZvoQUEbiA9OAYVuXzlHG4s3jxjmdXujUwuCTl0VmInfnByMNzwYjdnYtX0uV2NF8up0FFvizGYYWkshlu4dV-XTKS74pOj61_p8a7Kqn_0InCLTYhX0ApdC83yrEQB5l4CoPxIPMeichtI_t_Xl6ZcjPbR3JX7iFp"/>
+</div>
+<div class="absolute -bottom-1 -right-1 bg-primary text-white text-[10px] font-bold px-2 py-0.5 rounded-full border-2 border-white dark:border-slate-800">25%</div>
+</div>
+<span class="font-bold text-slate-800 dark:text-white text-sm">Sarah L.</span>
+<span class="text-primary font-extrabold text-lg">$21.37</span>
+</div>
+</div>
+<!-- Player 3 (Bottom Left) -->
+<div class="absolute -bottom-4 -left-4 md:-bottom-10 md:-left-10 group cursor-pointer">
+<div class="relative p-2 bg-white dark:bg-slate-800 rounded-2xl shadow-lg border border-slate-100 dark:border-slate-700 w-32 md:w-40 flex flex-col items-center">
+<div class="relative w-16 h-16 md:w-20 md:h-20 mb-2">
+<svg class="absolute inset-0 w-full h-full transform -rotate-90" viewbox="0 0 100 100">
+<circle class="dark:stroke-slate-700" cx="50" cy="50" fill="none" r="45" stroke="#e2e8f0" stroke-width="4"></circle>
+<circle class="transition-all duration-300" cx="50" cy="50" fill="none" r="45" stroke="#059467" stroke-dasharray="283" stroke-dashoffset="240" stroke-width="5"></circle>
+</svg>
+<div class="absolute inset-2 overflow-hidden rounded-full bg-slate-200">
+<img alt="Avatar" class="w-full h-full object-cover" data-alt="Cartoon avatar of a man with a beard" src="https://lh3.googleusercontent.com/aida-public/AB6AXuALK0zizoVAL0tIhIQqVaFOIpvEMWf-18z-z1VixhOJDV5KSVZuBrjUmRWxl_ju_rYY4JSEXV8ifj-UHwz0RcD1-e-_8PQnONN_1I8aLF65ax2a_nPgAM_foG2Dvobg2TL8Xhs0h-wCpHAygb7h6bNHFAk1whMYQhec1OlWDwLQU8lfO74uC2stQYt5lH5OO_a0xljBco2dUL14pOie5D70Tpq7WX6q9r3ooYAYrgLQNjH-tTnjFYggOzH8m8s3gDjzLBvDdd7fYOJJ"/>
+</div>
+<div class="absolute -bottom-1 -right-1 bg-primary text-white text-[10px] font-bold px-2 py-0.5 rounded-full border-2 border-white dark:border-slate-800">15%</div>
+</div>
+<span class="font-bold text-slate-800 dark:text-white text-sm">James M.</span>
+<span class="text-primary font-extrabold text-lg">$12.83</span>
+</div>
+</div>
+<!-- Player 4 (Bottom Right) -->
+<div class="absolute -bottom-4 -right-4 md:-bottom-10 md:-right-10 group cursor-pointer">
+<div class="relative p-2 bg-white dark:bg-slate-800 rounded-2xl shadow-lg border border-slate-100 dark:border-slate-700 w-32 md:w-40 flex flex-col items-center">
+<div class="relative w-16 h-16 md:w-20 md:h-20 mb-2">
+<svg class="absolute inset-0 w-full h-full transform -rotate-90" viewbox="0 0 100 100">
+<circle class="dark:stroke-slate-700" cx="50" cy="50" fill="none" r="45" stroke="#e2e8f0" stroke-width="4"></circle>
+<circle class="transition-all duration-300" cx="50" cy="50" fill="none" r="45" stroke="#059467" stroke-dasharray="283" stroke-dashoffset="255" stroke-width="5"></circle>
+</svg>
+<div class="absolute inset-2 overflow-hidden rounded-full bg-slate-200">
+<img alt="Avatar" class="w-full h-full object-cover" data-alt="Cartoon avatar of a woman with short hair" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAgGYznSN8YiJ0TH0E7l4_0GBZUqR7oc1eg3DJaqTt9dR6b8Cdka4l7K_vypxbrN4ync2oSBvMCYe8zQDfXaWdOFY-EocPTZdhQeAl9K9LCHpCJOMxHkdp2FlWSOCSdSsVpljLlY29yCS_zB-ICx9XcDIDKAuRgLC2Btk-IcEeeSvqpsgkqVaEOaMNwWCeDPSKDwVvy_F8JEXPCswIVc_pznwWCciE_euIXrIonAFXzJyOP19CUjZ-_35_i9pPShYfA5zMbsPsE01Ii"/>
+</div>
+<div class="absolute -bottom-1 -right-1 bg-primary text-white text-[10px] font-bold px-2 py-0.5 rounded-full border-2 border-white dark:border-slate-800">10%</div>
+</div>
+<span class="font-bold text-slate-800 dark:text-white text-sm">Tina K.</span>
+<span class="text-primary font-extrabold text-lg">$8.55</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Payment Methods Section -->
+<div class="w-full max-w-4xl mx-auto mt-8">
+<h3 class="text-lg font-bold text-slate-custom dark:text-slate-300 mb-6 flex items-center gap-2">
+<span class="material-symbols-outlined text-primary">payments</span>
+                        Select Payment Method
+                    </h3>
+<div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-10">
+<!-- Card 1 -->
+<div class="group cursor-pointer p-5 bg-white dark:bg-slate-800 rounded-xl border-2 border-primary shadow-sm hover:shadow-md transition-all flex flex-col items-center gap-3">
+<div class="w-12 h-12 rounded-full bg-primary text-white flex items-center justify-center">
+<span class="material-symbols-outlined">payments</span>
+</div>
+<span class="font-bold text-slate-800 dark:text-white">Cash</span>
+<div class="w-5 h-5 rounded-full border-2 border-primary flex items-center justify-center">
+<div class="w-2.5 h-2.5 rounded-full bg-primary"></div>
+</div>
+</div>
+<!-- Card 2 -->
+<div class="group cursor-pointer p-5 bg-white dark:bg-slate-800 rounded-xl border-2 border-transparent hover:border-primary/30 shadow-sm hover:shadow-md transition-all flex flex-col items-center gap-3">
+<div class="w-12 h-12 rounded-full bg-slate-100 dark:bg-slate-700 text-slate-custom dark:text-slate-300 flex items-center justify-center group-hover:bg-primary/10 group-hover:text-primary transition-colors">
+<span class="material-symbols-outlined">qr_code_2</span>
+</div>
+<span class="font-bold text-slate-800 dark:text-white">UPI</span>
+<div class="w-5 h-5 rounded-full border-2 border-slate-300 dark:border-slate-600"></div>
+</div>
+<!-- Card 3 -->
+<div class="group cursor-pointer p-5 bg-white dark:bg-slate-800 rounded-xl border-2 border-transparent hover:border-primary/30 shadow-sm hover:shadow-md transition-all flex flex-col items-center gap-3">
+<div class="w-12 h-12 rounded-full bg-slate-100 dark:bg-slate-700 text-slate-custom dark:text-slate-300 flex items-center justify-center group-hover:bg-primary/10 group-hover:text-primary transition-colors">
+<span class="material-symbols-outlined">credit_card</span>
+</div>
+<span class="font-bold text-slate-800 dark:text-white">Card</span>
+<div class="w-5 h-5 rounded-full border-2 border-slate-300 dark:border-slate-600"></div>
+</div>
+<!-- Card 4 -->
+<div class="group cursor-pointer p-5 bg-white dark:bg-slate-800 rounded-xl border-2 border-transparent hover:border-primary/30 shadow-sm hover:shadow-md transition-all flex flex-col items-center gap-3">
+<div class="w-12 h-12 rounded-full bg-slate-100 dark:bg-slate-700 text-slate-custom dark:text-slate-300 flex items-center justify-center group-hover:bg-primary/10 group-hover:text-primary transition-colors">
+<span class="material-symbols-outlined">account_balance_wallet</span>
+</div>
+<span class="font-bold text-slate-800 dark:text-white">Wallet</span>
+<div class="w-5 h-5 rounded-full border-2 border-slate-300 dark:border-slate-600"></div>
+</div>
+</div>
+<!-- Final Action Button -->
+<div class="flex flex-col items-center gap-4">
+<button class="w-full md:w-[400px] h-16 bg-primary hover:bg-primary/90 text-white font-bold text-lg rounded-xl shadow-lg shadow-primary/20 flex items-center justify-center gap-3 transition-transform hover:scale-[1.02] active:scale-[0.98]">
+                            Finalize Payment
+                            <span class="material-symbols-outlined">double_arrow</span>
+</button>
+<p class="text-sm text-slate-custom dark:text-slate-400">Transactions are encrypted and secure.</p>
+</div>
+</div>
+</main>
+<!-- Bottom Stats / Footer Style Navigation -->
+<footer class="mt-auto px-6 py-8 md:px-20 lg:px-40 bg-white dark:bg-slate-900 border-t border-slate-100 dark:border-slate-800">
+<div class="max-w-[1200px] mx-auto grid grid-cols-2 md:grid-cols-4 gap-8">
+<div>
+<p class="text-xs uppercase tracking-widest text-slate-custom dark:text-slate-500 font-bold mb-1">Session Duration</p>
+<p class="text-lg font-bold text-slate-900 dark:text-white">2h 15m</p>
+</div>
+<div>
+<p class="text-xs uppercase tracking-widest text-slate-custom dark:text-slate-500 font-bold mb-1">Table Rate</p>
+<p class="text-lg font-bold text-slate-900 dark:text-white">$20.00/hr</p>
+</div>
+<div>
+<p class="text-xs uppercase tracking-widest text-slate-custom dark:text-slate-500 font-bold mb-1">Amenities</p>
+<p class="text-lg font-bold text-slate-900 dark:text-white">$40.50</p>
+</div>
+<div>
+<p class="text-xs uppercase tracking-widest text-slate-custom dark:text-slate-500 font-bold mb-1">Split Type</p>
+<p class="text-lg font-bold text-slate-900 dark:text-white">Custom Percent</p>
+</div>
+</div>
+</footer>
+</div>
+</div>
+</body></html>

@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@200..800&amp;family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#059467",
+                        "background-light": "#f5f8f7",
+                        "background-dark": "#0f231d",
+                    },
+                    fontFamily: {
+                        "display": ["Manrope", "sans-serif"]
+                    },
+                    borderRadius: {"DEFAULT": "0.5rem", "lg": "1rem", "xl": "1.5rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        .pool-table-surface {
+            background-color: #059467;
+            background-image: radial-gradient(circle at center, #06a875 0%, #059467 100%);
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-slate-100 min-h-screen">
+<div class="relative flex h-auto min-h-screen w-full flex-col overflow-x-hidden">
+<div class="layout-container flex h-full grow flex-col">
+<header class="flex items-center justify-between whitespace-nowrap border-b border-solid border-primary/10 px-6 md:px-10 py-4 bg-white/50 dark:bg-background-dark/50 backdrop-blur-md sticky top-0 z-50">
+<div class="flex items-center gap-4 text-slate-900 dark:text-slate-100">
+<div class="size-10 flex items-center justify-center bg-primary rounded-lg text-white">
+<span class="material-symbols-outlined text-2xl">sports_golf</span>
+</div>
+<h2 class="text-lg font-bold leading-tight tracking-tight">Emerald Cue</h2>
+</div>
+<div class="flex flex-1 justify-end gap-3">
+<div class="hidden md:flex items-center gap-1 mr-4">
+<div class="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-primary/10 transition-colors cursor-pointer text-slate-600 dark:text-slate-400">
+<span class="material-symbols-outlined text-[20px]">dashboard</span>
+<span class="text-sm font-semibold">Dashboard</span>
+</div>
+<div class="flex items-center gap-2 px-3 py-2 rounded-lg bg-primary/10 text-primary transition-colors cursor-pointer">
+<span class="material-symbols-outlined text-[20px] fill-1">table_bar</span>
+<span class="text-sm font-semibold">Tables</span>
+</div>
+<div class="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-primary/10 transition-colors cursor-pointer text-slate-600 dark:text-slate-400">
+<span class="material-symbols-outlined text-[20px]">group</span>
+<span class="text-sm font-semibold">Customers</span>
+</div>
+</div>
+<div class="flex gap-2">
+<button class="flex size-10 items-center justify-center rounded-xl bg-primary/10 text-primary hover:bg-primary/20 transition-all">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<button class="flex size-10 items-center justify-center rounded-xl bg-primary/10 text-primary hover:bg-primary/20 transition-all">
+<span class="material-symbols-outlined">settings</span>
+</button>
+</div>
+<div class="size-10 rounded-full bg-slate-200 dark:bg-slate-800 border-2 border-primary/20 flex items-center justify-center overflow-hidden" data-alt="User profile avatar placeholder">
+<span class="material-symbols-outlined text-slate-400">person</span>
+</div>
+</div>
+</header>
+<main class="flex-1 flex flex-col items-center justify-center p-6 max-w-5xl mx-auto w-full">
+<div class="w-full flex flex-col items-center gap-12 py-12">
+<div class="relative w-full max-w-[480px] aspect-[16/10] bg-slate-800 rounded-xl p-4 shadow-2xl border-b-8 border-slate-900 group" data-alt="Top down view of an idle emerald green pool table">
+<div class="w-full h-full pool-table-surface rounded-lg relative overflow-hidden shadow-inner border border-white/10">
+<div class="absolute top-0 left-0 w-8 h-8 bg-slate-900 rounded-br-full border-r border-b border-primary/20"></div>
+<div class="absolute top-0 right-0 w-8 h-8 bg-slate-900 rounded-bl-full border-l border-b border-primary/20"></div>
+<div class="absolute bottom-0 left-0 w-8 h-8 bg-slate-900 rounded-tr-full border-r border-t border-primary/20"></div>
+<div class="absolute bottom-0 right-0 w-8 h-8 bg-slate-900 rounded-tl-full border-l border-t border-primary/20"></div>
+<div class="absolute top-1/2 left-0 -translate-y-1/2 w-4 h-8 bg-slate-900 rounded-r-full"></div>
+<div class="absolute top-1/2 right-0 -translate-y-1/2 w-4 h-8 bg-slate-900 rounded-l-full"></div>
+<div class="absolute top-1/2 left-[30%] -translate-y-1/2 flex items-center justify-center">
+<div class="relative w-32 h-32 flex flex-wrap content-center justify-center rotate-90">
+<div class="w-24 h-24 border-2 border-white/20 rounded-sm flex items-center justify-center rotate-45">
+<div class="grid grid-cols-5 gap-0.5 -rotate-45">
+<div class="size-4 bg-slate-100 rounded-full shadow-sm"></div>
+<div class="size-4 bg-slate-100 rounded-full shadow-sm"></div>
+<div class="size-4 bg-slate-100 rounded-full shadow-sm"></div>
+<div class="size-4 bg-slate-100 rounded-full shadow-sm"></div>
+<div class="size-4 bg-slate-100 rounded-full shadow-sm"></div>
+<div class="size-4 bg-slate-100 rounded-full shadow-sm"></div>
+<div class="size-4 bg-slate-100 rounded-full shadow-sm"></div>
+<div class="size-4 bg-slate-100 rounded-full shadow-sm"></div>
+<div class="size-4 bg-slate-100 rounded-full shadow-sm"></div>
+<div class="size-4 bg-slate-100 rounded-full shadow-sm"></div>
+<div class="size-4 bg-slate-100 rounded-full shadow-sm"></div>
+<div class="size-4 bg-slate-100 rounded-full shadow-sm"></div>
+<div class="size-4 bg-slate-100 rounded-full shadow-sm"></div>
+<div class="size-4 bg-slate-100 rounded-full shadow-sm"></div>
+<div class="size-4 bg-slate-100 rounded-full shadow-sm"></div>
+</div>
+</div>
+</div>
+</div>
+<div class="absolute top-1/2 right-[25%] -translate-y-1/2 size-5 bg-white rounded-full shadow-md border border-slate-200"></div>
+</div>
+</div>
+<div class="flex flex-col items-center text-center space-y-4 max-w-lg">
+<div class="inline-flex items-center px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-bold uppercase tracking-wider">
+                            System Idle
+                        </div>
+<h1 class="text-3xl font-extrabold text-slate-900 dark:text-slate-100 tracking-tight">
+                            No sessions running right now
+                        </h1>
+<p class="text-lg text-slate-600 dark:text-slate-400 font-medium leading-relaxed">
+                            All tables are available for play. Select a table from the floor layout to start a new session.
+                        </p>
+</div>
+<div class="flex flex-col sm:flex-row gap-4 w-full justify-center">
+<button class="flex-1 max-w-[240px] flex items-center justify-center gap-2 h-14 bg-primary text-white rounded-xl font-bold text-base shadow-lg shadow-primary/25 hover:brightness-110 active:scale-95 transition-all">
+<span class="material-symbols-outlined">map</span>
+                            View Floor Layout
+                        </button>
+<button class="flex-1 max-w-[240px] flex items-center justify-center gap-2 h-14 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 border border-slate-200 dark:border-slate-700 rounded-xl font-bold text-base hover:bg-slate-50 dark:hover:bg-slate-700 active:scale-95 transition-all shadow-sm">
+<span class="material-symbols-outlined">edit_note</span>
+                            Manual Entry
+                        </button>
+</div>
+</div>
+</main>
+<footer class="mt-auto border-t border-primary/10 bg-white/30 dark:bg-background-dark/30 backdrop-blur-sm px-6 py-6">
+<div class="max-w-5xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4 text-slate-500 dark:text-slate-500 text-sm">
+<div class="flex items-center gap-4">
+<span class="flex items-center gap-1">
+<span class="size-2 rounded-full bg-primary"></span>
+                            All systems nominal
+                        </span>
+<span class="h-4 w-px bg-slate-300 dark:bg-slate-700"></span>
+<span>v2.4.0</span>
+</div>
+<div class="flex items-center gap-6">
+<a class="hover:text-primary transition-colors" href="#">Documentation</a>
+<a class="hover:text-primary transition-colors" href="#">Support</a>
+</div>
+</div>
+</footer>
+</div>
+</div>
+</body></html>

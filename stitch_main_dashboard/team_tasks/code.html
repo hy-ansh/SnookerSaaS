@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#059467",
+                        "background-light": "#f5f8f7",
+                        "background-dark": "#0f231d",
+                        "slate-custom": "#475569",
+                    },
+                    fontFamily: {
+                        "display": ["Manrope"]
+                    },
+                    borderRadius: {"DEFAULT": "0.5rem", "lg": "1rem", "xl": "1.5rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+</head>
+<body class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-slate-100 min-h-screen overflow-x-hidden">
+<div class="relative flex min-h-screen flex-col">
+<!-- Top Navigation Bar -->
+<header class="sticky top-0 z-40 w-full border-b border-primary/10 bg-white/80 dark:bg-background-dark/80 backdrop-blur-md px-6 md:px-10 py-3">
+<div class="flex items-center justify-between gap-4 max-w-7xl mx-auto">
+<div class="flex items-center gap-8">
+<div class="flex items-center gap-2 text-primary">
+<span class="material-symbols-outlined text-3xl font-bold">hub</span>
+<h2 class="text-slate-900 dark:text-slate-100 text-xl font-extrabold tracking-tight">TeamHub</h2>
+</div>
+<div class="hidden lg:flex items-center gap-6">
+<a class="text-slate-600 dark:text-slate-400 text-sm font-semibold hover:text-primary transition-colors" href="#">Dashboard</a>
+<a class="text-primary text-sm font-bold border-b-2 border-primary" href="#">Projects</a>
+<a class="text-slate-600 dark:text-slate-400 text-sm font-semibold hover:text-primary transition-colors" href="#">Team</a>
+<a class="text-slate-600 dark:text-slate-400 text-sm font-semibold hover:text-primary transition-colors" href="#">Settings</a>
+</div>
+</div>
+<div class="flex flex-1 justify-end items-center gap-4">
+<label class="hidden md:flex items-center bg-primary/5 dark:bg-primary/10 rounded-lg px-3 py-1.5 w-64">
+<span class="material-symbols-outlined text-primary text-xl">search</span>
+<input class="bg-transparent border-none focus:ring-0 text-sm w-full placeholder:text-primary/50" placeholder="Search tasks or members..." type="text"/>
+</label>
+<div class="flex gap-2">
+<button class="p-2 rounded-lg bg-primary/5 dark:bg-primary/10 text-primary hover:bg-primary/20 transition-all">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<button class="p-2 rounded-lg bg-primary/5 dark:bg-primary/10 text-primary hover:bg-primary/20 transition-all">
+<span class="material-symbols-outlined">account_circle</span>
+</button>
+</div>
+</div>
+</div>
+</header>
+<main class="flex-1 max-w-7xl mx-auto w-full p-6 md:p-10 space-y-8">
+<!-- Header Section -->
+<div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+<div>
+<h1 class="text-4xl font-black text-slate-900 dark:text-slate-100 tracking-tight">Team Collaboration</h1>
+<p class="text-slate-custom dark:text-slate-400 mt-1">Manage project Alpha's workload and task distribution</p>
+</div>
+<div class="flex gap-3">
+<button class="flex items-center gap-2 px-5 py-2.5 bg-primary text-white rounded-lg font-bold hover:shadow-lg hover:shadow-primary/30 transition-all">
+<span class="material-symbols-outlined">person_add</span>
+<span>Add Member</span>
+</button>
+<button class="p-2.5 border border-primary/20 rounded-lg text-primary hover:bg-primary/5 transition-colors">
+<span class="material-symbols-outlined">more_horiz</span>
+</button>
+</div>
+</div>
+<!-- Team Members Grid -->
+<section>
+<div class="flex items-center justify-between mb-6">
+<h2 class="text-xl font-bold flex items-center gap-2">
+<span class="material-symbols-outlined text-primary">groups</span>
+                        Active Members
+                    </h2>
+</div>
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+<!-- Member Card 1 -->
+<div class="bg-white dark:bg-slate-900 p-5 rounded-lg shadow-sm border border-primary/10 flex flex-col items-center text-center group hover:border-primary transition-all">
+<div class="relative mb-4">
+<div class="size-20 rounded-full bg-cover bg-center border-4 border-primary/20" data-alt="Portrait of a male designer smiling" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDGf9SOWc-D__qyWC4jhiwTlka_A2sEO8ejEfoul_w0PbPJP9654XfWTkdGQIUzZY8R9JjFuwOif04bIC7ZpLTbexs6uzTpgGE5jSP2zGnHEabEPkydan7r1HlL3XY1s13HeguDYqM2O2MHqNX8MtM26TKsP9sTLgk_OMN6_h70NZxOXqrd4mDH7aThsakHiZ2QUJcaN7_MnekhsVa7zwo2UDA6RsoLX81bR55WVure0xRqlC_Vutb1RKRNES4iDSAhTomntpmCn0l8')"></div>
+<div class="absolute bottom-0 right-0 size-5 bg-primary rounded-full border-2 border-white flex items-center justify-center">
+<span class="material-symbols-outlined text-[10px] text-white">check</span>
+</div>
+</div>
+<h3 class="font-bold text-slate-900 dark:text-slate-100">Alex Rivera</h3>
+<p class="text-sm text-slate-custom dark:text-slate-400 mb-4">Lead UX Designer</p>
+<div class="w-full space-y-2 mt-auto">
+<div class="flex justify-between text-xs font-bold text-slate-custom dark:text-slate-400">
+<span>Workload</span>
+<span class="text-primary">85%</span>
+</div>
+<div class="w-full h-2 bg-primary/10 rounded-full overflow-hidden">
+<div class="h-full bg-primary rounded-full" style="width: 85%"></div>
+</div>
+<p class="text-[10px] text-slate-custom/60 uppercase tracking-widest font-bold pt-1">Capacity nearly full</p>
+</div>
+</div>
+<!-- Member Card 2 -->
+<div class="bg-white dark:bg-slate-900 p-5 rounded-lg shadow-sm border border-primary/10 flex flex-col items-center text-center group hover:border-primary transition-all">
+<div class="relative mb-4">
+<div class="size-20 rounded-full bg-cover bg-center border-4 border-primary/20" data-alt="Portrait of a female frontend developer" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuAK3wCws3kdA0wk8ZDP2fps8PKyFt-dCH0Wkto5AnXmxDf2bdJum_X3DnBWFE7N0K2fVfOiED2s8HprAbf10NCxhMTIGvpDSQECTsseNfHjwyKGeIVqkuvR6F9MUvM4wgd8dNP8fUpmOXi-9m6zzm67Q0QGiIptfBHS0BDKLiMwxuuAHZvSqXopyG8unxxE2DUL2GYSTsXwUztv7sOl9WzKNXs64Ss70nWP-xSDsazAm4kw8OpAyNj6YccsT6YZKbkKuTr6K9uDHg5t')"></div>
+<div class="absolute bottom-0 right-0 size-5 bg-primary rounded-full border-2 border-white flex items-center justify-center">
+<span class="material-symbols-outlined text-[10px] text-white">check</span>
+</div>
+</div>
+<h3 class="font-bold text-slate-900 dark:text-slate-100">Sarah Chen</h3>
+<p class="text-sm text-slate-custom dark:text-slate-400 mb-4">Frontend Engineer</p>
+<div class="w-full space-y-2 mt-auto">
+<div class="flex justify-between text-xs font-bold text-slate-custom dark:text-slate-400">
+<span>Workload</span>
+<span class="text-primary">42%</span>
+</div>
+<div class="w-full h-2 bg-primary/10 rounded-full overflow-hidden">
+<div class="h-full bg-primary rounded-full" style="width: 42%"></div>
+</div>
+<p class="text-[10px] text-slate-custom/60 uppercase tracking-widest font-bold pt-1">Available for tasks</p>
+</div>
+</div>
+<!-- Member Card 3 -->
+<div class="bg-white dark:bg-slate-900 p-5 rounded-lg shadow-sm border border-primary/10 flex flex-col items-center text-center group hover:border-primary transition-all">
+<div class="relative mb-4">
+<div class="size-20 rounded-full bg-cover bg-center border-4 border-primary/20" data-alt="Portrait of a male product manager" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBliWCLqCxI772B1QRnRkb4dsS8cOpIgggUgDhb_zo4new1cKelpkURvyj4KdtUY6MsaCRFoTNclr5JdksmG_GEcyHQicbi14t3uty_xdGlQyQsl6Kfiam1cD1BXNXoVXXhtCa7X1id9hFOpGv2NXrNQmdCCZiRtebV0t_0gzLJTSGxkim1aLem3CHTtk3sPgm7RAArCuuUJajEPZhYsHRAqvBJaIx-4QTk8j-PgMukvVASchW1xyGB7A8PhxTyuRAEhQxh8kaJSOmG')"></div>
+<div class="absolute bottom-0 right-0 size-5 bg-primary rounded-full border-2 border-white flex items-center justify-center">
+<span class="material-symbols-outlined text-[10px] text-white">check</span>
+</div>
+</div>
+<h3 class="font-bold text-slate-900 dark:text-slate-100">Jordan Smith</h3>
+<p class="text-sm text-slate-custom dark:text-slate-400 mb-4">Product Manager</p>
+<div class="w-full space-y-2 mt-auto">
+<div class="flex justify-between text-xs font-bold text-slate-custom dark:text-slate-400">
+<span>Workload</span>
+<span class="text-primary">60%</span>
+</div>
+<div class="w-full h-2 bg-primary/10 rounded-full overflow-hidden">
+<div class="h-full bg-primary rounded-full" style="width: 60%"></div>
+</div>
+<p class="text-[10px] text-slate-custom/60 uppercase tracking-widest font-bold pt-1">Balanced load</p>
+</div>
+</div>
+<!-- Member Card 4 -->
+<div class="bg-white dark:bg-slate-900 p-5 rounded-lg shadow-sm border border-primary/10 flex flex-col items-center text-center group hover:border-primary transition-all">
+<div class="relative mb-4">
+<div class="size-20 rounded-full bg-cover bg-center border-4 border-primary/20" data-alt="Portrait of a female QA lead" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuALMVxHUG-mlRjUVnTlDUUIoGAxLcv9PaKuQPb_MyqfxGq9CpXERIA4d7N5R7AGkKiR7hAb6sYemoMqBKzhJdSOmiAIv_a1lUlxrzA8E22toWFbVKsejs_qg5bDNzY5JRMQWcSWNfCSCLRRWjfU-eE_XACeAXQFLLpq5S6-Q18BSl2cgnEXze0yxYu8UaBNZ5mO3Ie8DnODcmV6-lGedPl_0Dcvw8uVKPuTb5bfUm7YsvA6dRo4maekf1eKkZg_6ESHVorAIp9LODgY')"></div>
+<div class="absolute bottom-0 right-0 size-5 bg-amber-500 rounded-full border-2 border-white flex items-center justify-center">
+<span class="material-symbols-outlined text-[10px] text-white">schedule</span>
+</div>
+</div>
+<h3 class="font-bold text-slate-900 dark:text-slate-100">Taylor Bell</h3>
+<p class="text-sm text-slate-custom dark:text-slate-400 mb-4">QA Specialist</p>
+<div class="w-full space-y-2 mt-auto">
+<div class="flex justify-between text-xs font-bold text-slate-custom dark:text-slate-400">
+<span>Workload</span>
+<span class="text-primary">20%</span>
+</div>
+<div class="w-full h-2 bg-primary/10 rounded-full overflow-hidden">
+<div class="h-full bg-primary rounded-full" style="width: 20%"></div>
+</div>
+<p class="text-[10px] text-slate-custom/60 uppercase tracking-widest font-bold pt-1">Wide availability</p>
+</div>
+</div>
+</div>
+</section>
+<!-- Task Board Section -->
+<section class="space-y-6 pb-20">
+<div class="flex items-center justify-between">
+<h2 class="text-xl font-bold flex items-center gap-2">
+<span class="material-symbols-outlined text-primary">view_kanban</span>
+                        Task Distribution
+                    </h2>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6 h-auto">
+<!-- Column 1: In Progress -->
+<div class="flex flex-col gap-4">
+<div class="flex items-center justify-between bg-primary/5 dark:bg-primary/10 p-3 rounded-lg border-l-4 border-primary">
+<span class="font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2">
+                                In Progress
+                                <span class="bg-primary text-white text-[10px] px-1.5 py-0.5 rounded-full">3</span>
+</span>
+<span class="material-symbols-outlined text-primary/50 cursor-pointer">add_circle</span>
+</div>
+<div class="space-y-3">
+<!-- Task Card -->
+<div class="bg-white dark:bg-slate-900 p-4 rounded-lg border border-primary/5 shadow-sm hover:shadow-md cursor-grab active:cursor-grabbing">
+<div class="flex justify-between items-start mb-2">
+<span class="text-[10px] font-bold uppercase tracking-wider text-primary px-2 py-0.5 bg-primary/10 rounded">Design</span>
+<span class="material-symbols-outlined text-slate-custom/40 text-sm">more_vert</span>
+</div>
+<h4 class="font-semibold text-sm mb-3">User Flow Optimization</h4>
+<div class="flex items-center justify-between">
+<div class="flex -space-x-2">
+<div class="size-6 rounded-full border-2 border-white dark:border-slate-900 bg-cover bg-center" data-alt="Assigned user avatar" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDlDd7QyeC7b7AK1xFa6ON0YF-bsZCMrE5Cbs3Ne88Il87_VYw5b6JFheS0GCYIWCEh6CAkcJeKVTgjBhyIv6SZ2WJJyMMrepM9Ur3VnnqqqHoUOIBlYtTy5CkcuCx-ZZfVNTOsKMVvsu6fhsqNi8XB7PGnoKW-0RFVSjiMK03jYvdbBFMrQXBj4ebGGkRLhgMksyh6724j58pi3A7CxcPMEdu7wqGxY19Za4zMCbT1Pxu0MKzw8cWeyaG2R-sf3_B0DU5kTXJP8Y4h')"></div>
+</div>
+<div class="flex items-center gap-1 text-[10px] text-slate-custom font-bold">
+<span class="material-symbols-outlined text-xs">calendar_today</span>
+                                        Oct 24
+                                    </div>
+</div>
+</div>
+<div class="bg-white dark:bg-slate-900 p-4 rounded-lg border border-primary/5 shadow-sm hover:shadow-md cursor-grab">
+<div class="flex justify-between items-start mb-2">
+<span class="text-[10px] font-bold uppercase tracking-wider text-blue-500 px-2 py-0.5 bg-blue-500/10 rounded">Dev</span>
+</div>
+<h4 class="font-semibold text-sm mb-3">API Integration for Dashboard</h4>
+<div class="flex items-center justify-between">
+<div class="flex -space-x-2">
+<div class="size-6 rounded-full border-2 border-white dark:border-slate-900 bg-cover bg-center" data-alt="Assigned user avatar" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuAzohvyP3-6F1Ub36KgGDWmWK4qeUkYxNkaFCAtFVfPqvc0Av6CrPMJDp3_-D9SJXUpqpAtwhNaZLQ2Wo9dFYeEVJLdZrg2HXiFQ3P-Pyy3UH4CsHzufDo3DFQgxFRqmCI1Xx3DOdMwHtf9ayYQOYIqJwCkcDyGzL-OErvfiCPHld40WNj-HpzMVvsKO_uM4pkqcqDEpRqErESuJFCt9r78jGqVAnGdi_Geh3ZwOxH6ebHDnJhPVpiljAnL0GCr5-l1CfXBDmFUzbqe')"></div>
+</div>
+<div class="flex items-center gap-1 text-[10px] text-slate-custom font-bold">
+<span class="material-symbols-outlined text-xs">chat_bubble_outline</span>
+                                        5
+                                    </div>
+</div>
+</div>
+</div>
+</div>
+<!-- Column 2: Review -->
+<div class="flex flex-col gap-4">
+<div class="flex items-center justify-between bg-slate-100 dark:bg-slate-800 p-3 rounded-lg border-l-4 border-slate-400">
+<span class="font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2">
+                                Review
+                                <span class="bg-slate-400 text-white text-[10px] px-1.5 py-0.5 rounded-full">1</span>
+</span>
+<span class="material-symbols-outlined text-slate-400 cursor-pointer">add_circle</span>
+</div>
+<div class="space-y-3">
+<div class="bg-white dark:bg-slate-900 p-4 rounded-lg border border-primary/5 shadow-sm hover:shadow-md cursor-grab">
+<div class="flex justify-between items-start mb-2">
+<span class="text-[10px] font-bold uppercase tracking-wider text-amber-500 px-2 py-0.5 bg-amber-500/10 rounded">QA</span>
+</div>
+<h4 class="font-semibold text-sm mb-3">Beta Testing Report #4</h4>
+<div class="flex items-center justify-between">
+<div class="flex -space-x-2">
+<div class="size-6 rounded-full border-2 border-white dark:border-slate-900 bg-cover bg-center" data-alt="Assigned user avatar" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDwhO16yoV77FNv0hlQa-Dy_M4pWUTKDrfHfYZTLAnb9IgINo-4m2t1q6yfAgYCA7EhwsIAFYgPhmW4jvgX9QZNgnVDk5qazMARP2YA37Cnve_WIENwDtBBF0aXlQ2GEW55YBxhSB6WKsJ7VfKVV82fL_pabyjlgG3F1ajr5tvsjOSFxfRyUHvqfqS8jHPCK8TU2MoQVQ-IhTewR3c8eZNpc7xX_F0ga5A-mDlBN_ejiv-QIXl5HQyESsUfhkbntS_5DjlhPepJKpZm')"></div>
+</div>
+<div class="flex items-center gap-1 text-[10px] text-amber-500 font-bold">
+<span class="material-symbols-outlined text-xs">warning</span>
+                                        High
+                                    </div>
+</div>
+</div>
+</div>
+</div>
+<!-- Column 3: Completed -->
+<div class="flex flex-col gap-4">
+<div class="flex items-center justify-between bg-primary/10 dark:bg-primary/20 p-3 rounded-lg border-l-4 border-primary">
+<span class="font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2">
+                                Completed
+                                <span class="bg-primary text-white text-[10px] px-1.5 py-0.5 rounded-full">2</span>
+</span>
+</div>
+<div class="space-y-3 opacity-80">
+<div class="bg-slate-50 dark:bg-slate-800/50 p-4 rounded-lg border border-primary/5 shadow-sm">
+<div class="flex justify-between items-start mb-2">
+<span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 px-2 py-0.5 bg-slate-400/10 rounded line-through">Planning</span>
+<span class="material-symbols-outlined text-primary text-sm">check_circle</span>
+</div>
+<h4 class="font-semibold text-sm mb-3 line-through text-slate-400">Infrastructure Setup</h4>
+<div class="flex items-center justify-between">
+<div class="flex -space-x-2">
+<div class="size-6 rounded-full border-2 border-white dark:border-slate-900 bg-cover bg-center" data-alt="Assigned user avatar" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuAZVtrPU5MjcvcUUskUPenO9VTciHQjAPEKEZ8i73e9D99reeAEr-sGkWJsGfKMKcYtyaa0LT-N7hYEWPeNfHYUElrDtDvn-SjF3_rUOI_2Gzi5qeEBUw-_SzF6xNV8p2x5NUoLWS8hQai5M50lDjicjMo3vwMefGnC_sWpzko4Ph62hLMyKoJ2GPfO9EmwgUO6Z8Mp9D9sDwY_LWrvNyYuoIZ6TRnDFW3JhC3wYgwHSp1m0_9lmyLjwAUtDn1BuQUJL2c2tx82HwFO')"></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- Slide-in Panel Mockup (Semi-open state) -->
+<div class="fixed inset-y-0 right-0 w-[400px] bg-white dark:bg-background-dark shadow-2xl z-50 transform translate-x-4 border-l border-primary/10 flex flex-col">
+<div class="p-6 border-b border-primary/10 flex justify-between items-center">
+<h3 class="text-xl font-bold text-slate-900 dark:text-slate-100">Add New Member</h3>
+<button class="text-slate-custom hover:text-primary transition-colors">
+<span class="material-symbols-outlined">close</span>
+</button>
+</div>
+<div class="flex-1 p-6 space-y-6 overflow-y-auto">
+<div class="space-y-4">
+<div class="flex flex-col gap-1.5">
+<label class="text-xs font-bold uppercase text-slate-custom tracking-wider">Full Name</label>
+<input class="w-full rounded-lg border-primary/20 focus:border-primary focus:ring-1 focus:ring-primary bg-primary/5 dark:bg-primary/10 text-sm py-2.5" placeholder="e.g. Elena Rodriguez" type="text"/>
+</div>
+<div class="flex flex-col gap-1.5">
+<label class="text-xs font-bold uppercase text-slate-custom tracking-wider">Email Address</label>
+<input class="w-full rounded-lg border-primary/20 focus:border-primary focus:ring-1 focus:ring-primary bg-primary/5 dark:bg-primary/10 text-sm py-2.5" placeholder="elena@company.com" type="email"/>
+</div>
+<div class="flex flex-col gap-1.5">
+<label class="text-xs font-bold uppercase text-slate-custom tracking-wider">Role</label>
+<select class="w-full rounded-lg border-primary/20 focus:border-primary focus:ring-1 focus:ring-primary bg-primary/5 dark:bg-primary/10 text-sm py-2.5">
+<option>Frontend Developer</option>
+<option>Backend Developer</option>
+<option>UI/UX Designer</option>
+<option>Product Manager</option>
+<option>QA Tester</option>
+</select>
+</div>
+<div class="flex flex-col gap-1.5 pt-2">
+<label class="text-xs font-bold uppercase text-slate-custom tracking-wider">Department</label>
+<div class="grid grid-cols-2 gap-2">
+<button class="px-3 py-2 text-xs font-bold rounded-lg bg-primary text-white">Engineering</button>
+<button class="px-3 py-2 text-xs font-bold rounded-lg bg-primary/5 border border-primary/20 text-slate-custom">Design</button>
+<button class="px-3 py-2 text-xs font-bold rounded-lg bg-primary/5 border border-primary/20 text-slate-custom">Product</button>
+<button class="px-3 py-2 text-xs font-bold rounded-lg bg-primary/5 border border-primary/20 text-slate-custom">Marketing</button>
+</div>
+</div>
+</div>
+<div class="p-4 bg-primary/5 dark:bg-primary/10 rounded-lg space-y-3">
+<p class="text-xs font-semibold flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-lg">info</span>
+                        New members will receive an invite email.
+                    </p>
+<div class="flex items-center gap-3">
+<input class="rounded border-primary/30 text-primary focus:ring-primary" id="admin" type="checkbox"/>
+<label class="text-sm text-slate-custom font-medium" for="admin">Assign Administrative privileges</label>
+</div>
+</div>
+</div>
+<div class="p-6 bg-slate-50 dark:bg-slate-800/50 border-t border-primary/10">
+<button class="w-full py-3 bg-primary text-white rounded-lg font-bold hover:shadow-lg hover:shadow-primary/30 transition-all">
+                    Send Invitation
+                </button>
+</div>
+</div>
+<!-- Floating Overlay for slide-in effect -->
+<div class="fixed inset-0 bg-slate-900/40 backdrop-blur-[2px] z-40"></div>
+</div>
+</body></html>

@@ -1,0 +1,11 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const assetMaintenanceController_1 = require("../controllers/assetMaintenanceController");
+const auth_1 = require("../middleware/auth");
+const router = (0, express_1.Router)();
+router.use(auth_1.authenticate);
+router.use((0, auth_1.authorize)(['STORE_OWNER', 'SUPER_ADMIN']));
+router.get('/', assetMaintenanceController_1.getAssetMaintenance);
+router.post('/', assetMaintenanceController_1.createAssetMaintenance);
+exports.default = router;

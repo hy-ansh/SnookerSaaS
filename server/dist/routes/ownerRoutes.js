@@ -1,0 +1,12 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const organizationController_1 = require("../controllers/organizationController");
+const auth_1 = require("../middleware/auth");
+const router = (0, express_1.Router)();
+router.use(auth_1.authenticate);
+router.get('/subscription', (0, auth_1.authorize)(['STORE_OWNER', 'SUPER_ADMIN']), organizationController_1.getOwnerSubscription);
+router.get('/plans', (0, auth_1.authorize)(['STORE_OWNER', 'SUPER_ADMIN']), organizationController_1.getAvailablePlans);
+router.put('/subscription/change', (0, auth_1.authorize)(['STORE_OWNER', 'SUPER_ADMIN']), organizationController_1.updateOwnerSubscription);
+router.get('/users', (0, auth_1.authorize)(['STORE_OWNER', 'SUPER_ADMIN']), organizationController_1.getOrganizationUsers);
+exports.default = router;

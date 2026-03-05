@@ -1,0 +1,12 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const accountingController_1 = require("../controllers/accountingController");
+const auth_1 = require("../middleware/auth");
+const router = (0, express_1.Router)();
+router.use(auth_1.authenticate);
+router.use((0, auth_1.authorize)(['STORE_OWNER', 'SUPER_ADMIN']));
+router.get('/', accountingController_1.getStoreLedger);
+router.post('/expenses', accountingController_1.addExpense);
+router.get('/trend', accountingController_1.getMonthlyTrend);
+exports.default = router;

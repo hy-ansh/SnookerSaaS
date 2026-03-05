@@ -1,0 +1,74 @@
+[2mLoaded Prisma config from prisma.config.ts.
+[22m
+Prisma config detected, skipping environment variable loading.
+
+[1m[31mError: [39m[22m[31m[1mPrisma schema validation[22m[39m - (validate wasm)
+Error code: P1012
+[31m[1m[1;91merror[0m: [1mError validating field `branch` in model `InventoryItem`: The relation field `branch` on model `InventoryItem` is missing an opposite relation field on the model `Branch`. Either run `prisma format` or add it manually.[0m
+  [1;94m-->[0m  [4mprisma\schema.prisma:260[0m
+[1;94m   | [0m
+[1;94m259 | [0m  
+[1;94m260 | [0m  [1;91mbranch          Branch        @relation(fields: [branchId], references: [id])[0m
+[1;94m261 | [0m  orderItems      OrderItem[]
+[1;94m   | [0m
+[1;91merror[0m: [1mError validating field `branch` in model `Order`: The relation field `branch` on model `Order` is missing an opposite relation field on the model `Branch`. Either run `prisma format` or add it manually.[0m
+  [1;94m-->[0m  [4mprisma\schema.prisma:274[0m
+[1;94m   | [0m
+[1;94m273 | [0m
+[1;94m274 | [0m  [1;91mbranch          Branch        @relation(fields: [branchId], references: [id])[0m
+[1;94m275 | [0m  session         Session?      @relation(fields: [sessionId], references: [id])
+[1;94m   | [0m
+[1;91merror[0m: [1mError validating field `session` in model `Order`: The relation field `session` on model `Order` is missing an opposite relation field on the model `Session`. Either run `prisma format` or add it manually.[0m
+  [1;94m-->[0m  [4mprisma\schema.prisma:275[0m
+[1;94m   | [0m
+[1;94m274 | [0m  branch          Branch        @relation(fields: [branchId], references: [id])
+[1;94m275 | [0m  [1;91msession         Session?      @relation(fields: [sessionId], references: [id])[0m
+[1;94m276 | [0m  player          User?         @relation(fields: [playerId], references: [id])
+[1;94m   | [0m
+[1;91merror[0m: [1mError validating field `player` in model `Order`: The relation field `player` on model `Order` is missing an opposite relation field on the model `User`. Either run `prisma format` or add it manually.[0m
+  [1;94m-->[0m  [4mprisma\schema.prisma:276[0m
+[1;94m   | [0m
+[1;94m275 | [0m  session         Session?      @relation(fields: [sessionId], references: [id])
+[1;94m276 | [0m  [1;91mplayer          User?         @relation(fields: [playerId], references: [id])[0m
+[1;94m277 | [0m  items           OrderItem[]
+[1;94m   | [0m
+[1;91merror[0m: [1mError validating field `branch` in model `ShiftReconciliation`: The relation field `branch` on model `ShiftReconciliation` is missing an opposite relation field on the model `Branch`. Either run `prisma format` or add it manually.[0m
+  [1;94m-->[0m  [4mprisma\schema.prisma:310[0m
+[1;94m   | [0m
+[1;94m309 | [0m  
+[1;94m310 | [0m  [1;91mbranch          Branch        @relation(fields: [branchId], references: [id])[0m
+[1;94m311 | [0m  staff           User          @relation(fields: [staffId], references: [id])
+[1;94m   | [0m
+[1;91merror[0m: [1mError validating field `staff` in model `ShiftReconciliation`: The relation field `staff` on model `ShiftReconciliation` is missing an opposite relation field on the model `User`. Either run `prisma format` or add it manually.[0m
+  [1;94m-->[0m  [4mprisma\schema.prisma:311[0m
+[1;94m   | [0m
+[1;94m310 | [0m  branch          Branch        @relation(fields: [branchId], references: [id])
+[1;94m311 | [0m  [1;91mstaff           User          @relation(fields: [staffId], references: [id])[0m
+[1;94m312 | [0m}
+[1;94m   | [0m
+[1;91merror[0m: [1mError validating field `branch` in model `Expense`: The relation field `branch` on model `Expense` is missing an opposite relation field on the model `Branch`. Either run `prisma format` or add it manually.[0m
+  [1;94m-->[0m  [4mprisma\schema.prisma:324[0m
+[1;94m   | [0m
+[1;94m323 | [0m
+[1;94m324 | [0m  [1;91mbranch          Branch        @relation(fields: [branchId], references: [id])[0m
+[1;94m325 | [0m  recordedBy      User          @relation(fields: [recordedById], references: [id])
+[1;94m   | [0m
+[1;91merror[0m: [1mError validating field `recordedBy` in model `Expense`: The relation field `recordedBy` on model `Expense` is missing an opposite relation field on the model `User`. Either run `prisma format` or add it manually.[0m
+  [1;94m-->[0m  [4mprisma\schema.prisma:325[0m
+[1;94m   | [0m
+[1;94m324 | [0m  branch          Branch        @relation(fields: [branchId], references: [id])
+[1;94m325 | [0m  [1;91mrecordedBy      User          @relation(fields: [recordedById], references: [id])[0m
+[1;94m326 | [0m}
+[1;94m   | [0m
+[1;91merror[0m: [1mError validating field `branch` in model `AssetMaintenance`: The relation field `branch` on model `AssetMaintenance` is missing an opposite relation field on the model `Branch`. Either run `prisma format` or add it manually.[0m
+  [1;94m-->[0m  [4mprisma\schema.prisma:345[0m
+[1;94m   | [0m
+[1;94m344 | [0m
+[1;94m345 | [0m  [1;91mbranch          Branch        @relation(fields: [branchId], references: [id])[0m
+[1;94m346 | [0m}
+[1;94m   | [0m
+
+Validation Error Count: 9[22m[39m
+[Context: validate]
+
+Prisma CLI Version : 6.19.2

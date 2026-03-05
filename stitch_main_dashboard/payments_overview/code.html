@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Payments Overview - Pool Hall Manager</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#059467",
+                        "background-light": "#f8fafc",
+                        "background-dark": "#0f172a",
+                        "slate-custom": "#334155",
+                    },
+                    fontFamily: {
+                        "display": ["Manrope", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.5rem",
+                        "lg": "1rem",
+                        "xl": "1.5rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            font-family: 'Manrope', sans-serif;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 min-h-screen">
+<div class="layout-container flex h-full grow flex-col">
+<!-- Navigation -->
+<header class="flex items-center justify-between whitespace-nowrap border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-6 py-4 lg:px-10">
+<div class="flex items-center gap-8">
+<div class="flex items-center gap-3 text-primary">
+<div class="size-8 bg-primary/10 rounded-lg flex items-center justify-center">
+<span class="material-symbols-outlined text-primary">potted_plant</span>
+</div>
+<h2 class="text-slate-900 dark:text-white text-xl font-bold leading-tight tracking-tight">CueMaster Pro</h2>
+</div>
+<nav class="hidden md:flex items-center gap-6">
+<a class="text-slate-600 dark:text-slate-400 text-sm font-semibold hover:text-primary transition-colors" href="#">Dashboard</a>
+<a class="text-primary text-sm font-semibold" href="#">Payments</a>
+<a class="text-slate-600 dark:text-slate-400 text-sm font-semibold hover:text-primary transition-colors" href="#">Tables</a>
+<a class="text-slate-600 dark:text-slate-400 text-sm font-semibold hover:text-primary transition-colors" href="#">Members</a>
+</nav>
+</div>
+<div class="flex flex-1 justify-end gap-4 items-center">
+<label class="hidden sm:flex flex-col min-w-40 h-10 max-w-64">
+<div class="flex w-full flex-1 items-stretch rounded-lg h-full bg-slate-100 dark:bg-slate-800">
+<div class="text-slate-400 flex items-center justify-center pl-4">
+<span class="material-symbols-outlined text-lg">search</span>
+</div>
+<input class="form-input flex w-full border-none bg-transparent focus:ring-0 text-sm placeholder:text-slate-400" placeholder="Search transactions..."/>
+</div>
+</label>
+<div class="size-10 rounded-full bg-primary/20 flex items-center justify-center border border-primary/30">
+<span class="material-symbols-outlined text-primary">person</span>
+</div>
+</div>
+</header>
+<main class="flex-1 max-w-[1200px] mx-auto w-full px-6 py-8 lg:px-10">
+<!-- Header Section -->
+<div class="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-8">
+<div class="space-y-1">
+<h1 class="text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">Revenue Dashboard</h1>
+<p class="text-slate-500 dark:text-slate-400 font-medium">Monitoring real-time payment streams for Emerald Cue Hall</p>
+</div>
+<div class="flex gap-3">
+<button class="flex items-center gap-2 px-4 py-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg text-slate-700 dark:text-slate-300 font-semibold text-sm shadow-sm hover:bg-slate-50 transition-all">
+<span class="material-symbols-outlined text-sm">calendar_today</span>
+                        Last 24 Hours
+                    </button>
+<button class="flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-lg font-semibold text-sm shadow-lg shadow-primary/20 hover:bg-primary/90 transition-all">
+<span class="material-symbols-outlined text-sm">ios_share</span>
+                        Export Report
+                    </button>
+</div>
+</div>
+<!-- Summary Cards -->
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
+<!-- Cash Card -->
+<div class="bg-white dark:bg-slate-900 p-6 rounded-lg shadow-sm border border-slate-100 dark:border-slate-800 transition-transform hover:scale-[1.02]">
+<div class="flex justify-between items-start mb-4">
+<div class="size-10 bg-emerald-50 dark:bg-emerald-900/30 rounded-lg flex items-center justify-center text-emerald-600">
+<span class="material-symbols-outlined">payments</span>
+</div>
+<div class="text-emerald-500 text-xs font-bold bg-emerald-50 dark:bg-emerald-900/20 px-2 py-1 rounded-full">+12.5%</div>
+</div>
+<p class="text-slate-500 dark:text-slate-400 text-xs font-bold uppercase tracking-wider mb-1">Cash Revenue</p>
+<div class="flex items-baseline gap-2 mb-4">
+<span class="text-2xl font-extrabold text-slate-900 dark:text-white">$1,240.00</span>
+</div>
+<div class="h-10 w-full overflow-hidden">
+<svg class="w-full h-full" preserveaspectratio="none" viewbox="0 0 100 40">
+<path d="M0,35 Q10,30 20,32 T40,20 T60,25 T80,10 T100,15" fill="none" stroke="#059669" stroke-width="2" vector-effect="non-scaling-stroke"></path>
+</svg>
+</div>
+</div>
+<!-- UPI Card -->
+<div class="bg-white dark:bg-slate-900 p-6 rounded-lg shadow-sm border border-slate-100 dark:border-slate-800 transition-transform hover:scale-[1.02]">
+<div class="flex justify-between items-start mb-4">
+<div class="size-10 bg-blue-50 dark:bg-blue-900/30 rounded-lg flex items-center justify-center text-blue-600">
+<span class="material-symbols-outlined">qr_code_2</span>
+</div>
+<div class="text-blue-500 text-xs font-bold bg-blue-50 dark:bg-blue-900/20 px-2 py-1 rounded-full">+24.8%</div>
+</div>
+<p class="text-slate-500 dark:text-slate-400 text-xs font-bold uppercase tracking-wider mb-1">UPI Payments</p>
+<div class="flex items-baseline gap-2 mb-4">
+<span class="text-2xl font-extrabold text-slate-900 dark:text-white">$3,850.50</span>
+</div>
+<div class="h-10 w-full overflow-hidden">
+<svg class="w-full h-full" preserveaspectratio="none" viewbox="0 0 100 40">
+<path d="M0,38 Q10,35 20,30 T40,15 T60,20 T80,5 T100,2" fill="none" stroke="#3b82f6" stroke-width="2" vector-effect="non-scaling-stroke"></path>
+</svg>
+</div>
+</div>
+<!-- Wallet Card -->
+<div class="bg-white dark:bg-slate-900 p-6 rounded-lg shadow-sm border border-slate-100 dark:border-slate-800 transition-transform hover:scale-[1.02]">
+<div class="flex justify-between items-start mb-4">
+<div class="size-10 bg-amber-50 dark:bg-amber-900/30 rounded-lg flex items-center justify-center text-amber-600">
+<span class="material-symbols-outlined">account_balance_wallet</span>
+</div>
+<div class="text-rose-500 text-xs font-bold bg-rose-50 dark:bg-rose-900/20 px-2 py-1 rounded-full">-5.2%</div>
+</div>
+<p class="text-slate-500 dark:text-slate-400 text-xs font-bold uppercase tracking-wider mb-1">Wallet Credits</p>
+<div class="flex items-baseline gap-2 mb-4">
+<span class="text-2xl font-extrabold text-slate-900 dark:text-white">$920.00</span>
+</div>
+<div class="h-10 w-full overflow-hidden">
+<svg class="w-full h-full" preserveaspectratio="none" viewbox="0 0 100 40">
+<path d="M0,10 Q10,15 20,12 T40,25 T60,20 T80,35 T100,30" fill="none" stroke="#f59e0b" stroke-width="2" vector-effect="non-scaling-stroke"></path>
+</svg>
+</div>
+</div>
+<!-- Card Card -->
+<div class="bg-white dark:bg-slate-900 p-6 rounded-lg shadow-sm border border-slate-100 dark:border-slate-800 transition-transform hover:scale-[1.02]">
+<div class="flex justify-between items-start mb-4">
+<div class="size-10 bg-slate-50 dark:bg-slate-800 rounded-lg flex items-center justify-center text-slate-custom">
+<span class="material-symbols-outlined">credit_card</span>
+</div>
+<div class="text-emerald-500 text-xs font-bold bg-emerald-50 dark:bg-emerald-900/20 px-2 py-1 rounded-full">+8.1%</div>
+</div>
+<p class="text-slate-500 dark:text-slate-400 text-xs font-bold uppercase tracking-wider mb-1">Card Terminal</p>
+<div class="flex items-baseline gap-2 mb-4">
+<span class="text-2xl font-extrabold text-slate-900 dark:text-white">$2,100.25</span>
+</div>
+<div class="h-10 w-full overflow-hidden">
+<svg class="w-full h-full" preserveaspectratio="none" viewbox="0 0 100 40">
+<path d="M0,25 Q15,20 30,22 T50,15 T70,18 T85,10 T100,5" fill="none" stroke="#334155" stroke-width="2" vector-effect="non-scaling-stroke"></path>
+</svg>
+</div>
+</div>
+</div>
+<!-- Transaction Timeline Section -->
+<div class="space-y-6">
+<div class="flex items-center justify-between">
+<h3 class="text-xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
+<span class="material-symbols-outlined text-primary">history</span>
+                        Recent Activity
+                    </h3>
+<span class="text-sm font-semibold text-slate-500 bg-slate-100 dark:bg-slate-800 px-3 py-1 rounded-full">Today, Oct 24</span>
+</div>
+<div class="relative ml-4 md:ml-8 pl-8 border-l-2 border-slate-200 dark:border-slate-800 space-y-8 pb-4">
+<!-- Entry 1 -->
+<div class="relative group">
+<div class="absolute -left-[41px] top-1 size-4 rounded-full bg-primary ring-4 ring-white dark:ring-slate-950 group-hover:scale-125 transition-transform"></div>
+<div class="bg-white dark:bg-slate-900 rounded-lg p-5 shadow-sm border border-slate-100 dark:border-slate-800">
+<div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+<div class="flex items-center gap-4">
+<div class="size-12 rounded-lg bg-slate-100 dark:bg-slate-800 flex items-center justify-center overflow-hidden">
+<img class="size-full object-cover" data-alt="Profile picture of James Miller" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA35_no-S-ezuA7tlpV67fQKJm7wvyFEuFC5TNVhBRSjxkFSJUDcviywgd8Ep4MQjGN51Vk37lPbVj0skm00Z8EMl6ZQDvEz5RPF6B8lxieCRcSA7G_Ist19GAabylHhASC2pWnDvDGOCeGCSM8D4UrVZnKOA1DF78L-byThUaew2YsTXkXD7OcoGes8e1ffkvHMHoJyozBYeb4VxMlpuoTmDBVqc1coqNE5YFzbA98jDFxqbFf4vcSD12qoyNkGzWUbM2uksx0pwh4"/>
+</div>
+<div>
+<h4 class="font-bold text-slate-900 dark:text-white">James Miller</h4>
+<div class="flex items-center gap-2 mt-1">
+<span class="text-xs font-bold text-emerald-600 bg-emerald-50 dark:bg-emerald-900/30 px-2 py-0.5 rounded uppercase tracking-tight">UPI Success</span>
+<span class="text-xs text-slate-400 font-medium">10:45 AM</span>
+</div>
+</div>
+</div>
+<div class="flex items-center justify-between md:justify-end gap-6 w-full md:w-auto">
+<div class="text-right">
+<p class="text-xl font-black text-slate-900 dark:text-white">$45.50</p>
+<p class="text-xs text-slate-400 font-medium">Table #04 • 2h 15m</p>
+</div>
+<button class="text-primary hover:bg-primary/5 p-2 rounded-lg transition-colors flex items-center gap-1 group/btn">
+<span class="text-sm font-bold">View Session</span>
+<span class="material-symbols-outlined text-base transition-transform group-hover/btn:translate-x-1">chevron_right</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+<!-- Entry 2 -->
+<div class="relative group">
+<div class="absolute -left-[41px] top-1 size-4 rounded-full bg-primary ring-4 ring-white dark:ring-slate-950 group-hover:scale-125 transition-transform"></div>
+<div class="bg-white dark:bg-slate-900 rounded-lg p-5 shadow-sm border border-slate-100 dark:border-slate-800">
+<div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+<div class="flex items-center gap-4">
+<div class="size-12 rounded-lg bg-slate-100 dark:bg-slate-800 flex items-center justify-center overflow-hidden">
+<img class="size-full object-cover" data-alt="Profile picture of Sarah Chen" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAVrZZId8aUIkO5RqKFkHqSVwlLc_-uCuMrxxd3YNiaOtf5eLXonSg_6IYWWXttxsVzGB84rY5dhZawG3tImP3HlrcgOCgb8Zi7rEl2hcQ5AorgSdCUqV31-dg0o4mNcLe4-w8hUJPa9m9kmPKazcbiZ-9OmPW20sUe_jPjvEjcF-pAWF8slbWD4sweKBolMrC5qigrJo7EFBuGp5QmbMYl_DGDGHb67MJ-IPuTd70Vc5nBDEinEIeT3Uc8it-pfmDno0M5kxrvtjNY"/>
+</div>
+<div>
+<h4 class="font-bold text-slate-900 dark:text-white">Sarah Chen</h4>
+<div class="flex items-center gap-2 mt-1">
+<span class="text-xs font-bold text-slate-600 bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded uppercase tracking-tight">Cash</span>
+<span class="text-xs text-slate-400 font-medium">09:12 AM</span>
+</div>
+</div>
+</div>
+<div class="flex items-center justify-between md:justify-end gap-6 w-full md:w-auto">
+<div class="text-right">
+<p class="text-xl font-black text-slate-900 dark:text-white">$12.00</p>
+<p class="text-xs text-slate-400 font-medium">Table #12 • 0h 45m</p>
+</div>
+<button class="text-primary hover:bg-primary/5 p-2 rounded-lg transition-colors flex items-center gap-1 group/btn">
+<span class="text-sm font-bold">View Session</span>
+<span class="material-symbols-outlined text-base transition-transform group-hover/btn:translate-x-1">chevron_right</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+<!-- Entry 3 (Expanded Style Mock) -->
+<div class="relative group">
+<div class="absolute -left-[41px] top-1 size-4 rounded-full bg-slate-300 dark:bg-slate-700 ring-4 ring-white dark:ring-slate-950"></div>
+<div class="bg-white dark:bg-slate-900 rounded-lg shadow-sm border border-slate-100 dark:border-slate-800 overflow-hidden ring-2 ring-primary/20">
+<div class="p-5 border-b border-slate-50 dark:border-slate-800">
+<div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+<div class="flex items-center gap-4">
+<div class="size-12 rounded-lg bg-slate-100 dark:bg-slate-800 flex items-center justify-center overflow-hidden">
+<img class="size-full object-cover" data-alt="Profile picture of Marcus Rodriguez" src="https://lh3.googleusercontent.com/aida-public/AB6AXuADjp5Jh-bN5yALLaYRfx7yh5xwYhgr7g6860kAo1uDFTTo6SRJqbZizGfjLJrjHrDNSCzsAT2gmpOJAtXbzcoIaVh9FtB3vEafhLgW1KBSK7912BSVI-0atj_DnyEJZQ4b_DVSiEmoNLtKiWJYa0JEZI2RyjTCwh4Ai0R2tgzq6V0kYesvWyE7jUOMg1oM6JOOEcjyoGAbzcxdAKLO-dlMm6hneIXk2q4bY9l9Yjk9kbzU3h0HNAtVreiiZnpYTQ0OJBRPUAfoPvls"/>
+</div>
+<div>
+<h4 class="font-bold text-slate-900 dark:text-white">Marcus Rodriguez</h4>
+<div class="flex items-center gap-2 mt-1">
+<span class="text-xs font-bold text-amber-600 bg-amber-50 dark:bg-amber-900/30 px-2 py-0.5 rounded uppercase tracking-tight">Wallet Credit</span>
+<span class="text-xs text-slate-400 font-medium">08:30 AM</span>
+</div>
+</div>
+</div>
+<div class="flex items-center justify-between md:justify-end gap-6 w-full md:w-auto">
+<div class="text-right">
+<p class="text-xl font-black text-slate-900 dark:text-white">$84.00</p>
+<p class="text-xs text-slate-400 font-medium">Table #01 • 4h 00m</p>
+</div>
+<button class="text-slate-400 bg-slate-100 dark:bg-slate-800 p-2 rounded-lg transition-colors flex items-center gap-1">
+<span class="text-sm font-bold">Hide Details</span>
+<span class="material-symbols-outlined text-base">keyboard_arrow_up</span>
+</button>
+</div>
+</div>
+</div>
+<div class="bg-slate-50 dark:bg-slate-800/50 p-6">
+<div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
+<div class="space-y-2">
+<p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Session Details</p>
+<div class="space-y-1">
+<p class="text-sm text-slate-600 dark:text-slate-300 flex justify-between">Start Time <span class="font-bold">04:30 AM</span></p>
+<p class="text-sm text-slate-600 dark:text-slate-300 flex justify-between">End Time <span class="font-bold">08:30 AM</span></p>
+</div>
+</div>
+<div class="space-y-2">
+<p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Table Stats</p>
+<div class="space-y-1">
+<p class="text-sm text-slate-600 dark:text-slate-300 flex justify-between">Table Number <span class="font-bold">VIP-01</span></p>
+<p class="text-sm text-slate-600 dark:text-slate-300 flex justify-between">Table Rate <span class="font-bold">$20.00/hr</span></p>
+</div>
+</div>
+<div class="space-y-2">
+<p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Bill Breakdown</p>
+<div class="space-y-1">
+<p class="text-sm text-slate-600 dark:text-slate-300 flex justify-between">Play Time <span class="font-bold">$80.00</span></p>
+<p class="text-sm text-slate-600 dark:text-slate-300 flex justify-between">Beverages <span class="font-bold">$4.00</span></p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Entry 4 -->
+<div class="relative group">
+<div class="absolute -left-[41px] top-1 size-4 rounded-full bg-slate-300 dark:bg-slate-700 ring-4 ring-white dark:ring-slate-950 group-hover:scale-125 transition-transform"></div>
+<div class="bg-white dark:bg-slate-900 rounded-lg p-5 shadow-sm border border-slate-100 dark:border-slate-800">
+<div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+<div class="flex items-center gap-4">
+<div class="size-12 rounded-lg bg-slate-100 dark:bg-slate-800 flex items-center justify-center overflow-hidden">
+<img class="size-full object-cover" data-alt="Profile picture of Anna Watson" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC5qx1DtkTqI11yoVlANotOi0BeClGGoWBQBMf3zxe7WcS2vQDtk6yOBp4e-rEIauouxZ08UqySDsM9wfhGxGNoYpRArhBNiLDi_d4ver4Sr5Wqjej5HlnlxBafHm7X6dJE_12MBvlJMNY927NOtbECRNW2EAZbYkmP484MUOuKMiF2nRBG9PO4vatw6h_imL9Bzgk4I5Dw-fsfTofWJ936pMTaniOy6-G1NVYzANX9IyKTlV6VRRdBXYzb1V6UDKAKnEeOXJ9wNcGI"/>
+</div>
+<div>
+<h4 class="font-bold text-slate-900 dark:text-white">Anna Watson</h4>
+<div class="flex items-center gap-2 mt-1">
+<span class="text-xs font-bold text-slate-custom bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded uppercase tracking-tight">Visa Card</span>
+<span class="text-xs text-slate-400 font-medium">Yesterday</span>
+</div>
+</div>
+</div>
+<div class="flex items-center justify-between md:justify-end gap-6 w-full md:w-auto">
+<div class="text-right">
+<p class="text-xl font-black text-slate-900 dark:text-white">$21.25</p>
+<p class="text-xs text-slate-400 font-medium">Table #08 • 1h 10m</p>
+</div>
+<button class="text-primary hover:bg-primary/5 p-2 rounded-lg transition-colors flex items-center gap-1 group/btn">
+<span class="text-sm font-bold">View Session</span>
+<span class="material-symbols-outlined text-base transition-transform group-hover/btn:translate-x-1">chevron_right</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Footer Load More -->
+<div class="flex justify-center pt-4">
+<button class="text-slate-500 hover:text-primary font-bold text-sm flex items-center gap-2 transition-colors">
+                        Load previous transactions
+                        <span class="material-symbols-outlined">expand_more</span>
+</button>
+</div>
+</div>
+</main>
+<footer class="mt-12 border-t border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 py-8 px-6 lg:px-10">
+<div class="max-w-[1200px] mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
+<div class="flex items-center gap-4">
+<span class="text-slate-400 text-sm font-medium">© 2024 CueMaster SaaS. All rights reserved.</span>
+</div>
+<div class="flex gap-8">
+<a class="text-slate-400 hover:text-primary text-sm font-medium transition-colors" href="#">Privacy Policy</a>
+<a class="text-slate-400 hover:text-primary text-sm font-medium transition-colors" href="#">Terms of Service</a>
+<a class="text-slate-400 hover:text-primary text-sm font-medium transition-colors" href="#">Support</a>
+</div>
+</div>
+</footer>
+</div>
+</body></html>

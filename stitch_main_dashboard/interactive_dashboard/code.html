@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Poolly SaaS - Interactive Dashboard</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@200;300;400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#059669",
+                        "secondary": "#334155",
+                        "background-light": "#F8FAFC",
+                        "background-dark": "#0f172a",
+                    },
+                    fontFamily: {
+                        "display": ["Manrope", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.5rem",
+                        "lg": "1rem",
+                        "xl": "1.5rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            font-family: 'Manrope', sans-serif;
+        }
+        .heatmap-cell {
+            aspect-ratio: 1/1;
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 font-display">
+<div class="relative flex min-h-screen flex-col overflow-x-hidden">
+<!-- Header -->
+<header class="sticky top-0 z-50 flex items-center justify-between border-b border-slate-200 dark:border-slate-800 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md px-6 py-3 lg:px-12">
+<div class="flex items-center gap-8">
+<div class="flex items-center gap-3">
+<div class="flex h-10 w-10 items-center justify-center rounded-xl bg-primary text-white">
+<span class="material-symbols-outlined">sports_score</span>
+</div>
+<h2 class="text-xl font-bold tracking-tight text-slate-900 dark:text-white">Poolly <span class="text-primary font-medium">SaaS</span></h2>
+</div>
+<nav class="hidden lg:flex items-center gap-6">
+<a class="flex items-center gap-2 text-sm font-semibold text-primary" href="#">
+<span class="material-symbols-outlined text-[20px]">dashboard</span> Dashboard
+                </a>
+<a class="flex items-center gap-2 text-sm font-medium text-slate-500 hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined text-[20px]">table_restaurant</span> Tables
+                </a>
+<a class="flex items-center gap-2 text-sm font-medium text-slate-500 hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined text-[20px]">calendar_month</span> Bookings
+                </a>
+<a class="flex items-center gap-2 text-sm font-medium text-slate-500 hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined text-[20px]">inventory_2</span> Inventory
+                </a>
+</nav>
+</div>
+<div class="flex items-center gap-4">
+<div class="relative hidden sm:block">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">search</span>
+<input class="h-10 w-64 rounded-xl border-none bg-slate-100 dark:bg-slate-800 pl-10 pr-4 text-sm focus:ring-2 focus:ring-primary/20" placeholder="Search tables or logs..." type="text"/>
+</div>
+<button class="relative flex h-10 w-10 items-center justify-center rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300">
+<span class="material-symbols-outlined">notifications</span>
+<span class="absolute top-2 right-2 flex h-2 w-2 rounded-full bg-red-500"></span>
+</button>
+<div class="h-10 w-10 rounded-full border-2 border-primary/20 bg-slate-200 dark:bg-slate-800 overflow-hidden shadow-sm">
+<img alt="User Profile" data-alt="User profile avatar showing a friendly man with glasses" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCGBUKHzafyfgBV5XeVnls7B80B3RPGbs9TuV0SKqzZqFHwM7NVF9_RAAJrwClUJTfAsHcOx_6z4cu_Rc4r3ahkrJi91P7KWlZp5cZEjOJBAnQMEbPEce3qEF3cYLntvYyN5ktxByBisD1pwcqSkyCqxNCvBpCIIJJz2Lu3_B2Pmm2BmW_7ucHIQU16WL2vVdBijmOxP8wf_szAtXcknvnW8JADirPWry0Yye64mjW8PJwQPsgcMAdAPIMCOri4g5napevQx90Pcipg"/>
+</div>
+</div>
+</header>
+<main class="flex-1 px-6 py-8 lg:px-12">
+<div class="mb-8 flex flex-col gap-2">
+<h1 class="text-3xl font-extrabold text-slate-900 dark:text-white">Emerald Pool Hall</h1>
+<p class="text-slate-500">Live venue performance and table management overview</p>
+</div>
+<!-- Top Stats Row -->
+<div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+<div class="flex flex-col gap-2 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 shadow-sm">
+<div class="flex items-center justify-between">
+<span class="text-sm font-semibold text-slate-500">Today's Revenue</span>
+<div class="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10 text-primary">
+<span class="material-symbols-outlined text-[20px]">payments</span>
+</div>
+</div>
+<div class="flex items-baseline gap-2">
+<p class="text-3xl font-bold text-slate-900 dark:text-white">$1,240</p>
+<span class="text-xs font-bold text-primary flex items-center">
+<span class="material-symbols-outlined text-[14px]">trending_up</span> 12%
+                    </span>
+</div>
+</div>
+<div class="flex flex-col gap-2 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 shadow-sm">
+<div class="flex items-center justify-between">
+<span class="text-sm font-semibold text-slate-500">Active Sessions</span>
+<div class="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-500/10 text-blue-500">
+<span class="material-symbols-outlined text-[20px]">timer</span>
+</div>
+</div>
+<div class="flex items-baseline gap-2">
+<p class="text-3xl font-bold text-slate-900 dark:text-white">8</p>
+<span class="text-xs font-bold text-blue-500 flex items-center">
+<span class="material-symbols-outlined text-[14px]">remove</span> 0%
+                    </span>
+</div>
+</div>
+<div class="flex flex-col gap-2 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 shadow-sm">
+<div class="flex items-center justify-between">
+<span class="text-sm font-semibold text-slate-500">Pending Dues</span>
+<div class="flex h-8 w-8 items-center justify-center rounded-lg bg-red-500/10 text-red-500">
+<span class="material-symbols-outlined text-[20px]">hourglass_empty</span>
+</div>
+</div>
+<div class="flex items-baseline gap-2">
+<p class="text-3xl font-bold text-slate-900 dark:text-white">$145</p>
+<span class="text-xs font-bold text-red-500 flex items-center">
+<span class="material-symbols-outlined text-[14px]">trending_down</span> 5%
+                    </span>
+</div>
+</div>
+<div class="flex flex-col gap-2 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 shadow-sm">
+<div class="flex items-center justify-between">
+<span class="text-sm font-semibold text-slate-500">Total Tables</span>
+<div class="flex h-8 w-8 items-center justify-center rounded-lg bg-slate-500/10 text-slate-500">
+<span class="material-symbols-outlined text-[20px]">grid_view</span>
+</div>
+</div>
+<div class="flex items-baseline gap-2">
+<p class="text-3xl font-bold text-slate-900 dark:text-white">12</p>
+<span class="text-xs font-medium text-slate-400">Available: 4</span>
+</div>
+</div>
+</div>
+<!-- Center: Visual Floor Layout (Read-Only) -->
+<div class="mt-8 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 shadow-sm">
+<div class="mb-6 flex items-center justify-between">
+<div>
+<h2 class="text-lg font-bold text-slate-900 dark:text-white">Live Floor Status</h2>
+<p class="text-sm text-slate-500">Visual occupancy representation</p>
+</div>
+<div class="flex gap-4">
+<div class="flex items-center gap-2 text-xs font-medium">
+<span class="h-2 w-2 rounded-full bg-primary"></span> Occupied
+                    </div>
+<div class="flex items-center gap-2 text-xs font-medium">
+<span class="h-2 w-2 rounded-full bg-slate-300 dark:bg-slate-700"></span> Available
+                    </div>
+</div>
+</div>
+<div class="grid grid-cols-3 gap-4 sm:grid-cols-4 lg:grid-cols-6">
+<!-- Table Components -->
+<div class="group relative flex aspect-video flex-col items-center justify-center rounded-lg bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800">
+<div class="h-8 w-16 rounded bg-primary shadow-inner shadow-black/20 flex items-center justify-center">
+<span class="text-[10px] text-white/50">T-01</span>
+</div>
+<span class="mt-2 text-[11px] font-bold text-slate-600 dark:text-slate-400">TABLE 01</span>
+<div class="absolute top-2 right-2 h-1.5 w-1.5 rounded-full bg-primary animate-pulse"></div>
+</div>
+<div class="group relative flex aspect-video flex-col items-center justify-center rounded-lg bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800">
+<div class="h-8 w-16 rounded bg-primary shadow-inner shadow-black/20 flex items-center justify-center">
+<span class="text-[10px] text-white/50">T-02</span>
+</div>
+<span class="mt-2 text-[11px] font-bold text-slate-600 dark:text-slate-400">TABLE 02</span>
+<div class="absolute top-2 right-2 h-1.5 w-1.5 rounded-full bg-primary animate-pulse"></div>
+</div>
+<div class="group relative flex aspect-video flex-col items-center justify-center rounded-lg bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800 opacity-60">
+<div class="h-8 w-16 rounded bg-slate-400 dark:bg-slate-700 shadow-inner flex items-center justify-center">
+<span class="text-[10px] text-white/50">T-03</span>
+</div>
+<span class="mt-2 text-[11px] font-bold text-slate-600 dark:text-slate-400">TABLE 03</span>
+<div class="absolute top-2 right-2 h-1.5 w-1.5 rounded-full bg-slate-400"></div>
+</div>
+<div class="group relative flex aspect-video flex-col items-center justify-center rounded-lg bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800">
+<div class="h-8 w-16 rounded bg-primary shadow-inner shadow-black/20 flex items-center justify-center">
+<span class="text-[10px] text-white/50">T-04</span>
+</div>
+<span class="mt-2 text-[11px] font-bold text-slate-600 dark:text-slate-400">TABLE 04</span>
+<div class="absolute top-2 right-2 h-1.5 w-1.5 rounded-full bg-primary animate-pulse"></div>
+</div>
+<div class="group relative flex aspect-video flex-col items-center justify-center rounded-lg bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800">
+<div class="h-8 w-16 rounded bg-primary shadow-inner shadow-black/20 flex items-center justify-center">
+<span class="text-[10px] text-white/50">T-05</span>
+</div>
+<span class="mt-2 text-[11px] font-bold text-slate-600 dark:text-slate-400">TABLE 05</span>
+<div class="absolute top-2 right-2 h-1.5 w-1.5 rounded-full bg-primary animate-pulse"></div>
+</div>
+<div class="group relative flex aspect-video flex-col items-center justify-center rounded-lg bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800 opacity-60">
+<div class="h-8 w-16 rounded bg-slate-400 dark:bg-slate-700 shadow-inner flex items-center justify-center">
+<span class="text-[10px] text-white/50">T-06</span>
+</div>
+<span class="mt-2 text-[11px] font-bold text-slate-600 dark:text-slate-400">TABLE 06</span>
+<div class="absolute top-2 right-2 h-1.5 w-1.5 rounded-full bg-slate-400"></div>
+</div>
+<div class="group relative flex aspect-video flex-col items-center justify-center rounded-lg bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800">
+<div class="h-8 w-16 rounded bg-primary shadow-inner shadow-black/20 flex items-center justify-center">
+<span class="text-[10px] text-white/50">T-07</span>
+</div>
+<span class="mt-2 text-[11px] font-bold text-slate-600 dark:text-slate-400">TABLE 07</span>
+<div class="absolute top-2 right-2 h-1.5 w-1.5 rounded-full bg-primary animate-pulse"></div>
+</div>
+<div class="group relative flex aspect-video flex-col items-center justify-center rounded-lg bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800">
+<div class="h-8 w-16 rounded bg-primary shadow-inner shadow-black/20 flex items-center justify-center">
+<span class="text-[10px] text-white/50">T-08</span>
+</div>
+<span class="mt-2 text-[11px] font-bold text-slate-600 dark:text-slate-400">TABLE 08</span>
+<div class="absolute top-2 right-2 h-1.5 w-1.5 rounded-full bg-primary animate-pulse"></div>
+</div>
+<div class="group relative flex aspect-video flex-col items-center justify-center rounded-lg bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800 opacity-60">
+<div class="h-8 w-16 rounded bg-slate-400 dark:bg-slate-700 shadow-inner flex items-center justify-center">
+<span class="text-[10px] text-white/50">T-09</span>
+</div>
+<span class="mt-2 text-[11px] font-bold text-slate-600 dark:text-slate-400">TABLE 09</span>
+<div class="absolute top-2 right-2 h-1.5 w-1.5 rounded-full bg-slate-400"></div>
+</div>
+<div class="group relative flex aspect-video flex-col items-center justify-center rounded-lg bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800">
+<div class="h-8 w-16 rounded bg-primary shadow-inner shadow-black/20 flex items-center justify-center">
+<span class="text-[10px] text-white/50">T-10</span>
+</div>
+<span class="mt-2 text-[11px] font-bold text-slate-600 dark:text-slate-400">TABLE 10</span>
+<div class="absolute top-2 right-2 h-1.5 w-1.5 rounded-full bg-primary animate-pulse"></div>
+</div>
+<div class="group relative flex aspect-video flex-col items-center justify-center rounded-lg bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800">
+<div class="h-8 w-16 rounded bg-primary shadow-inner shadow-black/20 flex items-center justify-center">
+<span class="text-[10px] text-white/50">T-11</span>
+</div>
+<span class="mt-2 text-[11px] font-bold text-slate-600 dark:text-slate-400">TABLE 11</span>
+<div class="absolute top-2 right-2 h-1.5 w-1.5 rounded-full bg-primary animate-pulse"></div>
+</div>
+<div class="group relative flex aspect-video flex-col items-center justify-center rounded-lg bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800 opacity-60">
+<div class="h-8 w-16 rounded bg-slate-400 dark:bg-slate-700 shadow-inner flex items-center justify-center">
+<span class="text-[10px] text-white/50">T-12</span>
+</div>
+<span class="mt-2 text-[11px] font-bold text-slate-600 dark:text-slate-400">TABLE 12</span>
+<div class="absolute top-2 right-2 h-1.5 w-1.5 rounded-full bg-slate-400"></div>
+</div>
+</div>
+</div>
+<!-- Bottom: Data Visualizations -->
+<div class="mt-8 grid grid-cols-1 gap-6 lg:grid-cols-3">
+<!-- 1. Revenue Over Time (Line Chart Representation) -->
+<div class="rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 shadow-sm">
+<h3 class="mb-4 text-sm font-bold text-slate-900 dark:text-white uppercase tracking-wider">Revenue Over Time</h3>
+<div class="relative h-48 w-full flex items-end gap-1">
+<!-- Line Chart SVG representation -->
+<svg class="absolute inset-0 h-full w-full" preserveaspectratio="none" viewbox="0 0 100 100">
+<path d="M0 80 Q 20 60, 40 70 T 60 40 T 80 50 T 100 20 L 100 100 L 0 100 Z" fill="url(#grad1)"></path>
+<path d="M0 80 Q 20 60, 40 70 T 60 40 T 80 50 T 100 20" fill="none" stroke="#059669" stroke-width="2"></path>
+<defs>
+<lineargradient id="grad1" x1="0%" x2="0%" y1="0%" y2="100%">
+<stop offset="0%" style="stop-color:#059669;stop-opacity:0.2"></stop>
+<stop offset="100%" style="stop-color:#059669;stop-opacity:0"></stop>
+</lineargradient>
+</defs>
+</svg>
+<div class="flex h-full w-full flex-col justify-between text-[10px] text-slate-400 pb-1">
+<div class="w-full border-t border-slate-100 dark:border-slate-800 flex justify-between"><span>$2k</span></div>
+<div class="w-full border-t border-slate-100 dark:border-slate-800 flex justify-between"><span>$1k</span></div>
+<div class="w-full border-t border-slate-100 dark:border-slate-800 flex justify-between"><span>$0</span></div>
+</div>
+</div>
+<div class="mt-4 flex justify-between text-[10px] font-medium text-slate-500 px-1">
+<span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span><span>Sun</span>
+</div>
+</div>
+<!-- 2. Payment Method Distribution (Pie Chart Representation) -->
+<div class="rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 shadow-sm">
+<h3 class="mb-4 text-sm font-bold text-slate-900 dark:text-white uppercase tracking-wider">Payment Distribution</h3>
+<div class="flex items-center gap-6">
+<div class="relative flex h-32 w-32 items-center justify-center">
+<svg class="h-full w-full -rotate-90" viewbox="0 0 32 32">
+<circle cx="16" cy="16" fill="transparent" r="16" stroke="#059669" stroke-dasharray="45 100" stroke-width="32"></circle>
+<circle cx="16" cy="16" fill="transparent" r="16" stroke="#334155" stroke-dasharray="30 100" stroke-dashoffset="-45" stroke-width="32"></circle>
+<circle cx="16" cy="16" fill="transparent" r="16" stroke="#60a5fa" stroke-dasharray="15 100" stroke-dashoffset="-75" stroke-width="32"></circle>
+<circle cx="16" cy="16" fill="transparent" r="16" stroke="#fbbf24" stroke-dasharray="10 100" stroke-dashoffset="-90" stroke-width="32"></circle>
+</svg>
+<div class="absolute inset-0 flex items-center justify-center rounded-full bg-white dark:bg-slate-900 m-6">
+<span class="text-xs font-bold">$1.2k</span>
+</div>
+</div>
+<div class="flex flex-col gap-2">
+<div class="flex items-center gap-2 text-xs font-medium">
+<span class="h-2 w-2 rounded-full bg-primary"></span> Cash (45%)
+                        </div>
+<div class="flex items-center gap-2 text-xs font-medium">
+<span class="h-2 w-2 rounded-full bg-secondary"></span> UPI (30%)
+                        </div>
+<div class="flex items-center gap-2 text-xs font-medium">
+<span class="h-2 w-2 rounded-full bg-blue-400"></span> Card (15%)
+                        </div>
+<div class="flex items-center gap-2 text-xs font-medium">
+<span class="h-2 w-2 rounded-full bg-amber-400"></span> Wallet (10%)
+                        </div>
+</div>
+</div>
+</div>
+<!-- 3. Busy Hour Heatmap -->
+<div class="rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 shadow-sm">
+<h3 class="mb-4 text-sm font-bold text-slate-900 dark:text-white uppercase tracking-wider">Busy Hour Heatmap</h3>
+<div class="grid grid-cols-6 gap-1">
+<!-- Morning -->
+<div class="heatmap-cell rounded-sm bg-primary/5 border border-slate-100 dark:border-slate-800 flex items-center justify-center text-[8px]">08am</div>
+<div class="heatmap-cell rounded-sm bg-primary/10 border border-slate-100 dark:border-slate-800"></div>
+<div class="heatmap-cell rounded-sm bg-primary/20 border border-slate-100 dark:border-slate-800"></div>
+<div class="heatmap-cell rounded-sm bg-primary/20 border border-slate-100 dark:border-slate-800"></div>
+<div class="heatmap-cell rounded-sm bg-primary/30 border border-slate-100 dark:border-slate-800"></div>
+<div class="heatmap-cell rounded-sm bg-primary/40 border border-slate-100 dark:border-slate-800 flex items-center justify-center text-[8px]">12pm</div>
+<!-- Afternoon -->
+<div class="heatmap-cell rounded-sm bg-primary/50 border border-slate-100 dark:border-slate-800"></div>
+<div class="heatmap-cell rounded-sm bg-primary/60 border border-slate-100 dark:border-slate-800"></div>
+<div class="heatmap-cell rounded-sm bg-primary/70 border border-slate-100 dark:border-slate-800"></div>
+<div class="heatmap-cell rounded-sm bg-primary/80 border border-slate-100 dark:border-slate-800"></div>
+<div class="heatmap-cell rounded-sm bg-primary/90 border border-slate-100 dark:border-slate-800"></div>
+<div class="heatmap-cell rounded-sm bg-primary border border-slate-100 dark:border-slate-800 flex items-center justify-center text-[8px] text-white">06pm</div>
+<!-- Evening -->
+<div class="heatmap-cell rounded-sm bg-primary border border-slate-100 dark:border-slate-800"></div>
+<div class="heatmap-cell rounded-sm bg-primary border border-slate-100 dark:border-slate-800"></div>
+<div class="heatmap-cell rounded-sm bg-primary border border-slate-100 dark:border-slate-800"></div>
+<div class="heatmap-cell rounded-sm bg-primary border border-slate-100 dark:border-slate-800"></div>
+<div class="heatmap-cell rounded-sm bg-primary/80 border border-slate-100 dark:border-slate-800"></div>
+<div class="heatmap-cell rounded-sm bg-primary/50 border border-slate-100 dark:border-slate-800 flex items-center justify-center text-[8px]">12am</div>
+</div>
+<div class="mt-4 flex items-center justify-between">
+<span class="text-[10px] text-slate-500 font-medium">Quiet</span>
+<div class="flex h-2 flex-1 mx-4 rounded-full bg-gradient-to-r from-primary/5 to-primary"></div>
+<span class="text-[10px] text-slate-500 font-medium">Peak</span>
+</div>
+</div>
+</div>
+</main>
+</div>
+</body></html>

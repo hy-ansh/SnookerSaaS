@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#059467",
+                        "background-light": "#f8fafc",
+                        "background-dark": "#0f231d",
+                        "slate-custom": "#334155",
+                    },
+                    fontFamily: {
+                        "display": ["Manrope", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.5rem",
+                        "lg": "1rem",
+                        "xl": "1.5rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+<style>
+        body { font-family: 'Manrope', sans-serif; }
+        .form-input:focus { border-color: #059467; ring-color: #059467; }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-slate-100 transition-colors duration-300">
+<div class="relative flex min-h-screen w-full flex-col overflow-x-hidden">
+<div class="layout-container flex h-full grow flex-col">
+<!-- Top Navigation Bar -->
+<header class="flex items-center justify-between whitespace-nowrap border-b border-slate-200 dark:border-slate-800 bg-white/80 dark:bg-background-dark/80 backdrop-blur-md px-6 md:px-10 py-4 sticky top-0 z-50">
+<div class="flex items-center gap-3">
+<div class="bg-primary text-white p-2 rounded-lg flex items-center justify-center">
+<span class="material-symbols-outlined">counter_8</span>
+</div>
+<h2 class="text-slate-900 dark:text-white text-xl font-extrabold leading-tight tracking-tight">PoolManager<span class="text-primary text-2xl">.</span></h2>
+</div>
+<div class="flex flex-1 justify-end gap-6 items-center">
+<nav class="hidden md:flex items-center gap-8">
+<a class="text-slate-custom dark:text-slate-300 text-sm font-semibold hover:text-primary transition-colors" href="#">Dashboard</a>
+<a class="text-slate-custom dark:text-slate-300 text-sm font-semibold hover:text-primary transition-colors" href="#">Tables</a>
+<a class="text-slate-custom dark:text-slate-300 text-sm font-semibold hover:text-primary transition-colors" href="#">Staff</a>
+<a class="text-primary text-sm font-bold border-b-2 border-primary pb-1" href="#">Settings</a>
+</nav>
+<div class="h-10 w-10 rounded-full bg-slate-200 border-2 border-primary overflow-hidden">
+<img class="h-full w-full object-cover" data-alt="User profile avatar of Alex Thompson" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDCCLupji-B_JALNkd3N58-ougDTKmjH4nRc36pq03ejtruw4eJaqpbkAmBnhnDBLU963dyBT8ObLQTmbqM7OSS1JDcTONR2OBQJgA71kNCeRAR5wtIfiKOMlO5p9oK8dWzq1UiI23d7wrpCpBXiARPDVPB4jjwC2D_SO45TSU7Sw34ng8rHygKcz6FjgoGOJIdX_VYglxdAszGIhMY1FEgDbWTeK8KC1IF6dBiB0JeiY4L0HidaOHsm2yDSU88u9uhS4ilHI4UrWal"/>
+</div>
+</div>
+</header>
+<main class="flex flex-1 justify-center py-8 px-4 md:px-10">
+<div class="layout-content-container flex flex-col max-w-[1000px] flex-1 gap-8">
+<!-- Profile Header Card -->
+<div class="bg-white dark:bg-slate-900 rounded-xl shadow-sm border border-slate-200 dark:border-slate-800 overflow-hidden">
+<div class="h-32 bg-gradient-to-r from-primary/20 to-primary/5" data-alt="Abstract emerald green gradient pattern"></div>
+<div class="px-8 pb-8 -mt-12 flex flex-col md:flex-row md:items-end justify-between gap-6">
+<div class="flex flex-col md:flex-row items-center md:items-end gap-6">
+<div class="relative group">
+<div class="size-32 rounded-xl border-4 border-white dark:border-slate-900 shadow-xl overflow-hidden bg-slate-100">
+<img class="h-full w-full object-cover" data-alt="Close up portrait of a male manager" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDMCemZJJGLE7XKhNoBEej-wzEgZNlOicm8TkHcGEKfj5mHsdLUDy-B-v4zfQkRxG4XWEicM4cDRcevlnghu-3Z0pvAuTQG8HxUUx--OBrJD06WLYAGeevZ0lumN731ClQPu6qwkCBsdvHZJN-ohEDPCkGm9M2Cx_jpeilzDCT1rKcP_rED_0vbXU_LlQdOeKwe_tMgD1AvJH2nerWpHN6ZlRS1mteWmxpbDSCrSHLML5TTgdIYYGDWHB0GH5H5dF13S-sJtxBi50DL"/>
+</div>
+<button class="absolute bottom-2 right-2 p-2 bg-primary text-white rounded-lg shadow-lg hover:scale-105 transition-transform">
+<span class="material-symbols-outlined text-sm">photo_camera</span>
+</button>
+</div>
+<div class="text-center md:text-left">
+<h1 class="text-2xl md:text-3xl font-bold text-slate-900 dark:text-white">Alex Thompson</h1>
+<p class="text-slate-custom dark:text-slate-400 font-medium flex items-center justify-center md:justify-start gap-2">
+<span class="material-symbols-outlined text-primary text-lg">verified_user</span>
+                                        General Manager • Premium Plan
+                                    </p>
+</div>
+</div>
+<div class="flex items-center gap-3">
+<button class="px-6 py-2.5 bg-slate-100 dark:bg-slate-800 text-slate-custom dark:text-slate-200 font-bold rounded-lg hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors">
+                                    View Public Profile
+                                </button>
+</div>
+</div>
+</div>
+<!-- Main Settings Grid -->
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+<!-- Sidebar Toggles -->
+<div class="flex flex-col gap-6">
+<div class="bg-white dark:bg-slate-900 p-6 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm">
+<h3 class="text-sm font-bold uppercase tracking-wider text-slate-400 mb-4">Quick Controls</h3>
+<div class="flex items-center justify-between py-3">
+<div>
+<p class="text-slate-900 dark:text-white font-bold">Edit Mode</p>
+<p class="text-xs text-slate-custom dark:text-slate-400">Unlock profile fields</p>
+</div>
+<label class="relative inline-flex items-center cursor-pointer">
+<input checked="" class="sr-only peer" type="checkbox"/>
+<div class="w-11 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer dark:bg-slate-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+</label>
+</div>
+<div class="flex items-center justify-between py-3 border-t border-slate-100 dark:border-slate-800">
+<div>
+<p class="text-slate-900 dark:text-white font-bold">Dark Mode</p>
+<p class="text-xs text-slate-custom dark:text-slate-400">Toggle visual theme</p>
+</div>
+<label class="relative inline-flex items-center cursor-pointer">
+<input class="sr-only peer" type="checkbox"/>
+<div class="w-11 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer dark:bg-slate-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+</label>
+</div>
+</div>
+<div class="bg-primary/10 p-6 rounded-xl border border-primary/20">
+<div class="flex items-center gap-3 mb-2 text-primary">
+<span class="material-symbols-outlined">info</span>
+<p class="font-bold">Pro Tip</p>
+</div>
+<p class="text-sm text-slate-custom dark:text-slate-300 leading-relaxed">
+                                    Enabling 2FA adds an extra layer of security to your management dashboard. Visit the security tab to set it up.
+                                </p>
+</div>
+</div>
+<!-- Main Form Section -->
+<div class="lg:col-span-2 flex flex-col gap-6">
+<div class="bg-white dark:bg-slate-900 p-8 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm">
+<div class="flex items-center justify-between mb-8">
+<h2 class="text-xl font-bold text-slate-900 dark:text-white">Personal Information</h2>
+<span class="text-xs bg-primary/10 text-primary px-3 py-1 rounded-full font-bold">AUTO-SAVING</span>
+</div>
+<form class="grid grid-cols-1 md:grid-cols-2 gap-6">
+<div class="flex flex-col gap-2">
+<label class="text-sm font-bold text-slate-custom dark:text-slate-300">First Name</label>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xl">person</span>
+<input class="w-full pl-11 pr-4 py-3 bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary transition-all text-slate-900 dark:text-white" type="text" value="Alex"/>
+</div>
+</div>
+<div class="flex flex-col gap-2">
+<label class="text-sm font-bold text-slate-custom dark:text-slate-300">Last Name</label>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xl">person</span>
+<input class="w-full pl-11 pr-4 py-3 bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary transition-all text-slate-900 dark:text-white" type="text" value="Thompson"/>
+</div>
+</div>
+<div class="flex flex-col gap-2 md:col-span-2">
+<label class="text-sm font-bold text-slate-custom dark:text-slate-300">Email Address</label>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xl">mail</span>
+<input class="w-full pl-11 pr-4 py-3 bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary transition-all text-slate-900 dark:text-white" type="email" value="alex.thompson@poolhallpro.com"/>
+</div>
+</div>
+<div class="flex flex-col gap-2">
+<label class="text-sm font-bold text-slate-custom dark:text-slate-300">Phone Number</label>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xl">call</span>
+<input class="w-full pl-11 pr-4 py-3 bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary transition-all text-slate-900 dark:text-white" type="tel" value="+1 (555) 123-4567"/>
+</div>
+</div>
+<div class="flex flex-col gap-2">
+<label class="text-sm font-bold text-slate-custom dark:text-slate-300">Management Role</label>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xl">badge</span>
+<select class="w-full pl-11 pr-4 py-3 bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary transition-all text-slate-900 dark:text-white appearance-none">
+<option>General Manager</option>
+<option>Operations Director</option>
+<option>Owner</option>
+</select>
+</div>
+</div>
+<div class="flex flex-col gap-2 md:col-span-2">
+<label class="text-sm font-bold text-slate-custom dark:text-slate-300">System Preferences</label>
+<div class="flex flex-wrap gap-3">
+<label class="flex items-center gap-2 cursor-pointer bg-slate-50 dark:bg-slate-800 px-4 py-2 rounded-lg border border-slate-200 dark:border-slate-700">
+<input checked="" class="w-4 h-4 text-primary bg-white rounded border-slate-300 focus:ring-primary" type="checkbox"/>
+<span class="text-sm text-slate-custom dark:text-slate-300">Email Alerts</span>
+</label>
+<label class="flex items-center gap-2 cursor-pointer bg-slate-50 dark:bg-slate-800 px-4 py-2 rounded-lg border border-slate-200 dark:border-slate-700">
+<input checked="" class="w-4 h-4 text-primary bg-white rounded border-slate-300 focus:ring-primary" type="checkbox"/>
+<span class="text-sm text-slate-custom dark:text-slate-300">Daily Reports</span>
+</label>
+<label class="flex items-center gap-2 cursor-pointer bg-slate-50 dark:bg-slate-800 px-4 py-2 rounded-lg border border-slate-200 dark:border-slate-700">
+<input class="w-4 h-4 text-primary bg-white rounded border-slate-300 focus:ring-primary" type="checkbox"/>
+<span class="text-sm text-slate-custom dark:text-slate-300">Beta Features</span>
+</label>
+</div>
+</div>
+<div class="md:col-span-2 pt-6 flex flex-col md:flex-row items-center justify-between gap-4 border-t border-slate-100 dark:border-slate-800 mt-4">
+<p class="text-sm text-slate-custom dark:text-slate-400 italic">Last modified on Oct 24, 2023 at 11:45 AM</p>
+<div class="flex gap-4 w-full md:w-auto">
+<button class="flex-1 md:flex-none px-8 py-3 bg-slate-100 dark:bg-slate-800 text-slate-custom dark:text-slate-200 font-bold rounded-xl hover:bg-slate-200 transition-colors" type="button">
+                                                Cancel
+                                            </button>
+<button class="flex-1 md:flex-none px-10 py-3 bg-primary text-white font-bold rounded-xl hover:bg-primary/90 shadow-lg shadow-primary/20 transition-all flex items-center justify-center gap-2" type="submit">
+<span class="material-symbols-outlined">save</span>
+                                                Save Changes
+                                            </button>
+</div>
+</div>
+</form>
+</div>
+<!-- Danger Zone -->
+<div class="bg-white dark:bg-slate-900 p-8 rounded-xl border border-red-100 dark:border-red-900 shadow-sm">
+<h2 class="text-xl font-bold text-red-600 mb-2">Danger Zone</h2>
+<p class="text-slate-custom dark:text-slate-400 text-sm mb-6">Irreversible actions regarding your account security and data.</p>
+<div class="flex flex-col md:flex-row gap-4">
+<button class="px-6 py-2.5 bg-red-50 dark:bg-red-900/20 text-red-600 font-bold rounded-lg border border-red-200 dark:border-red-800 hover:bg-red-100 transition-colors text-sm">
+                                        Deactivate Account
+                                    </button>
+<button class="px-6 py-2.5 bg-red-600 text-white font-bold rounded-lg hover:bg-red-700 transition-colors text-sm">
+                                        Delete All Data
+                                    </button>
+</div>
+</div>
+</div>
+</div>
+<!-- Footer Info -->
+<footer class="text-center py-6">
+<p class="text-slate-custom dark:text-slate-500 text-sm font-medium">Pool Hall Manager Premium SaaS • v2.4.0</p>
+<div class="flex justify-center gap-6 mt-4">
+<a class="text-primary text-xs font-bold hover:underline" href="#">Privacy Policy</a>
+<a class="text-primary text-xs font-bold hover:underline" href="#">Terms of Service</a>
+<a class="text-primary text-xs font-bold hover:underline" href="#">Help Center</a>
+</div>
+</footer>
+</div>
+</main>
+</div>
+</div>
+<!-- Success Message Toast (Visual Only) -->
+<div class="fixed bottom-10 left-1/2 -translate-x-1/2 z-[100] hidden">
+<div class="bg-slate-900 text-white px-6 py-4 rounded-2xl shadow-2xl flex items-center gap-4">
+<div class="bg-primary p-1 rounded-full">
+<span class="material-symbols-outlined text-white">check</span>
+</div>
+<p class="font-bold">Settings updated successfully!</p>
+</div>
+</div>
+</body></html>

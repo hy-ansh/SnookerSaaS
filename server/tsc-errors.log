@@ -1,0 +1,1 @@
+src/controllers/paymentController.ts(251,13): error TS2322: Type '"DUE"' is not assignable to type '"CASH" | "UPI" | "CARD" | "WALLET"'.

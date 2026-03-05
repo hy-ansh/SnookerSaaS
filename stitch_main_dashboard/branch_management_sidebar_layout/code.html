@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>PoolHall Pro - Branch Management</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@200;300;400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#059467",
+                        "secondary": "#475569",
+                        "background-light": "#f5f8f7",
+                        "background-dark": "#0f231d",
+                    },
+                    fontFamily: {
+                        "display": ["Manrope", "sans-serif"]
+                    },
+                    borderRadius: {"DEFAULT": "0.5rem", "lg": "1rem", "xl": "1.5rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-left: 1px solid rgba(255, 255, 255, 0.3);
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-slate-100 antialiased">
+<div class="flex min-h-screen overflow-hidden">
+<!-- Sidebar Navigation -->
+<aside class="w-64 border-r border-primary/10 bg-white dark:bg-slate-900 flex flex-col fixed h-full z-20">
+<div class="p-6 flex items-center gap-3">
+<div class="bg-primary size-10 rounded-lg flex items-center justify-center text-white">
+<span class="material-symbols-outlined">sports_handball</span>
+</div>
+<div>
+<h1 class="text-slate-900 dark:text-white text-lg font-bold leading-none">PoolHall Pro</h1>
+<p class="text-primary text-xs font-medium">SaaS Admin</p>
+</div>
+</div>
+<nav class="flex-1 px-4 space-y-2 mt-4">
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-primary/5 hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="text-sm font-semibold">Dashboard</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg bg-primary text-white shadow-lg shadow-primary/20" href="#">
+<span class="material-symbols-outlined">location_on</span>
+<span class="text-sm font-semibold">Branches</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-primary/5 hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined">table_restaurant</span>
+<span class="text-sm font-semibold">Tables</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-primary/5 hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined">group</span>
+<span class="text-sm font-semibold">Members</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-primary/5 hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined">analytics</span>
+<span class="text-sm font-semibold">Analytics</span>
+</a>
+</nav>
+<div class="p-4 mt-auto">
+<div class="bg-primary/10 rounded-xl p-4 border border-primary/20">
+<p class="text-xs font-bold text-primary uppercase tracking-wider mb-2">Upgrade</p>
+<p class="text-xs text-slate-600 dark:text-slate-400 mb-3 leading-relaxed">Unlock multi-region support and advanced APIs.</p>
+<button class="w-full bg-primary text-white text-xs font-bold py-2 rounded-lg hover:bg-primary/90 transition-colors">Upgrade Plan</button>
+</div>
+</div>
+</aside>
+<!-- Main Content Area -->
+<main class="flex-1 ml-64 p-8 min-h-screen relative">
+<!-- Header -->
+<header class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
+<div>
+<h2 class="text-3xl font-black text-slate-900 dark:text-white tracking-tight">Branch Management</h2>
+<p class="text-secondary dark:text-slate-400 font-medium">Monitor and manage all your billiard club locations in real-time</p>
+</div>
+<div class="flex items-center gap-3">
+<div class="relative">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">search</span>
+<input class="pl-10 pr-4 py-2 bg-white dark:bg-slate-800 border-none rounded-xl focus:ring-2 focus:ring-primary text-sm w-64 shadow-sm" placeholder="Search branches..." type="text"/>
+</div>
+<button class="flex items-center gap-2 px-4 py-2 bg-white dark:bg-slate-800 border-none rounded-xl text-slate-700 dark:text-slate-200 text-sm font-bold shadow-sm hover:bg-slate-50 transition-colors">
+<span class="material-symbols-outlined text-sm">map</span>
+                        View Map
+                    </button>
+</div>
+</header>
+<!-- Filters -->
+<div class="flex flex-wrap gap-2 mb-8">
+<button class="px-4 py-1.5 rounded-full bg-primary text-white text-sm font-semibold">All Branches</button>
+<button class="px-4 py-1.5 rounded-full bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-400 text-sm font-semibold hover:bg-primary/10 hover:text-primary transition-all">Active</button>
+<button class="px-4 py-1.5 rounded-full bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-400 text-sm font-semibold hover:bg-primary/10 hover:text-primary transition-all">Full Capacity</button>
+<button class="px-4 py-1.5 rounded-full bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-400 text-sm font-semibold hover:bg-primary/10 hover:text-primary transition-all">Maintenance</button>
+</div>
+<!-- Branch Grid (Masonry-like layout using columns) -->
+<div class="columns-1 sm:columns-2 lg:columns-3 gap-6 space-y-6">
+<!-- Card 1 -->
+<div class="break-inside-avoid group cursor-pointer bg-white dark:bg-slate-900 rounded-xl overflow-hidden shadow-sm hover:shadow-xl hover:scale-[1.02] transition-all duration-300 border border-slate-200/50 dark:border-slate-800/50">
+<div class="h-32 bg-slate-100 dark:bg-slate-800 relative overflow-hidden">
+<img class="w-full h-full object-cover opacity-80 group-hover:scale-110 transition-transform duration-700" data-alt="Stylized map showing branch location in New York" data-location="New York" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBQMFcvSz23wi0e6GcSgmn1fOR_C77p1V_IsO05rPJHseMrAHhaVk3Cdw3yP-JxE2G7aU6xyBNVjAzYJbNV_NxSy-03gHCRb3iy1IzAdbqXNmp1W651EgYnyfUUO9_MB28qYJT9-uE4CTaM3-QbqBl2HbsOzyTfXGYW22mxBKu7lYNWOh8m56yuyBc01ab4nj2j5jyCKicx3Mp87UQtyYbigBzdAMhZzxai7AeUXc_kEa6G_HfoGOSHRvKC6dGkeUNhhMZWa1gjRfDS"/>
+<div class="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
+</div>
+<div class="p-5">
+<div class="flex justify-between items-start mb-2">
+<h3 class="text-lg font-bold text-slate-900 dark:text-white">Emerald Cue City</h3>
+<span class="flex items-center gap-1 text-xs font-bold text-primary bg-primary/10 px-2 py-0.5 rounded">
+<span class="size-1.5 rounded-full bg-primary animate-pulse"></span> LIVE
+                            </span>
+</div>
+<p class="text-sm text-secondary dark:text-slate-400 mb-4 flex items-center gap-1">
+<span class="material-symbols-outlined text-sm">location_on</span> 123 Downtown St, NY
+                        </p>
+<div class="grid grid-cols-2 gap-4 pt-4 border-t border-slate-100 dark:border-slate-800">
+<div>
+<p class="text-[10px] font-bold text-secondary uppercase tracking-widest mb-1">Total Tables</p>
+<p class="text-lg font-black text-slate-900 dark:text-white leading-none">12</p>
+</div>
+<div>
+<p class="text-[10px] font-bold text-secondary uppercase tracking-widest mb-1">Active Sessions</p>
+<p class="text-lg font-black text-primary leading-none">08</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Card 2 -->
+<div class="break-inside-avoid group cursor-pointer bg-white dark:bg-slate-900 rounded-xl overflow-hidden shadow-sm hover:shadow-xl hover:scale-[1.02] transition-all duration-300 border border-slate-200/50 dark:border-slate-800/50">
+<div class="h-48 bg-slate-100 dark:bg-slate-800 relative overflow-hidden">
+<img class="w-full h-full object-cover opacity-80 group-hover:scale-110 transition-transform duration-700" data-alt="Scenic map view of Los Angeles area" data-location="Los Angeles" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBk6N1aOZWRT2I09Wz_DKmjIQRH4f8ge2CrPi57IzzZH-S-ty2JcPET0VrxXx5Rl9iMBJwNc5jNy0VJ8X-e5sF1KvmParZXqPBdb5gwSppxF6W5J0W40C4-3F48vq41n0Z05ohu-mnrtdYoFYiK-osGZzMjEKjL9w4uLSlDAWzhvVOTTcNOa2nDZpo0YIMSv7PZmymiS4wr5IJaV_zlMdy0WptdUxHjZPhDUzfO9KStzxXgO3_5KKnhon5aCM_6GlIKbPrwFtrl3aik"/>
+<div class="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
+</div>
+<div class="p-5">
+<div class="flex justify-between items-start mb-2">
+<h3 class="text-lg font-bold text-slate-900 dark:text-white">Slate Pocket Lounge</h3>
+<span class="flex items-center gap-1 text-xs font-bold text-amber-500 bg-amber-500/10 px-2 py-0.5 rounded">
+                                AT CAPACITY
+                            </span>
+</div>
+<p class="text-sm text-secondary dark:text-slate-400 mb-4 flex items-center gap-1">
+<span class="material-symbols-outlined text-sm">location_on</span> 456 Uptown Ave, LA
+                        </p>
+<div class="grid grid-cols-2 gap-4 pt-4 border-t border-slate-100 dark:border-slate-800">
+<div>
+<p class="text-[10px] font-bold text-secondary uppercase tracking-widest mb-1">Total Tables</p>
+<p class="text-lg font-black text-slate-900 dark:text-white leading-none">15</p>
+</div>
+<div>
+<p class="text-[10px] font-bold text-secondary uppercase tracking-widest mb-1">Active Sessions</p>
+<p class="text-lg font-black text-primary leading-none">15</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Card 3 -->
+<div class="break-inside-avoid group cursor-pointer bg-white dark:bg-slate-900 rounded-xl overflow-hidden shadow-sm hover:shadow-xl hover:scale-[1.02] transition-all duration-300 border border-slate-200/50 dark:border-slate-800/50">
+<div class="h-32 bg-slate-100 dark:bg-slate-800 relative overflow-hidden">
+<img class="w-full h-full object-cover opacity-80 group-hover:scale-110 transition-transform duration-700" data-alt="Map overlay of Chicago city grid" data-location="Chicago" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAX4lPxBIUPo6yT6orYuNWjO62I9JxKzi8zdHnbyJwy4V7raB6lgpR-Kgnbnhdh7nCi-TMkVPqtEdefQwyvwqVxAubOWQrzbT7FPvHJiKd7euBOB7IDcl35Gc-Nco2_60dMt_VeLmgJIgrurbHiIg-A7sW9QuNEEjqIyKfSBEidpR9sY_PU7gxZcLcDm3bBsqKvYerl1u2Iqb1V8u9o8RsOA-xeLvF5YHx6iLhtN2X-EZAMtfVUHgVRfMB_236CEAwhP1JnDaP2nD_t"/>
+<div class="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
+</div>
+<div class="p-5">
+<div class="flex justify-between items-start mb-2">
+<h3 class="text-lg font-bold text-slate-900 dark:text-white">The Break Point</h3>
+<span class="flex items-center gap-1 text-xs font-bold text-primary bg-primary/10 px-2 py-0.5 rounded">
+<span class="size-1.5 rounded-full bg-primary animate-pulse"></span> LIVE
+                            </span>
+</div>
+<p class="text-sm text-secondary dark:text-slate-400 mb-4 flex items-center gap-1">
+<span class="material-symbols-outlined text-sm">location_on</span> 789 East Side, CHI
+                        </p>
+<div class="grid grid-cols-2 gap-4 pt-4 border-t border-slate-100 dark:border-slate-800">
+<div>
+<p class="text-[10px] font-bold text-secondary uppercase tracking-widest mb-1">Total Tables</p>
+<p class="text-lg font-black text-slate-900 dark:text-white leading-none">10</p>
+</div>
+<div>
+<p class="text-[10px] font-bold text-secondary uppercase tracking-widest mb-1">Active Sessions</p>
+<p class="text-lg font-black text-primary leading-none">04</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Card 4 -->
+<div class="break-inside-avoid group cursor-pointer bg-white dark:bg-slate-900 rounded-xl overflow-hidden shadow-sm hover:shadow-xl hover:scale-[1.02] transition-all duration-300 border border-slate-200/50 dark:border-slate-800/50">
+<div class="h-40 bg-slate-100 dark:bg-slate-800 relative overflow-hidden">
+<img class="w-full h-full object-cover opacity-80 group-hover:scale-110 transition-transform duration-700" data-alt="San Francisco city map graphical representation" data-location="San Francisco" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBKKuNr6bOD8v4OAfbCf4S-QuCla8xr2tg6Z7wUJ2eTFOByIigyhRtyN95cCY52NHSnnsaHnCRTshxAUMjRwQw8pGeBr2IZvUMqVS05PZqBHoREj3UVZ30xCa2M5vq1KFX1UFgYDzb5TlFCpdNrts2jJpb9oaWzZPG0iFlKsWcBXeC3U_oQJUfvevCrfomWuvB5ZORz4tBSs04xxvVcFJ0pE7We15rAIwLLjyL4CrFN83GodZHZUcqrLCxbpZCn8Jk-bRXxZJ5k1e9E"/>
+<div class="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
+</div>
+<div class="p-5">
+<div class="flex justify-between items-start mb-2">
+<h3 class="text-lg font-bold text-slate-900 dark:text-white">Rack &amp; Roll</h3>
+<span class="flex items-center gap-1 text-xs font-bold text-primary bg-primary/10 px-2 py-0.5 rounded">
+<span class="size-1.5 rounded-full bg-primary animate-pulse"></span> LIVE
+                            </span>
+</div>
+<p class="text-sm text-secondary dark:text-slate-400 mb-4 flex items-center gap-1">
+<span class="material-symbols-outlined text-sm">location_on</span> 101 West Blvd, SF
+                        </p>
+<div class="grid grid-cols-2 gap-4 pt-4 border-t border-slate-100 dark:border-slate-800">
+<div>
+<p class="text-[10px] font-bold text-secondary uppercase tracking-widest mb-1">Total Tables</p>
+<p class="text-lg font-black text-slate-900 dark:text-white leading-none">20</p>
+</div>
+<div>
+<p class="text-[10px] font-bold text-secondary uppercase tracking-widest mb-1">Active Sessions</p>
+<p class="text-lg font-black text-primary leading-none">18</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Card 5 -->
+<div class="break-inside-avoid group cursor-pointer bg-white dark:bg-slate-900 rounded-xl overflow-hidden shadow-sm hover:shadow-xl hover:scale-[1.02] transition-all duration-300 border border-slate-200/50 dark:border-slate-800/50">
+<div class="h-32 bg-slate-100 dark:bg-slate-800 relative overflow-hidden">
+<img class="w-full h-full object-cover opacity-80 group-hover:scale-110 transition-transform duration-700" data-alt="Houston area urban development map" data-location="Houston" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCpt1VusOhKOa3c26pPhC9Z_xih4F56YMbMaenP8J7g_jNMjL7RQ7l9RZDw55HNZy5U59J9dyNVDoORHgEos3I7nYwl1GriAh2H4-3ohxGCehJicfM8IoJFhlgRtEnREahE2SKfIsXmVXvej1fgTYE4yT9C1XHgKpNbzhvdrbCFSamkhSP1RrNgQl0GocWqSHdyAz9YeDxvb2OeZ0jB7_yPnLZGqaM-Al3wrM0r8tNOjc477_NbgpWNssHXwDoGFpxX_8pgIp8YxPmA"/>
+<div class="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
+</div>
+<div class="p-5">
+<div class="flex justify-between items-start mb-2">
+<h3 class="text-lg font-bold text-slate-900 dark:text-white">Lone Star Billiards</h3>
+<span class="flex items-center gap-1 text-xs font-bold text-slate-400 bg-slate-100 px-2 py-0.5 rounded">
+                                CLOSED
+                            </span>
+</div>
+<p class="text-sm text-secondary dark:text-slate-400 mb-4 flex items-center gap-1">
+<span class="material-symbols-outlined text-sm">location_on</span> 555 Texas Rd, HOU
+                        </p>
+<div class="grid grid-cols-2 gap-4 pt-4 border-t border-slate-100 dark:border-slate-800">
+<div>
+<p class="text-[10px] font-bold text-secondary uppercase tracking-widest mb-1">Total Tables</p>
+<p class="text-lg font-black text-slate-900 dark:text-white leading-none">18</p>
+</div>
+<div>
+<p class="text-[10px] font-bold text-secondary uppercase tracking-widest mb-1">Active Sessions</p>
+<p class="text-lg font-black text-slate-400 leading-none">00</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Floating Action Button -->
+<button class="fixed bottom-8 right-8 size-14 bg-primary text-white rounded-full shadow-2xl flex items-center justify-center hover:scale-110 transition-transform active:scale-95 z-30">
+<span class="material-symbols-outlined text-3xl">add</span>
+</button>
+<!-- Table Status Slide-over Panel (Simulated open) -->
+<aside class="fixed inset-y-0 right-0 w-96 glass-panel z-40 p-6 flex flex-col shadow-2xl transition-transform duration-500 translate-x-0">
+<div class="flex items-center justify-between mb-8">
+<div>
+<h4 class="text-xl font-bold text-slate-900">Emerald Cue City</h4>
+<p class="text-xs text-primary font-bold">12 Active Tables</p>
+</div>
+<button class="p-2 hover:bg-white/50 rounded-full transition-colors">
+<span class="material-symbols-outlined text-slate-600">close</span>
+</button>
+</div>
+<div class="flex-1 overflow-y-auto pr-2 space-y-4">
+<!-- Table Row 1 -->
+<div class="bg-white/60 p-4 rounded-xl border border-white/40 flex items-center justify-between">
+<div class="flex items-center gap-3">
+<div class="size-10 rounded-lg bg-primary flex items-center justify-center text-white">
+<p class="font-black">1</p>
+</div>
+<div>
+<p class="text-sm font-bold text-slate-900">Table #01</p>
+<p class="text-[10px] text-slate-500 font-medium">9-Ball Pro • Standard</p>
+</div>
+</div>
+<div class="text-right">
+<p class="text-xs font-bold text-primary">01:42:15</p>
+<p class="text-[10px] text-slate-500">$24.50</p>
+</div>
+</div>
+<!-- Table Row 2 -->
+<div class="bg-white/60 p-4 rounded-xl border border-white/40 flex items-center justify-between">
+<div class="flex items-center gap-3">
+<div class="size-10 rounded-lg bg-primary flex items-center justify-center text-white">
+<p class="font-black">2</p>
+</div>
+<div>
+<p class="text-sm font-bold text-slate-900">Table #02</p>
+<p class="text-[10px] text-slate-500">Snooker • Elite</p>
+</div>
+</div>
+<div class="text-right">
+<p class="text-xs font-bold text-primary">00:55:02</p>
+<p class="text-[10px] text-slate-500">$18.00</p>
+</div>
+</div>
+<!-- Table Row 3 (Empty/Reserved) -->
+<div class="bg-slate-100/30 p-4 rounded-xl border border-dashed border-slate-300 flex items-center justify-between opacity-60">
+<div class="flex items-center gap-3">
+<div class="size-10 rounded-lg bg-slate-200 flex items-center justify-center text-slate-500">
+<p class="font-black">3</p>
+</div>
+<div>
+<p class="text-sm font-bold text-slate-900">Table #03</p>
+<p class="text-[10px] text-slate-500">Reserved @ 7:00 PM</p>
+</div>
+</div>
+<span class="text-[10px] font-bold bg-slate-200 px-2 py-1 rounded">RESERVED</span>
+</div>
+<!-- Table Row 4 -->
+<div class="bg-white/60 p-4 rounded-xl border border-white/40 flex items-center justify-between">
+<div class="flex items-center gap-3">
+<div class="size-10 rounded-lg bg-primary flex items-center justify-center text-white">
+<p class="font-black">4</p>
+</div>
+<div>
+<p class="text-sm font-bold text-slate-900">Table #04</p>
+<p class="text-[10px] text-slate-500">9-Ball Pro • Standard</p>
+</div>
+</div>
+<div class="text-right">
+<p class="text-xs font-bold text-primary">03:15:20</p>
+<p class="text-[10px] text-slate-500">$45.75</p>
+</div>
+</div>
+<!-- Table Row 5 -->
+<div class="bg-white/60 p-4 rounded-xl border border-white/40 flex items-center justify-between">
+<div class="flex items-center gap-3">
+<div class="size-10 rounded-lg bg-primary flex items-center justify-center text-white">
+<p class="font-black">5</p>
+</div>
+<div>
+<p class="text-sm font-bold text-slate-900">Table #05</p>
+<p class="text-[10px] text-slate-500">9-Ball Pro • Standard</p>
+</div>
+</div>
+<div class="text-right">
+<p class="text-xs font-bold text-primary">02:22:11</p>
+<p class="text-[10px] text-slate-500">$32.00</p>
+</div>
+</div>
+</div>
+<div class="pt-6 mt-4 border-t border-white/40">
+<div class="flex justify-between mb-4">
+<span class="text-sm font-semibold text-slate-600">Total Live Revenue</span>
+<span class="text-lg font-black text-slate-900">$120.25</span>
+</div>
+<button class="w-full bg-slate-900 text-white py-3 rounded-xl font-bold flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-sm">open_in_new</span>
+                        Manage Branch Session
+                    </button>
+</div>
+</aside>
+</main>
+</div>
+</body></html>

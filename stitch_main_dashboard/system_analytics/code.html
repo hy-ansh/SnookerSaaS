@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>System Analytics Dashboard</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#059467",
+                        "background-light": "#f5f8f7",
+                        "background-dark": "#0f231d",
+                        "slate-custom": "#64748b",
+                    },
+                    fontFamily: {
+                        "display": ["Manrope"]
+                    },
+                    borderRadius: {"DEFAULT": "0.5rem", "lg": "1rem", "xl": "1.5rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        .glass-effect {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        .metric-card-hover:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 25px -5px rgba(5, 148, 103, 0.1);
+        }
+        .feed-indicator::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 50%;
+            height: 60%;
+            width: 3px;
+            background: #059467;
+            border-radius: 0 4px 4px 0;
+            transform: translateY(-50%);
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-slate-100 min-h-screen">
+<div class="flex h-screen overflow-hidden">
+<!-- Sidebar -->
+<aside class="w-64 bg-white dark:bg-background-dark border-r border-primary/10 flex flex-col">
+<div class="p-6 flex items-center gap-3">
+<div class="size-10 bg-primary rounded-lg flex items-center justify-center text-white">
+<span class="material-symbols-outlined">analytics</span>
+</div>
+<h2 class="font-bold text-xl tracking-tight">Systemly</h2>
+</div>
+<nav class="flex-1 px-4 space-y-2 mt-4">
+<a class="flex items-center gap-3 px-4 py-3 bg-primary/10 text-primary rounded-lg font-semibold" href="#">
+<span class="material-symbols-outlined">dashboard</span> Dashboard
+                </a>
+<a class="flex items-center gap-3 px-4 py-3 text-slate-custom hover:bg-primary/5 hover:text-primary transition-colors rounded-lg" href="#">
+<span class="material-symbols-outlined">monitoring</span> Live Monitoring
+                </a>
+<a class="flex items-center gap-3 px-4 py-3 text-slate-custom hover:bg-primary/5 hover:text-primary transition-colors rounded-lg" href="#">
+<span class="material-symbols-outlined">database</span> Infrastructure
+                </a>
+<a class="flex items-center gap-3 px-4 py-3 text-slate-custom hover:bg-primary/5 hover:text-primary transition-colors rounded-lg" href="#">
+<span class="material-symbols-outlined">security</span> Security Ops
+                </a>
+<a class="flex items-center gap-3 px-4 py-3 text-slate-custom hover:bg-primary/5 hover:text-primary transition-colors rounded-lg" href="#">
+<span class="material-symbols-outlined">settings</span> Configuration
+                </a>
+</nav>
+<div class="p-4 border-t border-primary/10">
+<div class="flex items-center gap-3 p-2 bg-primary/5 rounded-xl">
+<div class="size-10 rounded-full bg-primary/20 flex items-center justify-center">
+<img class="rounded-full" data-alt="User profile avatar illustration" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDeYjssZ9nn-MT4vjZRHmtVsyhHBVhOzOUSHIjDZhf4udTfiRovIPsXDOQiOMg51C-b8L-PklIbd-xedErVkb_FUs4AA053GP3nFWqcukXZp6WX_x8j2Sbt0ooRxngFGZI_R6_QZrpPqpiC3oLsplF9sBeBhsPa2MHnqmI0jj6PrdxLC-TwXPQpXoFJj0b3ZwBYuKxRLygJCQY9kGU8TxdTzci5E5goYppbHO2wvi0Bkf_E-7M6ke5Kh17E72ZvqAgO0gy_Ur_khTAu"/>
+</div>
+<div class="flex-1 min-w-0">
+<p class="text-sm font-bold truncate">Alex Rivera</p>
+<p class="text-xs text-slate-custom truncate">Admin Tier</p>
+</div>
+<span class="material-symbols-outlined text-slate-custom text-sm">unfold_more</span>
+</div>
+</div>
+</aside>
+<!-- Main Content -->
+<main class="flex-1 overflow-y-auto relative">
+<!-- Header -->
+<header class="sticky top-0 z-10 flex items-center justify-between px-8 py-4 glass-effect">
+<div>
+<h1 class="text-2xl font-bold">System Analytics</h1>
+<p class="text-sm text-slate-custom">Centralized intelligence &amp; health reporting</p>
+</div>
+<div class="flex items-center gap-4">
+<div class="relative">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-custom">search</span>
+<input class="pl-10 pr-4 py-2 bg-primary/5 border-none rounded-lg focus:ring-2 focus:ring-primary w-64 text-sm" placeholder="Search metrics..." type="text"/>
+</div>
+<button class="size-10 rounded-lg bg-white border border-primary/10 flex items-center justify-center hover:bg-primary/5">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<button class="bg-primary text-white px-4 py-2 rounded-lg font-bold text-sm flex items-center gap-2">
+<span class="material-symbols-outlined text-sm">download</span> Export Data
+                    </button>
+</div>
+</header>
+<div class="p-8 space-y-8">
+<!-- Top Section: Health & Feed -->
+<div class="grid grid-cols-12 gap-8">
+<!-- Health Gauge Container -->
+<div class="col-span-12 lg:col-span-8 bg-white dark:bg-slate-900 rounded-xl p-8 border border-primary/5 shadow-sm relative overflow-hidden">
+<div class="flex justify-between items-start mb-8">
+<div>
+<h3 class="font-bold text-lg">System Health Gauge</h3>
+<p class="text-sm text-slate-custom italic">Aggregated from 14 global nodes</p>
+</div>
+<span class="px-3 py-1 bg-primary/10 text-primary text-xs font-bold rounded-full">ACTIVE</span>
+</div>
+<!-- Interactive Gauge Visualization -->
+<div class="relative flex justify-center items-center py-12">
+<div class="absolute inset-0 bg-gradient-to-b from-primary/5 to-transparent rounded-full blur-3xl opacity-50"></div>
+<!-- Gauge Arc (SVG Representation) -->
+<div class="relative size-64 flex items-center justify-center">
+<svg class="size-full transform -rotate-90">
+<circle class="text-primary/10" cx="50%" cy="50%" fill="transparent" r="45%" stroke="currentColor" stroke-width="20"></circle>
+<circle class="text-primary" cx="50%" cy="50%" fill="transparent" r="45%" stroke="currentColor" stroke-dasharray="283" stroke-dashoffset="14" stroke-width="20"></circle>
+</svg>
+<div class="absolute inset-4 glass-effect rounded-full shadow-lg flex flex-col items-center justify-center text-center">
+<span class="text-5xl font-extrabold text-primary">98.4<span class="text-2xl">%</span></span>
+<span class="text-xs font-bold uppercase tracking-wider text-slate-custom mt-1">Excellent</span>
+</div>
+</div>
+</div>
+<!-- Real-time Chart (Mini) -->
+<div class="mt-8 border-t border-primary/5 pt-8 grid grid-cols-4 gap-4">
+<div class="space-y-1">
+<p class="text-xs text-slate-custom">CPU Load</p>
+<p class="text-xl font-bold">12.4%</p>
+<div class="w-full bg-slate-200 h-1.5 rounded-full overflow-hidden">
+<div class="bg-primary h-full w-[12%]"></div>
+</div>
+</div>
+<div class="space-y-1">
+<p class="text-xs text-slate-custom">Memory Usage</p>
+<p class="text-xl font-bold">4.2 GB</p>
+<div class="w-full bg-slate-200 h-1.5 rounded-full overflow-hidden">
+<div class="bg-primary h-full w-[45%]"></div>
+</div>
+</div>
+<div class="space-y-1">
+<p class="text-xs text-slate-custom">Latency</p>
+<p class="text-xl font-bold">14ms</p>
+<div class="w-full bg-slate-200 h-1.5 rounded-full overflow-hidden">
+<div class="bg-[#3b82f6] h-full w-[25%]"></div>
+</div>
+</div>
+<div class="space-y-1">
+<p class="text-xs text-slate-custom">Network In</p>
+<p class="text-xl font-bold">840 Mbps</p>
+<div class="w-full bg-slate-200 h-1.5 rounded-full overflow-hidden">
+<div class="bg-primary h-full w-[60%]"></div>
+</div>
+</div>
+</div>
+</div>
+<!-- Real-time Feed -->
+<div class="col-span-12 lg:col-span-4 bg-white dark:bg-slate-900 rounded-xl border border-primary/5 shadow-sm flex flex-col">
+<div class="p-6 border-b border-primary/5 flex justify-between items-center">
+<h3 class="font-bold">Live Activity</h3>
+<div class="size-2 bg-primary rounded-full animate-pulse"></div>
+</div>
+<div class="flex-1 p-4 space-y-4 overflow-y-auto max-h-[480px]">
+<div class="relative pl-6 feed-indicator py-1">
+<p class="text-sm font-bold">New deployment stable</p>
+<p class="text-xs text-slate-custom">v2.4.0 successfully rolled out to US-EAST</p>
+<span class="text-[10px] font-medium text-slate-custom mt-1 block uppercase">2 min ago</span>
+</div>
+<div class="relative pl-6 py-1 opacity-70">
+<p class="text-sm font-bold">Auto-scaling event</p>
+<p class="text-xs text-slate-custom">Added 3 nodes to Load Balancer #4</p>
+<span class="text-[10px] font-medium text-slate-custom mt-1 block uppercase">15 min ago</span>
+</div>
+<div class="relative pl-6 py-1 border-l-2 border-blue-500/30">
+<p class="text-sm font-bold text-blue-600">Backup completed</p>
+<p class="text-xs text-slate-custom">Full database snapshot encrypted &amp; stored</p>
+<span class="text-[10px] font-medium text-slate-custom mt-1 block uppercase">1 hour ago</span>
+</div>
+<div class="relative pl-6 py-1 opacity-60">
+<p class="text-sm font-bold">Node failure recovered</p>
+<p class="text-xs text-slate-custom">instance-928 rebooted automatically</p>
+<span class="text-[10px] font-medium text-slate-custom mt-1 block uppercase">2 hours ago</span>
+</div>
+<div class="relative pl-6 feed-indicator py-1">
+<p class="text-sm font-bold">Security scan finished</p>
+<p class="text-xs text-slate-custom">0 vulnerabilities detected in 1,240 containers</p>
+<span class="text-[10px] font-medium text-slate-custom mt-1 block uppercase">3 hours ago</span>
+</div>
+</div>
+<div class="p-4 border-t border-primary/5">
+<button class="w-full text-center text-xs font-bold text-primary py-2 hover:bg-primary/5 rounded-lg">VIEW ALL LOGS</button>
+</div>
+</div>
+</div>
+<!-- Metric Cards Grid -->
+<div>
+<h2 class="text-lg font-bold mb-6 flex items-center gap-2">
+<span class="material-symbols-outlined text-primary">analytics</span> Key Performance Indicators
+                    </h2>
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+<!-- Card 1 -->
+<div class="bg-white dark:bg-slate-900 p-6 rounded-xl border border-primary/5 shadow-sm metric-card-hover transition-all cursor-pointer group">
+<div class="flex justify-between items-center mb-4">
+<div class="size-10 rounded-lg bg-primary/10 flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-white transition-colors">
+<span class="material-symbols-outlined">trending_up</span>
+</div>
+<span class="text-xs font-bold text-primary">+12.5%</span>
+</div>
+<h4 class="text-slate-custom text-sm font-medium">Uptime Last 30d</h4>
+<p class="text-2xl font-extrabold mt-1">99.998%</p>
+</div>
+<!-- Card 2 -->
+<div class="bg-white dark:bg-slate-900 p-6 rounded-xl border border-primary/5 shadow-sm metric-card-hover transition-all cursor-pointer group">
+<div class="flex justify-between items-center mb-4">
+<div class="size-10 rounded-lg bg-blue-500/10 flex items-center justify-center text-blue-500 group-hover:bg-blue-500 group-hover:text-white transition-colors">
+<span class="material-symbols-outlined">public</span>
+</div>
+<span class="text-xs font-bold text-blue-500">8 Regions</span>
+</div>
+<h4 class="text-slate-custom text-sm font-medium">Global Traffic</h4>
+<p class="text-2xl font-extrabold mt-1">1.2M <span class="text-sm font-normal text-slate-custom">req/s</span></p>
+</div>
+<!-- Card 3 -->
+<div class="bg-white dark:bg-slate-900 p-6 rounded-xl border border-primary/5 shadow-sm metric-card-hover transition-all cursor-pointer group">
+<div class="flex justify-between items-center mb-4">
+<div class="size-10 rounded-lg bg-primary/10 flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-white transition-colors">
+<span class="material-symbols-outlined">payments</span>
+</div>
+<span class="text-xs font-bold text-red-500">-2.4%</span>
+</div>
+<h4 class="text-slate-custom text-sm font-medium">Monthly Burn Rate</h4>
+<p class="text-2xl font-extrabold mt-1">$4,280 <span class="text-sm font-normal text-slate-custom">USD</span></p>
+</div>
+<!-- Card 4 -->
+<div class="bg-white dark:bg-slate-900 p-6 rounded-xl border border-primary/5 shadow-sm metric-card-hover transition-all cursor-pointer group">
+<div class="flex justify-between items-center mb-4">
+<div class="size-10 rounded-lg bg-blue-500/10 flex items-center justify-center text-blue-500 group-hover:bg-blue-500 group-hover:text-white transition-colors">
+<span class="material-symbols-outlined">bug_report</span>
+</div>
+<span class="text-xs font-bold text-primary">Stable</span>
+</div>
+<h4 class="text-slate-custom text-sm font-medium">Error Rate</h4>
+<p class="text-2xl font-extrabold mt-1">0.021%</p>
+</div>
+</div>
+</div>
+<!-- Active Map Context -->
+<div class="bg-white dark:bg-slate-900 rounded-xl border border-primary/5 shadow-sm overflow-hidden p-8">
+<div class="flex justify-between items-center mb-6">
+<h3 class="font-bold text-lg">Infrastructure Distribution</h3>
+<div class="flex gap-2">
+<span class="flex items-center gap-1 text-xs text-slate-custom"><span class="size-2 rounded-full bg-primary"></span> Primary</span>
+<span class="flex items-center gap-1 text-xs text-slate-custom"><span class="size-2 rounded-full bg-blue-500"></span> Edge</span>
+</div>
+</div>
+<div class="w-full h-80 bg-background-light dark:bg-background-dark rounded-xl relative overflow-hidden flex items-center justify-center border border-primary/10">
+<img class="absolute inset-0 object-cover opacity-40 grayscale" data-alt="Stylized world map showing node locations" data-location="Global" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDUh_yxSJSviX8Nk4kZYG0Jmwxloq0PjUiUZhA6siO5kmV1GlLLbKF2GsGFEiYFFcaPDg_lUaAaQc5p3UBfo5UwPdDg3j9nXPxNbF0uumMXJ4VIwfAF9IE_iTRu14T6iB3MqHVBqVYnjtoWOjkdBVNMvnpCTlA0zLbgc-l2MKmBg_hQY4RPjx-kDJmox1iv0n8SCnKXdZ9p1LBH4wXRrshWFG-QeSfy9T09NU90Vy3-9LiZmt86534MgGtALFXyiN4qyEL7vbW845pe"/>
+<div class="relative z-10 flex flex-col items-center">
+<span class="material-symbols-outlined text-4xl text-primary animate-bounce">location_on</span>
+<p class="text-xs font-bold bg-white px-2 py-1 rounded shadow text-slate-900">14 Active Nodes Global</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Modal Window (Report Preview) -->
+<div class="fixed inset-0 z-50 flex items-center justify-center px-4 py-6 bg-slate-900/40 backdrop-blur-sm">
+<div class="bg-white dark:bg-slate-900 w-full max-w-2xl rounded-xl shadow-2xl overflow-hidden glass-effect flex flex-col max-h-[90vh]">
+<div class="p-6 border-b border-primary/10 flex justify-between items-center">
+<div>
+<h2 class="text-xl font-bold">Detailed Incident Report</h2>
+<p class="text-xs text-slate-custom">Ref ID: #ANL-2023-88942</p>
+</div>
+<button class="size-8 rounded-full bg-slate-200 flex items-center justify-center hover:bg-slate-300 transition-colors">
+<span class="material-symbols-outlined text-sm">close</span>
+</button>
+</div>
+<div class="flex-1 overflow-y-auto p-8 space-y-6">
+<div class="grid grid-cols-2 gap-8">
+<div>
+<h4 class="text-xs font-bold text-slate-custom uppercase tracking-widest mb-2">Primary Cause</h4>
+<div class="p-3 bg-red-50 border border-red-100 rounded-lg">
+<p class="text-sm font-semibold text-red-700">Database Connection Timeout</p>
+</div>
+</div>
+<div>
+<h4 class="text-xs font-bold text-slate-custom uppercase tracking-widest mb-2">Recovery Status</h4>
+<div class="p-3 bg-emerald-50 border border-emerald-100 rounded-lg">
+<p class="text-sm font-semibold text-emerald-700">Resolved Automatically</p>
+</div>
+</div>
+</div>
+<div>
+<h4 class="text-xs font-bold text-slate-custom uppercase tracking-widest mb-4">Event Timeline</h4>
+<div class="space-y-4">
+<div class="flex gap-4">
+<div class="flex flex-col items-center">
+<div class="size-3 rounded-full bg-primary mt-1"></div>
+<div class="w-0.5 h-full bg-primary/10"></div>
+</div>
+<div>
+<p class="text-sm font-bold">14:02:10 UTC</p>
+<p class="text-xs text-slate-custom">Latency spike detected in Frankfurt region (+400ms)</p>
+</div>
+</div>
+<div class="flex gap-4">
+<div class="flex flex-col items-center">
+<div class="size-3 rounded-full bg-primary mt-1"></div>
+<div class="w-0.5 h-full bg-primary/10"></div>
+</div>
+<div>
+<p class="text-sm font-bold">14:02:45 UTC</p>
+<p class="text-xs text-slate-custom">Failover mechanism initiated for DB-Cluster-02</p>
+</div>
+</div>
+<div class="flex gap-4">
+<div class="flex flex-col items-center">
+<div class="size-3 rounded-full bg-primary mt-1"></div>
+</div>
+<div>
+<p class="text-sm font-bold">14:03:12 UTC</p>
+<p class="text-xs text-slate-custom">Services restored. Traffic redirected to Secondary Node</p>
+</div>
+</div>
+</div>
+</div>
+<div class="p-4 bg-primary/5 rounded-xl border border-primary/10">
+<h4 class="text-sm font-bold mb-2">Recommendation</h4>
+<p class="text-xs text-slate-600 leading-relaxed">System suggests increasing the pool size for Postgres connections in the EU-CENTRAL region to prevent similar timeout cascades during peak load.</p>
+</div>
+</div>
+<div class="p-6 border-t border-primary/10 flex justify-end gap-3">
+<button class="px-6 py-2 border border-slate-200 rounded-lg text-sm font-bold hover:bg-slate-50">Archive</button>
+<button class="px-6 py-2 bg-primary text-white rounded-lg text-sm font-bold shadow-lg shadow-primary/20">Apply Optimization</button>
+</div>
+</div>
+</div>
+</main>
+</div>
+</body></html>

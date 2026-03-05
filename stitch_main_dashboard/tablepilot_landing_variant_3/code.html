@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>TablePilot | Modern Pool Hall Management</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@200..800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#059467",
+                        "secondary": "#475569",
+                        "background-light": "#f5f8f7",
+                        "background-dark": "#0f231d",
+                    },
+                    fontFamily: {
+                        "display": ["Manrope", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.5rem",
+                        "lg": "1rem",
+                        "xl": "1.5rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+<style>
+        body { font-family: 'Manrope', sans-serif; }
+        .glass-panel { background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(8px); }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 font-display">
+<!-- Navigation -->
+<header class="sticky top-0 z-50 border-b border-primary/10 bg-white/80 dark:bg-background-dark/80 backdrop-blur-md px-6 lg:px-20">
+<div class="max-w-7xl mx-auto flex h-20 items-center justify-between">
+<div class="flex items-center gap-3">
+<div class="bg-primary p-2 rounded-lg">
+<span class="material-symbols-outlined text-white">sports_golf</span>
+</div>
+<h2 class="text-xl font-extrabold tracking-tight text-slate-900 dark:text-white">TablePilot</h2>
+</div>
+<nav class="hidden md:flex items-center gap-10">
+<a class="text-sm font-semibold hover:text-primary transition-colors" href="#features">Features</a>
+<a class="text-sm font-semibold hover:text-primary transition-colors" href="#analytics">Analytics</a>
+<a class="text-sm font-semibold hover:text-primary transition-colors" href="#pricing">Pricing</a>
+<a class="text-sm font-semibold hover:text-primary transition-colors" href="#contact">Support</a>
+</nav>
+<div class="flex items-center gap-4">
+<button class="text-sm font-bold text-slate-600 dark:text-slate-300 px-4 py-2">Login</button>
+<button class="bg-primary hover:bg-primary/90 text-white px-6 py-2.5 rounded-xl font-bold shadow-lg shadow-primary/20 transition-all">
+                    Start Free Trial
+                </button>
+</div>
+</div>
+</header>
+<main>
+<!-- Hero Section -->
+<section class="relative overflow-hidden pt-16 pb-24 px-6 lg:px-20">
+<div class="max-w-7xl mx-auto grid lg:grid-cols-2 gap-16 items-center">
+<div class="z-10">
+<span class="inline-block bg-primary/10 text-primary px-4 py-1.5 rounded-full text-sm font-bold mb-6">v2.0 Now Live</span>
+<h1 class="text-5xl lg:text-7xl font-black leading-[1.1] tracking-tight mb-8">
+                        Effortless <span class="text-primary">Table</span> Management
+                    </h1>
+<p class="text-lg text-slate-600 dark:text-slate-400 mb-10 max-w-lg leading-relaxed">
+                        The visual command center for modern pool halls. Track sessions, automate billing, and scale your revenue with real-time analytics.
+                    </p>
+<div class="flex flex-col sm:flex-row gap-4">
+<button class="bg-primary text-white px-8 py-4 rounded-xl font-bold text-lg flex items-center justify-center gap-2 group shadow-xl shadow-primary/30">
+                            Book a Demo
+                            <span class="material-symbols-outlined group-hover:translate-x-1 transition-transform">arrow_forward</span>
+</button>
+<button class="bg-white dark:bg-slate-800 border-2 border-slate-100 dark:border-slate-700 px-8 py-4 rounded-xl font-bold text-lg">
+                            Watch Video
+                        </button>
+</div>
+</div>
+<div class="relative">
+<!-- Interactive Table 4 Widget -->
+<div class="relative aspect-square rounded-3xl bg-slate-200 dark:bg-slate-800 shadow-2xl overflow-hidden group border-8 border-white dark:border-slate-900" data-alt="Top-down view of a modern pool hall with green tables" style="background-image: linear-gradient(45deg, rgba(5,148,103,0.1), transparent);">
+<div class="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1544197150-b99a580bb7a8?auto=format&amp;fit=crop&amp;q=80')] bg-cover bg-center opacity-40 mix-blend-overlay"></div>
+<!-- Table 4 Card -->
+<div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-80 glass-panel p-6 rounded-2xl shadow-2xl border border-white/50">
+<div class="flex justify-between items-start mb-6">
+<div>
+<span class="text-xs font-bold uppercase tracking-widest text-primary">Session Active</span>
+<h3 class="text-2xl font-black">Table 04</h3>
+</div>
+<div class="bg-primary/20 text-primary p-2 rounded-lg">
+<span class="material-symbols-outlined">timer</span>
+</div>
+</div>
+<div class="grid grid-cols-3 gap-2 mb-8">
+<div class="bg-slate-100 dark:bg-slate-900/50 p-3 rounded-xl text-center">
+<p class="text-xl font-black">01</p>
+<p class="text-[10px] uppercase font-bold text-slate-500">Hr</p>
+</div>
+<div class="bg-slate-100 dark:bg-slate-900/50 p-3 rounded-xl text-center">
+<p class="text-xl font-black">24</p>
+<p class="text-[10px] uppercase font-bold text-slate-500">Min</p>
+</div>
+<div class="bg-slate-100 dark:bg-slate-900/50 p-3 rounded-xl text-center">
+<p class="text-xl font-black">45</p>
+<p class="text-[10px] uppercase font-bold text-slate-500">Sec</p>
+</div>
+</div>
+<div class="flex justify-between items-center">
+<span class="text-lg font-bold text-primary">$28.50</span>
+<button class="bg-red-500 text-white px-4 py-2 rounded-lg font-bold text-sm">End Session</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Floor View Section -->
+<section class="py-24 px-6 lg:px-20 bg-white dark:bg-slate-900/50" id="features">
+<div class="max-w-7xl mx-auto">
+<div class="text-center mb-20">
+<h2 class="text-4xl lg:text-5xl font-black mb-6">Real-Time Floor View</h2>
+<p class="text-slate-600 dark:text-slate-400 max-w-2xl mx-auto text-lg leading-relaxed">
+                        Say goodbye to clipboards and messy logs. Our visual floor plan gives you instant control over every table in the building.
+                    </p>
+</div>
+<div class="grid md:grid-cols-4 gap-4 p-8 bg-slate-50 dark:bg-slate-800 rounded-3xl border border-slate-100 dark:border-slate-700 shadow-inner">
+<!-- Table Grid Mock -->
+<div class="aspect-video bg-primary/20 border-2 border-primary rounded-2xl flex flex-col items-center justify-center relative cursor-pointer">
+<span class="text-xs font-black text-primary absolute top-2 left-3">T1</span>
+<span class="material-symbols-outlined text-primary text-4xl">check_circle</span>
+<span class="text-primary font-bold mt-2">Occupied</span>
+</div>
+<div class="aspect-video bg-white dark:bg-slate-700 border-2 border-slate-200 dark:border-slate-600 rounded-2xl flex flex-col items-center justify-center relative hover:border-primary transition-colors cursor-pointer group">
+<span class="text-xs font-black text-slate-400 absolute top-2 left-3">T2</span>
+<span class="material-symbols-outlined text-slate-300 dark:text-slate-500 text-4xl group-hover:text-primary">add_circle</span>
+<span class="text-slate-500 dark:text-slate-400 font-bold mt-2">Available</span>
+</div>
+<div class="aspect-video bg-primary/20 border-2 border-primary rounded-2xl flex flex-col items-center justify-center relative cursor-pointer">
+<span class="text-xs font-black text-primary absolute top-2 left-3">T3</span>
+<span class="material-symbols-outlined text-primary text-4xl">check_circle</span>
+<span class="text-primary font-bold mt-2">Occupied</span>
+</div>
+<div class="aspect-video bg-white dark:bg-slate-700 border-2 border-slate-200 dark:border-slate-600 rounded-2xl flex flex-col items-center justify-center relative cursor-pointer">
+<span class="text-xs font-black text-slate-400 absolute top-2 left-3">T4</span>
+<span class="material-symbols-outlined text-slate-300 dark:text-slate-500 text-4xl">add_circle</span>
+<span class="text-slate-500 dark:text-slate-400 font-bold mt-2">Available</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Profit Tracker Section -->
+<section class="py-24 px-6 lg:px-20 overflow-hidden" id="analytics">
+<div class="max-w-7xl mx-auto grid lg:grid-cols-2 gap-20 items-center">
+<div class="order-2 lg:order-1 relative">
+<div class="bg-white dark:bg-slate-800 p-8 rounded-[2rem] shadow-2xl border border-slate-100 dark:border-slate-700">
+<div class="flex items-center justify-between mb-10">
+<div>
+<h4 class="text-sm font-bold text-slate-500 uppercase">Daily Revenue</h4>
+<p class="text-4xl font-black text-slate-900 dark:text-white mt-1">$12,482.00</p>
+</div>
+<div class="bg-primary/10 text-primary p-3 rounded-xl">
+<span class="material-symbols-outlined">trending_up</span>
+</div>
+</div>
+<div class="space-y-6">
+<div class="h-64 w-full bg-slate-50 dark:bg-slate-900 rounded-xl relative flex items-end gap-2 p-4">
+<!-- Bars -->
+<div class="flex-1 bg-primary/30 rounded-t-lg h-1/2"></div>
+<div class="flex-1 bg-primary/40 rounded-t-lg h-2/3"></div>
+<div class="flex-1 bg-primary/60 rounded-t-lg h-4/5"></div>
+<div class="flex-1 bg-primary rounded-t-lg h-full relative">
+<div class="absolute -top-10 left-1/2 -translate-x-1/2 bg-slate-900 text-white text-[10px] px-2 py-1 rounded">Peak</div>
+</div>
+<div class="flex-1 bg-primary/80 rounded-t-lg h-3/4"></div>
+<div class="flex-1 bg-primary/50 rounded-t-lg h-1/2"></div>
+</div>
+<div class="flex justify-between text-xs font-bold text-slate-400 px-2 uppercase">
+<span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span>
+</div>
+</div>
+</div>
+</div>
+<div class="order-1 lg:order-2">
+<h2 class="text-4xl lg:text-5xl font-black mb-8">Profit Tracking that Scales</h2>
+<p class="text-slate-600 dark:text-slate-400 text-lg mb-8 leading-relaxed">
+                        Automated reporting that gives you the full picture. Track peak hours, monitor staff performance, and watch your margins grow with automated pricing adjustments.
+                    </p>
+<ul class="space-y-4">
+<li class="flex items-center gap-3 font-bold text-slate-700 dark:text-slate-300">
+<span class="material-symbols-outlined text-primary">verified</span>
+                            Live transaction monitoring
+                        </li>
+<li class="flex items-center gap-3 font-bold text-slate-700 dark:text-slate-300">
+<span class="material-symbols-outlined text-primary">verified</span>
+                            Dynamic happy hour pricing
+                        </li>
+<li class="flex items-center gap-3 font-bold text-slate-700 dark:text-slate-300">
+<span class="material-symbols-outlined text-primary">verified</span>
+                            Integrated POS system support
+                        </li>
+</ul>
+</div>
+</div>
+</section>
+<!-- Billing Demo Section -->
+<section class="py-24 px-6 lg:px-20 bg-background-light dark:bg-background-dark">
+<div class="max-w-7xl mx-auto">
+<div class="text-center mb-16">
+<h2 class="text-4xl lg:text-5xl font-black mb-6 text-slate-900 dark:text-white">Seamless Billing</h2>
+<p class="text-slate-600 dark:text-slate-400 text-lg">Split checks and calculate time-based pricing in seconds.</p>
+</div>
+<div class="grid md:grid-cols-2 gap-12 items-center">
+<div class="relative h-[400px]">
+<!-- Card Stack Metaphor -->
+<div class="absolute top-0 left-1/2 -translate-x-1/2 w-72 bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-xl border border-slate-100 dark:border-slate-700 z-30">
+<div class="flex justify-between mb-4">
+<span class="font-bold">Player 1</span>
+<span class="text-primary font-bold">$14.25</span>
+</div>
+<div class="space-y-2">
+<div class="h-2 w-full bg-slate-100 dark:bg-slate-700 rounded"></div>
+<div class="h-2 w-3/4 bg-slate-100 dark:bg-slate-700 rounded"></div>
+</div>
+</div>
+<div class="absolute top-8 left-1/2 -translate-x-1/2 w-72 bg-white/60 dark:bg-slate-800/60 p-6 rounded-2xl shadow-lg border border-slate-100/50 dark:border-slate-700/50 z-20 scale-95 translate-y-4">
+<div class="flex justify-between mb-4">
+<span class="font-bold opacity-50">Player 2</span>
+<span class="text-primary font-bold opacity-50">$14.25</span>
+</div>
+</div>
+<div class="absolute top-16 left-1/2 -translate-x-1/2 w-72 bg-white/40 dark:bg-slate-800/40 p-6 rounded-2xl shadow-md border border-slate-100/30 dark:border-slate-700/30 z-10 scale-90 translate-y-8">
+<div class="flex justify-between mb-4">
+<span class="font-bold opacity-30">Player 3</span>
+<span class="text-primary font-bold opacity-30">$14.25</span>
+</div>
+</div>
+</div>
+<div>
+<h3 class="text-3xl font-black mb-6">Complex Splits, Made Simple</h3>
+<p class="text-slate-600 dark:text-slate-400 mb-8 text-lg">
+                            Whether it's equal splits, itemized billing, or time-proportioned tabs, TablePilot handles the math so your staff can focus on the service.
+                        </p>
+<div class="flex gap-4">
+<div class="flex-1 bg-white dark:bg-slate-800 p-6 rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm">
+<span class="material-symbols-outlined text-primary mb-2">call_split</span>
+<h4 class="font-bold mb-1">Time Splitting</h4>
+<p class="text-sm text-slate-500">Auto-calculate per person based on time played.</p>
+</div>
+<div class="flex-1 bg-white dark:bg-slate-800 p-6 rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm">
+<span class="material-symbols-outlined text-primary mb-2">schedule</span>
+<h4 class="font-bold mb-1">Peak Rates</h4>
+<p class="text-sm text-slate-500">Automatically adjust pricing by time of day.</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- CTA Section -->
+<section class="py-24 px-6 lg:px-20">
+<div class="max-w-5xl mx-auto bg-slate-900 dark:bg-slate-800 rounded-[3rem] p-12 lg:p-20 text-center relative overflow-hidden">
+<div class="absolute top-0 right-0 w-64 h-64 bg-primary/20 rounded-full blur-[100px] -translate-y-1/2 translate-x-1/2"></div>
+<div class="absolute bottom-0 left-0 w-64 h-64 bg-primary/10 rounded-full blur-[100px] translate-y-1/2 -translate-x-1/2"></div>
+<h2 class="text-4xl lg:text-6xl font-black text-white mb-8 relative z-10">Ready to level up your hall?</h2>
+<p class="text-slate-400 text-lg mb-12 max-w-2xl mx-auto relative z-10">
+                    Join over 500+ venues using TablePilot to streamline their operations and increase customer satisfaction.
+                </p>
+<div class="flex flex-col sm:flex-row gap-4 justify-center relative z-10">
+<button class="bg-primary hover:bg-primary/90 text-white px-10 py-5 rounded-2xl font-black text-xl shadow-2xl transition-all scale-100 hover:scale-105">
+                        Get Started Free
+                    </button>
+<button class="bg-white/10 hover:bg-white/20 text-white border border-white/20 px-10 py-5 rounded-2xl font-black text-xl transition-all">
+                        Talk to Sales
+                    </button>
+</div>
+<p class="mt-8 text-slate-500 text-sm font-medium">No credit card required • 14-day free trial</p>
+</div>
+</section>
+</main>
+<!-- Footer -->
+<footer class="bg-white dark:bg-background-dark border-t border-slate-100 dark:border-slate-800 py-20 px-6 lg:px-20">
+<div class="max-w-7xl mx-auto grid md:grid-cols-4 gap-12">
+<div class="col-span-1 md:col-span-2">
+<div class="flex items-center gap-3 mb-6">
+<div class="bg-primary p-2 rounded-lg">
+<span class="material-symbols-outlined text-white">sports_golf</span>
+</div>
+<h2 class="text-xl font-extrabold tracking-tight">TablePilot</h2>
+</div>
+<p class="text-slate-500 max-w-sm leading-relaxed mb-8">
+                    The leading visual management platform for cue sports venues worldwide. Built by pool hall owners, for pool hall owners.
+                </p>
+<div class="flex gap-4">
+<a class="w-10 h-10 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-600 hover:bg-primary hover:text-white transition-all" href="#"><span class="material-symbols-outlined text-lg">public</span></a>
+<a class="w-10 h-10 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-600 hover:bg-primary hover:text-white transition-all" href="#"><span class="material-symbols-outlined text-lg">alternate_email</span></a>
+</div>
+</div>
+<div>
+<h4 class="font-black mb-6 uppercase text-xs tracking-widest text-slate-400">Product</h4>
+<ul class="space-y-4 font-bold text-slate-600 dark:text-slate-400">
+<li><a class="hover:text-primary transition-colors" href="#">Features</a></li>
+<li><a class="hover:text-primary transition-colors" href="#">Hardware</a></li>
+<li><a class="hover:text-primary transition-colors" href="#">Integrations</a></li>
+<li><a class="hover:text-primary transition-colors" href="#">Enterprise</a></li>
+</ul>
+</div>
+<div>
+<h4 class="font-black mb-6 uppercase text-xs tracking-widest text-slate-400">Company</h4>
+<ul class="space-y-4 font-bold text-slate-600 dark:text-slate-400">
+<li><a class="hover:text-primary transition-colors" href="#">About Us</a></li>
+<li><a class="hover:text-primary transition-colors" href="#">Careers</a></li>
+<li><a class="hover:text-primary transition-colors" href="#">Privacy</a></li>
+<li><a class="hover:text-primary transition-colors" href="#">Contact</a></li>
+</ul>
+</div>
+</div>
+<div class="max-w-7xl mx-auto mt-20 pt-8 border-t border-slate-100 dark:border-slate-800 flex flex-col md:row justify-between items-center gap-4">
+<p class="text-slate-400 text-sm font-medium">© 2024 TablePilot Systems Inc. All rights reserved.</p>
+<div class="flex gap-8 text-sm font-bold text-slate-400">
+<a href="#">Terms</a>
+<a href="#">Privacy</a>
+<a href="#">Security</a>
+</div>
+</div>
+</footer>
+</body></html>

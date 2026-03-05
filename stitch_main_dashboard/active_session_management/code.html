@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@200;300;400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#059467",
+                        "secondary": "#334155",
+                        "background-light": "#f5f8f7",
+                        "background-dark": "#0f231d",
+                    },
+                    fontFamily: {
+                        "display": ["Manrope", "sans-serif"]
+                    },
+                    borderRadius: {"DEFAULT": "0.5rem", "lg": "1rem", "xl": "1.5rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<title>Active Session | PoolHall Pro</title>
+</head>
+<body class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-slate-100 min-h-screen">
+<div class="relative flex h-auto min-h-screen w-full flex-col overflow-x-hidden">
+<div class="layout-container flex h-full grow flex-col">
+<!-- Navigation Bar -->
+<header class="flex items-center justify-between whitespace-nowrap border-b border-solid border-primary/10 bg-white/50 dark:bg-background-dark/50 backdrop-blur-md px-6 md:px-10 py-4 sticky top-0 z-50">
+<div class="flex items-center gap-3">
+<div class="flex items-center justify-center size-10 rounded-xl bg-primary text-white">
+<span class="material-symbols-outlined">sports_handball</span>
+</div>
+<div>
+<h2 class="text-slate-900 dark:text-white text-lg font-extrabold leading-tight tracking-tight">PoolHall Pro</h2>
+<p class="text-xs text-primary font-medium">Lounge Management</p>
+</div>
+</div>
+<div class="flex gap-3">
+<button class="flex items-center justify-center rounded-xl h-10 w-10 bg-primary/10 text-primary hover:bg-primary/20 transition-colors">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<button class="flex items-center justify-center rounded-xl h-10 w-10 bg-primary/10 text-primary hover:bg-primary/20 transition-colors">
+<span class="material-symbols-outlined">account_circle</span>
+</button>
+</div>
+</header>
+<main class="flex-1 flex flex-col items-center justify-start py-8 px-4 max-w-4xl mx-auto w-full">
+<!-- Table Status Header -->
+<div class="text-center mb-8">
+<div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 text-primary text-sm font-bold mb-3">
+<span class="relative flex h-2 w-2">
+<span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
+<span class="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
+</span>
+                        ACTIVE SESSION
+                    </div>
+<h1 class="text-4xl font-extrabold text-slate-900 dark:text-white mb-2">Table #08</h1>
+<p class="text-secondary/70 dark:text-slate-400">Premium Diamond Pro Table</p>
+</div>
+<!-- Main Timer Section -->
+<div class="w-full max-w-md bg-white dark:bg-slate-900 rounded-xl shadow-xl shadow-primary/5 p-8 border border-primary/5 mb-8 relative overflow-hidden">
+<!-- Background Accent -->
+<div class="absolute -top-24 -right-24 w-48 h-48 bg-primary/5 rounded-full blur-3xl"></div>
+<div class="relative flex flex-col items-center">
+<!-- Circular Progress Ring -->
+<div class="relative flex items-center justify-center mb-8">
+<svg class="w-64 h-64 transform -rotate-90">
+<circle class="text-primary/10" cx="128" cy="128" fill="transparent" r="110" stroke="currentColor" stroke-width="8"></circle>
+<circle class="text-primary" cx="128" cy="128" fill="transparent" r="110" stroke="currentColor" stroke-dasharray="691" stroke-dashoffset="240" stroke-linecap="round" stroke-width="12"></circle>
+</svg>
+<div class="absolute flex flex-col items-center justify-center">
+<span class="text-5xl font-black text-slate-900 dark:text-white tracking-tighter">01:32:45</span>
+<span class="text-xs font-bold text-secondary uppercase tracking-widest mt-1">Elapsed Time</span>
+</div>
+</div>
+<!-- Pricing Stats -->
+<div class="grid grid-cols-2 gap-4 w-full mb-8">
+<div class="bg-background-light dark:bg-slate-800/50 p-4 rounded-lg border border-primary/5 flex flex-col items-center">
+<span class="text-xs font-bold text-secondary/60 dark:text-slate-400 uppercase tracking-wider">Hourly Rate</span>
+<span class="text-xl font-bold text-slate-900 dark:text-white">$12.00</span>
+</div>
+<div class="bg-primary/5 dark:bg-primary/10 p-4 rounded-lg border border-primary/10 flex flex-col items-center">
+<span class="text-xs font-bold text-primary uppercase tracking-wider">Total Cost</span>
+<div class="flex items-baseline">
+<span class="text-2xl font-black text-primary">$18.45</span>
+<span class="text-xs text-primary/70 ml-1 font-bold italic">+tax</span>
+</div>
+</div>
+</div>
+<!-- Timer Controls -->
+<div class="flex gap-4 w-full">
+<button class="flex-1 flex items-center justify-center gap-2 h-14 bg-secondary text-white rounded-lg font-bold hover:bg-slate-800 transition-all shadow-lg shadow-secondary/20">
+<span class="material-symbols-outlined">pause_circle</span>
+                                PAUSE
+                            </button>
+<button class="flex-1 flex items-center justify-center gap-2 h-14 bg-primary text-white rounded-lg font-bold hover:brightness-110 transition-all shadow-lg shadow-primary/20">
+<span class="material-symbols-outlined">play_circle</span>
+                                RESUME
+                            </button>
+</div>
+</div>
+</div>
+<!-- Session Details Grid -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6 w-full mb-8">
+<!-- Session Info -->
+<div class="bg-white dark:bg-slate-900 p-6 rounded-xl border border-primary/5 shadow-sm">
+<h3 class="font-bold text-slate-900 dark:text-white mb-4 flex items-center gap-2">
+<span class="material-symbols-outlined text-primary">info</span>
+                            Session Details
+                        </h3>
+<div class="space-y-3">
+<div class="flex justify-between text-sm">
+<span class="text-secondary/70">Started At</span>
+<span class="font-semibold">10:00 AM</span>
+</div>
+<div class="flex justify-between text-sm">
+<span class="text-secondary/70">Customer</span>
+<span class="font-semibold">John Wick (Member)</span>
+</div>
+<div class="flex justify-between text-sm">
+<span class="text-secondary/70">Players</span>
+<span class="font-semibold">2 Active</span>
+</div>
+</div>
+</div>
+<!-- Expandable Pause History -->
+<div class="bg-white dark:bg-slate-900 p-6 rounded-xl border border-primary/5 shadow-sm overflow-hidden">
+<div class="flex items-center justify-between mb-4">
+<h3 class="font-bold text-slate-900 dark:text-white flex items-center gap-2">
+<span class="material-symbols-outlined text-amber-500">history_toggle_off</span>
+                                Pause History
+                            </h3>
+<span class="text-xs font-bold bg-amber-100 text-amber-700 px-2 py-0.5 rounded-full">2 Pauses</span>
+</div>
+<div class="space-y-3 max-h-32 overflow-y-auto pr-2 custom-scrollbar">
+<div class="flex items-center justify-between text-sm p-2 bg-background-light dark:bg-slate-800 rounded-lg">
+<div class="flex flex-col">
+<span class="font-medium">10:15 AM - 10:20 AM</span>
+<span class="text-[10px] text-secondary/60">Phone Call</span>
+</div>
+<span class="text-xs font-bold text-amber-600">5m</span>
+</div>
+<div class="flex items-center justify-between text-sm p-2 bg-background-light dark:bg-slate-800 rounded-lg">
+<div class="flex flex-col">
+<span class="font-medium">10:45 AM - 10:52 AM</span>
+<span class="text-[10px] text-secondary/60">Restroom Break</span>
+</div>
+<span class="text-xs font-bold text-amber-600">7m</span>
+</div>
+</div>
+<button class="w-full mt-4 text-xs font-bold text-primary hover:underline flex items-center justify-center gap-1">
+                            VIEW ALL DETAILS <span class="material-symbols-outlined text-sm">expand_more</span>
+</button>
+</div>
+</div>
+<!-- Primary Action Button -->
+<button class="w-full max-w-md h-16 bg-primary text-white text-lg font-black rounded-xl shadow-xl shadow-primary/30 flex items-center justify-center gap-3 group hover:scale-[1.02] transition-transform">
+<span class="material-symbols-outlined">payments</span>
+                    END SESSION &amp; CHECKOUT
+                    <span class="material-symbols-outlined group-hover:translate-x-1 transition-transform">chevron_right</span>
+</button>
+<p class="mt-6 text-xs text-secondary/50 dark:text-slate-500 text-center italic">
+                    All sessions are recorded. Late checkouts may incur additional fees.
+                </p>
+</main>
+<!-- Bottom Navigation for Tablet/Mobile -->
+<footer class="md:hidden bg-white dark:bg-background-dark border-t border-primary/10 px-6 py-4 flex justify-around items-center">
+<button class="text-primary flex flex-col items-center gap-1">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="text-[10px] font-bold">Dashboard</span>
+</button>
+<button class="text-secondary/50 flex flex-col items-center gap-1">
+<span class="material-symbols-outlined">table_bar</span>
+<span class="text-[10px] font-bold">Tables</span>
+</button>
+<button class="text-secondary/50 flex flex-col items-center gap-1">
+<span class="material-symbols-outlined">settings</span>
+<span class="text-[10px] font-bold">Settings</span>
+</button>
+</footer>
+</div>
+</div>
+<style>
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #05946733;
+            border-radius: 10px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #05946766;
+        }
+    </style>
+</body></html>

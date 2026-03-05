@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>PoolMaster SaaS - Premium Login</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#059467",
+                        "background-light": "#f5f8f7",
+                        "background-dark": "#0f231d",
+                        "emerald-accent": "#059669",
+                        "slate-custom": "#334155",
+                    },
+                    fontFamily: {
+                        "display": ["Manrope", "sans-serif"]
+                    },
+                    borderRadius: {"DEFAULT": "0.5rem", "lg": "1rem", "xl": "1.5rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        .login-card {
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.05), 0 10px 10px -5px rgba(0, 0, 0, 0.02);
+        }
+        .input-focus-border {
+            position: relative;
+        }
+        .input-focus-border::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            width: 0;
+            height: 2px;
+            background-color: #059669;
+            transition: all 0.3s ease;
+            transform: translateX(-50%);
+        }
+        .input-focus-border:focus-within::after {
+            width: 100%;
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark font-display min-h-screen flex flex-col">
+<header class="w-full px-6 py-6 lg:px-20 flex items-center justify-between absolute top-0 left-0 z-50">
+<div class="flex items-center gap-3">
+<div class="bg-primary p-2 rounded-lg text-white">
+<span class="material-symbols-outlined text-2xl">pool</span>
+</div>
+<h2 class="text-slate-custom dark:text-slate-100 text-xl font-bold tracking-tight">PoolMaster <span class="text-primary font-medium text-sm">SaaS</span></h2>
+</div>
+<div class="hidden md:flex gap-8 items-center text-sm font-semibold text-slate-custom/70 dark:text-slate-300">
+<a class="hover:text-primary transition-colors" href="#">Pricing</a>
+<a class="hover:text-primary transition-colors" href="#">Features</a>
+<button class="bg-primary/10 text-primary px-5 py-2 rounded-lg hover:bg-primary/20 transition-all">Support</button>
+</div>
+</header>
+<main class="flex-1 flex flex-col lg:flex-row items-center justify-center gap-12 px-6 py-20 relative overflow-hidden">
+<div class="absolute -top-20 -left-20 w-96 h-96 bg-primary/5 rounded-full blur-3xl"></div>
+<div class="absolute -bottom-20 -right-20 w-96 h-96 bg-primary/5 rounded-full blur-3xl"></div>
+<div class="relative z-10 w-full max-w-md">
+<div class="login-card bg-white dark:bg-slate-900/50 p-8 lg:p-12 rounded-xl border border-slate-100 dark:border-slate-800 backdrop-blur-sm">
+<div class="mb-10">
+<h1 class="text-3xl font-bold text-slate-custom dark:text-slate-100 mb-2">Owner Login</h1>
+<p class="text-slate-custom/60 dark:text-slate-400">Enter your credentials to manage your hall.</p>
+</div>
+<form class="space-y-6">
+<div class="space-y-1 input-focus-border">
+<label class="text-xs font-bold uppercase tracking-wider text-slate-custom/50 dark:text-slate-500 ml-1">Email Address</label>
+<input class="w-full bg-transparent border-0 border-b border-slate-200 dark:border-slate-700 focus:ring-0 px-1 py-3 text-slate-custom dark:text-slate-100 placeholder:text-slate-300 transition-all" placeholder="owner@emeraldpool.com" type="email"/>
+</div>
+<div class="space-y-1 input-focus-border">
+<label class="text-xs font-bold uppercase tracking-wider text-slate-custom/50 dark:text-slate-500 ml-1">Password</label>
+<div class="relative">
+<input class="w-full bg-transparent border-0 border-b border-slate-200 dark:border-slate-700 focus:ring-0 px-1 py-3 text-slate-custom dark:text-slate-100 placeholder:text-slate-300 transition-all" placeholder="••••••••" type="password"/>
+<span class="material-symbols-outlined absolute right-2 top-1/2 -translate-y-1/2 text-slate-300 cursor-pointer hover:text-primary">visibility</span>
+</div>
+</div>
+<div class="flex items-center justify-between text-sm pt-2">
+<label class="flex items-center gap-2 cursor-pointer group">
+<input class="rounded border-slate-300 text-primary focus:ring-primary/20 cursor-pointer" type="checkbox"/>
+<span class="text-slate-custom/70 dark:text-slate-400 group-hover:text-primary transition-colors">Remember me</span>
+</label>
+<a class="text-primary font-semibold hover:underline" href="#">Forgot password?</a>
+</div>
+<button class="w-full bg-primary hover:bg-emerald-accent text-white font-bold py-4 rounded-lg shadow-lg shadow-primary/20 transition-all active:scale-[0.98] flex items-center justify-center gap-2">
+<span>Sign In</span>
+<span class="material-symbols-outlined text-sm">arrow_forward</span>
+</button>
+</form>
+<div class="mt-8 pt-8 border-t border-slate-50 dark:border-slate-800 text-center">
+<p class="text-sm text-slate-custom/60 dark:text-slate-400">
+                        Don't have an account? <a class="text-primary font-bold" href="#">Start Free Trial</a>
+</p>
+</div>
+</div>
+<div class="mt-6 bg-emerald-accent/10 border border-emerald-accent/20 p-4 rounded-lg flex items-center gap-4 animate-pulse">
+<div class="bg-emerald-accent rounded-full p-1 text-white">
+<span class="material-symbols-outlined text-lg leading-none">check_circle</span>
+</div>
+<div>
+<p class="text-emerald-accent text-sm font-bold">Success! Redirecting...</p>
+<p class="text-emerald-accent/80 text-xs font-medium">Loading Owner Dashboard</p>
+</div>
+</div>
+</div>
+<div class="hidden lg:flex flex-1 items-center justify-center relative">
+<div class="relative w-[500px] h-[500px]">
+<div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-80 h-80 bg-gradient-to-tr from-primary/10 to-transparent rounded-full blur-2xl"></div>
+<div class="absolute top-[20%] right-[15%] w-24 h-24 bg-primary rounded-full shadow-2xl flex items-center justify-center border-4 border-white/20 transform rotate-12">
+<span class="text-white text-3xl font-bold italic">8</span>
+</div>
+<div class="absolute bottom-[25%] left-[10%] w-full h-4 bg-slate-custom/10 rounded-full blur-md"></div>
+<div class="absolute bottom-[20%] left-0 w-full transform -rotate-12 h-6 bg-gradient-to-r from-slate-custom to-slate-400 rounded-full shadow-xl">
+<div class="absolute right-0 top-1/2 -translate-y-1/2 w-20 h-full bg-white/20 rounded-r-full"></div>
+<div class="absolute left-10 top-1/2 -translate-y-1/2 w-4 h-full bg-black/10"></div>
+</div>
+<div class="absolute top-[40%] left-[20%] w-16 h-16 bg-white rounded-full shadow-xl border border-slate-100"></div>
+<div class="absolute top-0 left-0 w-full h-full border border-primary/10 rounded-full opacity-50 scale-110"></div>
+</div>
+<div class="absolute bottom-10 right-10 max-w-xs bg-white dark:bg-slate-900 p-6 rounded-xl shadow-xl border border-slate-100 dark:border-slate-800">
+<div class="flex gap-1 mb-4">
+<span class="material-symbols-outlined text-yellow-400 text-sm fill-current">star</span>
+<span class="material-symbols-outlined text-yellow-400 text-sm fill-current">star</span>
+<span class="material-symbols-outlined text-yellow-400 text-sm fill-current">star</span>
+<span class="material-symbols-outlined text-yellow-400 text-sm fill-current">star</span>
+<span class="material-symbols-outlined text-yellow-400 text-sm fill-current">star</span>
+</div>
+<p class="text-slate-custom dark:text-slate-300 text-sm italic leading-relaxed">"The most intuitive management software I've used for my hall. Our revenue increased by 20% in the first quarter."</p>
+<div class="mt-4 flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="Portrait of a billiard hall owner" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAt2Sa1M2mdNdHPy07l59nXUyCX8OIW1roKj2f4cuCnrhgWB-yZBOYPpMg4D2l8FmzyS_aCmnof4MaCJPbFCXvTX6EaSxpUy0QlgyAM5IZqAclvn8uoDBZkmWg_iLInQQbnKPfQby5UOfs0ujvLg2LyNFBD1uVc8nj-LYkWatr59DOpz34q60BTLzugUj5s0lNMYcZ6FPf6VafczCT-wETswJDUKDesqu_Z4ID3ni5-oG4sOUArW6kD_LeVtEfX19tLu0y6Ew9qpbhg"/>
+</div>
+<div>
+<p class="text-slate-custom dark:text-slate-100 text-xs font-bold">Marcus Chen</p>
+<p class="text-slate-custom/50 dark:text-slate-500 text-[10px]">Owner, Q-Sports Lounge</p>
+</div>
+</div>
+</div>
+</div>
+</main>
+<footer class="w-full px-6 py-8 lg:px-20 text-center text-slate-custom/40 dark:text-slate-500 text-xs">
+<p>© 2024 PoolMaster SaaS Inc. All rights reserved. Precision in every shot.</p>
+</footer>
+</body></html>

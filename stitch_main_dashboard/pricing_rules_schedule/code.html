@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#059467",
+                        "background-light": "#f5f8f7",
+                        "background-dark": "#0f231d",
+                        "slate-custom": "#475569",
+                    },
+                    fontFamily: {
+                        "display": ["Manrope"]
+                    },
+                    borderRadius: {"DEFAULT": "0.5rem", "lg": "1rem", "xl": "1.5rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        .schedule-grid {
+            display: grid;
+            grid-template-columns: 80px repeat(7, 1fr);
+        }
+        .time-slot {
+            height: 64px;
+            border-bottom: 1px solid rgba(5, 148, 103, 0.05);
+        }
+        .day-column {
+            border-right: 1px solid rgba(5, 148, 103, 0.05);
+        }
+        .selection-overlay {
+            background-color: #059467;
+            border-radius: 1rem;
+            box-shadow: 0 4px 12px rgba(5, 148, 103, 0.2);
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-slate-100 antialiased">
+<div class="relative flex min-h-screen w-full flex-col overflow-x-hidden">
+<!-- Top Navigation Bar -->
+<header class="sticky top-0 z-50 flex items-center justify-between border-b border-primary/10 bg-white/80 dark:bg-background-dark/80 px-6 py-4 backdrop-blur-md lg:px-12">
+<div class="flex items-center gap-4">
+<div class="flex h-10 w-10 items-center justify-center rounded-xl bg-primary text-white">
+<span class="material-symbols-outlined">payments</span>
+</div>
+<div>
+<h1 class="text-xl font-bold tracking-tight">Pricing Rules &amp; Schedule</h1>
+<p class="text-xs font-medium text-primary/70">Revenue Management Console</p>
+</div>
+</div>
+<div class="flex items-center gap-3">
+<button class="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10 text-primary hover:bg-primary/20 transition-colors">
+<span class="material-symbols-outlined text-[20px]">notifications</span>
+</button>
+<div class="h-10 w-px bg-primary/10 mx-1"></div>
+<button class="flex items-center gap-3 rounded-xl bg-primary px-5 py-2 text-sm font-bold text-white shadow-lg shadow-primary/20 hover:bg-primary/90 transition-all">
+<span class="material-symbols-outlined text-[18px]">save</span>
+<span>Save Schedule</span>
+</button>
+</div>
+</header>
+<main class="flex flex-1 flex-col lg:flex-row">
+<!-- Sidebar: Global Rates Summary -->
+<aside class="w-full shrink-0 border-r border-primary/10 p-6 lg:w-80">
+<div class="flex flex-col gap-6">
+<div class="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-primary/5">
+<h3 class="mb-4 text-sm font-bold uppercase tracking-wider text-slate-custom/60">Global Rates Summary</h3>
+<div class="space-y-4">
+<div class="flex items-center justify-between">
+<span class="text-sm font-medium text-slate-custom">Base Hourly</span>
+<span class="rounded-full bg-primary/10 px-3 py-1 text-sm font-bold text-primary">$20/hr</span>
+</div>
+<div class="flex items-center justify-between">
+<span class="text-sm font-medium text-slate-custom">Peak Hours</span>
+<span class="rounded-full bg-orange-100 px-3 py-1 text-sm font-bold text-orange-600">$35/hr</span>
+</div>
+<div class="flex items-center justify-between">
+<span class="text-sm font-medium text-slate-custom">Weekend Bonus</span>
+<span class="rounded-full bg-blue-100 px-3 py-1 text-sm font-bold text-blue-600">+$5/hr</span>
+</div>
+</div>
+<div class="mt-6 border-t border-primary/5 pt-4">
+<p class="text-[11px] leading-relaxed text-slate-custom/50 italic">
+                                * Pricing rules are applied automatically based on the schedule selection.
+                            </p>
+</div>
+</div>
+<div class="rounded-2xl bg-primary/5 p-6 ring-1 ring-primary/10">
+<div class="mb-3 flex items-center gap-2 text-primary">
+<span class="material-symbols-outlined text-[20px]">info</span>
+<h4 class="text-sm font-bold">Quick Tip</h4>
+</div>
+<p class="text-xs leading-normal text-slate-custom">
+                            Click and drag your mouse across the grid to select multiple time blocks for batch editing.
+                        </p>
+</div>
+<div class="relative overflow-hidden rounded-2xl bg-slate-900 p-6 text-white shadow-xl">
+<div class="relative z-10 flex flex-col gap-2">
+<h4 class="text-lg font-bold">Analytics</h4>
+<p class="text-xs text-slate-300">Projected weekly revenue based on current rules.</p>
+<div class="mt-4 text-3xl font-black">$4,280</div>
+<div class="flex items-center gap-1 text-emerald-400">
+<span class="material-symbols-outlined text-[16px]">trending_up</span>
+<span class="text-[10px] font-bold">+12% from last week</span>
+</div>
+</div>
+<div class="absolute -right-4 -top-4 h-24 w-24 rounded-full bg-primary/20 blur-3xl"></div>
+</div>
+</div>
+</aside>
+<!-- Main Content: Schedule Builder -->
+<section class="flex-1 bg-white p-6 lg:p-10">
+<div class="mb-8 flex flex-col justify-between gap-4 md:flex-row md:items-end">
+<div>
+<h2 class="text-3xl font-extrabold tracking-tight text-slate-900">Weekly Schedule Builder</h2>
+<p class="mt-1 text-slate-custom">Visualizing dynamic pricing blocks across the week.</p>
+</div>
+<div class="flex gap-2">
+<button class="flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-bold text-slate-600 hover:bg-slate-50 transition-colors">
+<span class="material-symbols-outlined text-[18px]">calendar_view_week</span>
+<span>Week View</span>
+</button>
+<button class="flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-bold text-slate-600 hover:bg-slate-50 transition-colors">
+<span class="material-symbols-outlined text-[18px]">filter_list</span>
+<span>Filters</span>
+</button>
+</div>
+</div>
+<!-- Schedule Grid Container -->
+<div class="relative overflow-hidden rounded-2xl border border-primary/10 bg-white shadow-sm">
+<!-- Day Headers -->
+<div class="schedule-grid border-b border-primary/10 bg-primary/5 py-4">
+<div class="flex items-center justify-center font-bold text-primary/40 text-xs uppercase tracking-widest">Time</div>
+<div class="flex flex-col items-center">
+<span class="text-xs font-bold text-slate-custom uppercase tracking-tighter opacity-50">Mon</span>
+<span class="text-lg font-black text-slate-900">22</span>
+</div>
+<div class="flex flex-col items-center">
+<span class="text-xs font-bold text-slate-custom uppercase tracking-tighter opacity-50">Tue</span>
+<span class="text-lg font-black text-slate-900">23</span>
+</div>
+<div class="flex flex-col items-center">
+<span class="text-xs font-bold text-slate-custom uppercase tracking-tighter opacity-50">Wed</span>
+<span class="text-lg font-black text-slate-900">24</span>
+</div>
+<div class="flex flex-col items-center">
+<span class="text-xs font-bold text-slate-custom uppercase tracking-tighter opacity-50">Thu</span>
+<span class="text-lg font-black text-slate-900 text-primary">25</span>
+</div>
+<div class="flex flex-col items-center">
+<span class="text-xs font-bold text-slate-custom uppercase tracking-tighter opacity-50">Fri</span>
+<span class="text-lg font-black text-slate-900">26</span>
+</div>
+<div class="flex flex-col items-center">
+<span class="text-xs font-bold text-slate-custom uppercase tracking-tighter opacity-50">Sat</span>
+<span class="text-lg font-black text-slate-900">27</span>
+</div>
+<div class="flex flex-col items-center">
+<span class="text-xs font-bold text-slate-custom uppercase tracking-tighter opacity-50">Sun</span>
+<span class="text-lg font-black text-slate-900">28</span>
+</div>
+</div>
+<!-- Grid Content -->
+<div class="schedule-grid relative max-h-[600px] overflow-y-auto">
+<!-- Left Time Labels -->
+<div class="bg-primary/5 flex flex-col">
+<div class="time-slot flex items-center justify-center text-[10px] font-bold text-slate-custom/60">08 AM</div>
+<div class="time-slot flex items-center justify-center text-[10px] font-bold text-slate-custom/60">09 AM</div>
+<div class="time-slot flex items-center justify-center text-[10px] font-bold text-slate-custom/60">10 AM</div>
+<div class="time-slot flex items-center justify-center text-[10px] font-bold text-slate-custom/60">11 AM</div>
+<div class="time-slot flex items-center justify-center text-[10px] font-bold text-slate-custom/60">12 PM</div>
+<div class="time-slot flex items-center justify-center text-[10px] font-bold text-slate-custom/60">01 PM</div>
+<div class="time-slot flex items-center justify-center text-[10px] font-bold text-slate-custom/60">02 PM</div>
+<div class="time-slot flex items-center justify-center text-[10px] font-bold text-slate-custom/60">03 PM</div>
+<div class="time-slot flex items-center justify-center text-[10px] font-bold text-slate-custom/60">04 PM</div>
+</div>
+<!-- Grid Columns (Days) -->
+<div class="day-column">
+<div class="time-slot"></div>
+<div class="time-slot"></div>
+<!-- Selection Block -->
+<div class="relative">
+<div class="absolute inset-x-1 top-2 h-[112px] selection-overlay z-10 p-2 flex flex-col justify-between items-start">
+<div class="rounded-lg bg-white/20 px-2 py-0.5 text-[10px] font-black text-white">$25/hr</div>
+<div class="w-full text-center text-[10px] font-bold text-white/70">Peak Rule</div>
+</div>
+<div class="time-slot"></div>
+<div class="time-slot"></div>
+</div>
+<div class="time-slot"></div>
+<div class="time-slot"></div>
+<div class="time-slot"></div>
+</div>
+<div class="day-column">
+<div class="time-slot"></div>
+<div class="time-slot"></div>
+<div class="time-slot"></div>
+<div class="time-slot"></div>
+<div class="time-slot"></div>
+<div class="time-slot"></div>
+<div class="time-slot"></div>
+<div class="time-slot"></div>
+</div>
+<div class="day-column">
+<div class="time-slot"></div>
+<div class="time-slot"></div>
+<!-- Selection Block -->
+<div class="relative">
+<div class="absolute inset-x-1 top-8 h-[180px] selection-overlay z-10 p-3 flex flex-col justify-between items-start">
+<div class="rounded-lg bg-white/20 px-2 py-1 text-[11px] font-black text-white">$20/hr</div>
+<div class="flex w-full items-center justify-between text-[10px] font-bold text-white/70">
+<span>Standard</span>
+<span class="material-symbols-outlined text-[14px]">edit</span>
+</div>
+</div>
+<div class="time-slot"></div>
+<div class="time-slot"></div>
+<div class="time-slot"></div>
+</div>
+<div class="time-slot"></div>
+<div class="time-slot"></div>
+</div>
+<div class="day-column">
+<div class="time-slot"></div>
+<div class="time-slot"></div>
+<div class="time-slot"></div>
+<div class="time-slot"></div>
+<div class="time-slot"></div>
+<div class="time-slot"></div>
+<div class="time-slot"></div>
+<div class="time-slot"></div>
+</div>
+<div class="day-column">
+<div class="time-slot"></div>
+<!-- Selection Block -->
+<div class="relative">
+<div class="absolute inset-x-1 top-4 h-[250px] selection-overlay z-10 p-3 flex flex-col justify-between items-start">
+<div class="rounded-lg bg-white/20 px-2 py-1 text-[11px] font-black text-white">$30/hr</div>
+<div class="flex w-full items-center justify-between text-[10px] font-bold text-white/70">
+<span>Premium</span>
+<span class="material-symbols-outlined text-[14px]">edit</span>
+</div>
+</div>
+<div class="time-slot"></div>
+<div class="time-slot"></div>
+<div class="time-slot"></div>
+<div class="time-slot"></div>
+</div>
+<div class="time-slot"></div>
+<div class="time-slot"></div>
+</div>
+<div class="day-column">
+<div class="time-slot"></div>
+<div class="time-slot"></div>
+<div class="time-slot"></div>
+<div class="time-slot"></div>
+<div class="time-slot"></div>
+<div class="time-slot"></div>
+<div class="time-slot"></div>
+<div class="time-slot"></div>
+</div>
+<div class="day-column border-none">
+<div class="time-slot"></div>
+<div class="time-slot"></div>
+<div class="time-slot"></div>
+<div class="time-slot"></div>
+<div class="time-slot"></div>
+<div class="time-slot"></div>
+<div class="time-slot"></div>
+<div class="time-slot"></div>
+</div>
+</div>
+</div>
+<!-- Legend / Controls -->
+<div class="mt-10 flex flex-wrap items-center gap-8">
+<div class="flex items-center gap-3">
+<div class="h-4 w-4 rounded bg-primary"></div>
+<span class="text-sm font-bold text-slate-custom">Active Rate Blocks</span>
+</div>
+<div class="flex items-center gap-3">
+<div class="h-4 w-4 rounded border border-primary/20 bg-primary/5"></div>
+<span class="text-sm font-bold text-slate-custom">Unassigned Hours</span>
+</div>
+<div class="ml-auto flex items-center gap-4">
+<p class="text-sm font-medium text-slate-custom/60">Showing 18th Oct — 25th Oct</p>
+</div>
+</div>
+</section>
+</main>
+</div>
+</body></html>

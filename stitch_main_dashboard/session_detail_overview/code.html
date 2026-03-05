@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>RackShare - Session Detail</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@300;400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#059467",
+                        "background-light": "#f8fafd",
+                        "background-dark": "#0f172a",
+                        "slate-custom": {
+                            50: "#f8fafc",
+                            100: "#f1f5f9",
+                            200: "#e2e8f0",
+                            300: "#cbd5e1",
+                            400: "#94a3b8",
+                            500: "#64748b",
+                            600: "#475569",
+                            700: "#334155",
+                            800: "#1e293b",
+                            900: "#0f172a",
+                        }
+                    },
+                    fontFamily: {
+                        "display": ["Public Sans", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "1rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+</head>
+<body class="bg-background-light dark:bg-background-dark font-display text-slate-custom-900 dark:text-slate-custom-100 min-h-screen">
+<div class="layout-container flex h-full grow flex-col">
+<!-- Top Navigation Bar -->
+<header class="flex items-center justify-between border-b border-slate-custom-200 dark:border-slate-custom-800 bg-white dark:bg-slate-custom-900 px-6 py-4 lg:px-20">
+<div class="flex items-center gap-3">
+<div class="size-8 bg-primary rounded-lg flex items-center justify-center text-white">
+<span class="material-symbols-outlined">sports_handball</span>
+</div>
+<h2 class="text-slate-custom-900 dark:text-white text-xl font-extrabold tracking-tight">RackShare</h2>
+</div>
+<div class="flex items-center gap-4">
+<button class="flex items-center justify-center rounded-xl p-2 hover:bg-slate-custom-100 dark:hover:bg-slate-custom-800 transition-colors">
+<span class="material-symbols-outlined text-slate-custom-600 dark:text-slate-custom-400">notifications</span>
+</button>
+<div class="h-8 w-px bg-slate-custom-200 dark:bg-slate-custom-800 mx-2"></div>
+<div class="flex items-center gap-3">
+<div class="text-right hidden sm:block">
+<p class="text-sm font-bold leading-none">Admin User</p>
+<p class="text-xs text-slate-custom-500">Floor Manager</p>
+</div>
+<div class="bg-primary/10 border-2 border-primary/20 rounded-full size-10 flex items-center justify-center overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="User profile avatar" src="https://lh3.googleusercontent.com/aida-public/AB6AXuANTRkOTyLA7lgUo-sntHeV5wX3Fsyb3DqGruIvT0_N97x3rHW86ZCW4-2GgXi7kKDLUHyyTp6rVk3BQa9X9Xcw3x3VHU8B4V7T0dABSr5orQWl8NpTqcvfuy8o7zXxawRxm4IzIeS96xFVCUgmecMtMCrBL3yksFfNJ0tuX1dbe183MiI06tugJV2A-3U7S7O_gYGrqzLqIvvje1tPZfUjI1Msb2knaoatUPiDC8K6lHADXKp6ZxC0umllqxeShn73-L5-xXKWIlRN"/>
+</div>
+</div>
+</div>
+</header>
+<main class="flex-1 max-w-5xl mx-auto w-full px-6 py-8">
+<!-- Table Status & Hero -->
+<div class="bg-white dark:bg-slate-custom-900 rounded-xl shadow-sm border border-slate-custom-200 dark:border-slate-custom-800 overflow-hidden mb-6">
+<div class="p-6 md:p-8 flex flex-col md:flex-row md:items-center justify-between gap-6">
+<div class="flex items-center gap-6">
+<div class="relative">
+<div class="w-24 h-40 bg-primary rounded-lg flex flex-col items-center justify-between py-4 shadow-lg shadow-primary/20">
+<div class="w-4 h-4 rounded-full bg-white/20"></div>
+<div class="w-4 h-4 rounded-full bg-white/20"></div>
+<div class="w-4 h-4 rounded-full bg-white/20"></div>
+</div>
+<div class="absolute -top-2 -right-2 bg-primary text-white text-[10px] font-bold px-2 py-1 rounded-full uppercase tracking-wider border-2 border-white dark:border-slate-custom-900">Active</div>
+</div>
+<div>
+<h1 class="text-3xl font-black text-slate-custom-900 dark:text-white">Table #08</h1>
+<p class="text-slate-custom-500 dark:text-slate-custom-400 mt-1 flex items-center gap-2">
+<span class="material-symbols-outlined text-sm">info</span>
+                                8-Ball Tournament Style
+                            </p>
+<div class="mt-4 flex flex-wrap gap-2">
+<span class="px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-bold uppercase tracking-wider">Premium Table</span>
+<span class="px-3 py-1 rounded-full bg-slate-custom-100 dark:bg-slate-custom-800 text-slate-custom-600 dark:text-slate-custom-400 text-xs font-bold uppercase tracking-wider">Hourly Rate: $18.00</span>
+</div>
+</div>
+</div>
+<div class="flex flex-col gap-3 min-w-[200px]">
+<button class="w-full bg-primary hover:bg-primary/90 text-white font-bold py-3 px-6 rounded-xl transition-all shadow-md shadow-primary/20 flex items-center justify-center gap-2">
+<span class="material-symbols-outlined">stop_circle</span>
+                            End Session
+                        </button>
+<button class="w-full bg-slate-custom-100 dark:bg-slate-custom-800 hover:bg-slate-custom-200 dark:hover:bg-slate-custom-700 text-slate-custom-700 dark:text-slate-custom-200 font-bold py-3 px-6 rounded-xl transition-all flex items-center justify-center gap-2">
+<span class="material-symbols-outlined">pause_circle</span>
+                            Pause Session
+                        </button>
+</div>
+</div>
+<!-- Timeline Stats -->
+<div class="grid grid-cols-1 md:grid-cols-3 border-t border-slate-custom-200 dark:border-slate-custom-800">
+<div class="p-6 flex flex-col items-center border-b md:border-b-0 md:border-r border-slate-custom-200 dark:border-slate-custom-800">
+<span class="material-symbols-outlined text-primary mb-2">schedule</span>
+<p class="text-xs font-bold text-slate-custom-500 uppercase tracking-widest">Start Time</p>
+<p class="text-xl font-bold text-slate-custom-900 dark:text-white">14:30 PM</p>
+</div>
+<div class="p-6 flex flex-col items-center border-b md:border-b-0 md:border-r border-slate-custom-200 dark:border-slate-custom-800 bg-primary/5">
+<span class="material-symbols-outlined text-primary mb-2">timer</span>
+<p class="text-xs font-bold text-slate-custom-500 uppercase tracking-widest">Duration</p>
+<p class="text-xl font-bold text-slate-custom-900 dark:text-white">02:15:45</p>
+</div>
+<div class="p-6 flex flex-col items-center">
+<span class="material-symbols-outlined text-primary mb-2">event_available</span>
+<p class="text-xs font-bold text-slate-custom-500 uppercase tracking-widest">Estimated End</p>
+<p class="text-xl font-bold text-slate-custom-900 dark:text-white">16:45 PM</p>
+</div>
+</div>
+</div>
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+<!-- Players & Split -->
+<div class="bg-white dark:bg-slate-custom-900 rounded-xl shadow-sm border border-slate-custom-200 dark:border-slate-custom-800 p-6 flex flex-col">
+<div class="flex items-center justify-between mb-6">
+<h3 class="text-lg font-bold flex items-center gap-2">
+<span class="material-symbols-outlined text-primary">groups</span>
+                            Players &amp; Split
+                        </h3>
+<button class="text-primary text-sm font-bold hover:underline">Edit Split</button>
+</div>
+<div class="space-y-4 flex-1">
+<!-- Player Row -->
+<div class="flex items-center justify-between p-4 rounded-xl bg-slate-custom-50 dark:bg-slate-custom-800/50 border border-slate-custom-100 dark:border-slate-custom-800">
+<div class="flex items-center gap-4">
+<div class="size-10 rounded-full border-2 border-primary/20 overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="John W. profile" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD7v_DS-5GDB87KDkWw8KMVeA-iSxYXVOKhg51IzXsYzqQS8Orn_vN6ZeAHm-HXH8FHWFNh45IPsjQrnHH7yKZSvq8DSn8xgYC-j3kT8z6oWVppw0iqia_punrw28DaLESv8cw0nFyHHvCutr0st7yO7Y7W08qNl70wSWSJ2Qb9LujM1YIOit2XBYwwkXZ4f_N5nPSwSx8VHhbk69bth2N8X4FwDtooZya7HOfOWOYlTwbMG7aFsp2yVCAcKhcac9GcA7ADoOndqFzq"/>
+</div>
+<div>
+<p class="font-bold">John W.</p>
+<p class="text-xs text-slate-custom-500">Organizer</p>
+</div>
+</div>
+<div class="text-right">
+<p class="font-bold text-primary">40%</p>
+<p class="text-sm font-medium text-slate-custom-600 dark:text-slate-custom-400">$14.40</p>
+</div>
+</div>
+<!-- Player Row -->
+<div class="flex items-center justify-between p-4 rounded-xl bg-slate-custom-50 dark:bg-slate-custom-800/50 border border-slate-custom-100 dark:border-slate-custom-800">
+<div class="flex items-center gap-4">
+<div class="size-10 rounded-full border-2 border-primary/20 overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="Sarah L. profile" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC6HIS1tEdWvqQjTlMTiWiFRDJFfN9Ou0UqGO9Vf-vYuVzssbK60gf91hbjPudtESCeC2ywKQQyEeAzlqNDuIap8OFO80Coz8BUwhF5tFHR6tf8vcqY6oYknFxSkL2xozVxtfg6fGwfTDm4qbPvsZbK8Jbvl648KqgfKUeq_Bh2sxeopkoi9odOpPtOEMyHe7gjLz3W2sacDdrogx8QfYt11PVmTD8LCdECh-OjFwwooDpSX4KZJ2WaOwz0_0T0KxWG4TruPDTGFvFD"/>
+</div>
+<div>
+<p class="font-bold">Sarah L.</p>
+<p class="text-xs text-slate-custom-500">Member</p>
+</div>
+</div>
+<div class="text-right">
+<p class="font-bold text-primary">30%</p>
+<p class="text-sm font-medium text-slate-custom-600 dark:text-slate-custom-400">$10.80</p>
+</div>
+</div>
+<!-- Player Row -->
+<div class="flex items-center justify-between p-4 rounded-xl bg-slate-custom-50 dark:bg-slate-custom-800/50 border border-slate-custom-100 dark:border-slate-custom-800">
+<div class="flex items-center gap-4">
+<div class="size-10 rounded-full border-2 border-primary/20 overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="Alex R. profile" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC2mU9dScvmQeNrYSJt2aVfHonSxLn7xVbXGoqR2-HXgQPtK5_5jSLRAHLgokb1oT9MJcH0nKR2J1Ll-BYL2_XYt5F87W-Rh_2DrSVrCEtTHUo0mD8qOGHXvi2dh0LKjlaVTNx77S5AZFB-icvbCgkFBj9LcEgFk_q7IiM2iplVxHuyvXl2Q50D-31_yom1nPtNfzdiSQYJWv2uUQc5ufzsXlIo0g_fFEO5axcJzluEFRu3t67VkXLKABXOQ_5-Jf_q2qrtoEQxIyzv"/>
+</div>
+<div>
+<p class="font-bold">Alex R.</p>
+<p class="text-xs text-slate-custom-500">Member</p>
+</div>
+</div>
+<div class="text-right">
+<p class="font-bold text-primary">30%</p>
+<p class="text-sm font-medium text-slate-custom-600 dark:text-slate-custom-400">$10.80</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Payment Breakdown -->
+<div class="bg-white dark:bg-slate-custom-900 rounded-xl shadow-sm border border-slate-custom-200 dark:border-slate-custom-800 p-6 flex flex-col">
+<h3 class="text-lg font-bold flex items-center gap-2 mb-6">
+<span class="material-symbols-outlined text-primary">receipt_long</span>
+                        Payment Breakdown
+                    </h3>
+<div class="space-y-3 mb-6">
+<div class="flex justify-between text-slate-custom-600 dark:text-slate-custom-400">
+<span>Table Rate (2h 15m)</span>
+<span class="font-medium">$32.00</span>
+</div>
+<div class="flex justify-between text-slate-custom-600 dark:text-slate-custom-400">
+<span>Equipment Rental</span>
+<span class="font-medium">$4.00</span>
+</div>
+<div class="flex justify-between text-slate-custom-600 dark:text-slate-custom-400">
+<span>Subtotal</span>
+<span class="font-medium">$36.00</span>
+</div>
+<div class="flex justify-between text-slate-custom-600 dark:text-slate-custom-400">
+<span>Service Tax (0%)</span>
+<span class="font-medium">$0.00</span>
+</div>
+<div class="pt-3 border-t border-slate-custom-100 dark:border-slate-custom-800 flex justify-between items-end">
+<span class="text-xl font-extrabold">Total Amount</span>
+<span class="text-3xl font-black text-primary tracking-tight">$36.00</span>
+</div>
+</div>
+<div class="mt-auto">
+<p class="text-xs font-bold text-slate-custom-400 uppercase tracking-widest mb-3">Suggested Payment Methods</p>
+<div class="flex gap-4">
+<div class="flex-1 flex flex-col items-center p-3 border border-slate-custom-200 dark:border-slate-custom-800 rounded-xl bg-slate-custom-50 dark:bg-slate-custom-800 hover:border-primary transition-colors cursor-pointer group">
+<span class="material-symbols-outlined text-3xl text-slate-custom-400 group-hover:text-primary mb-1">payments</span>
+<span class="text-[10px] font-bold">CASH</span>
+</div>
+<div class="flex-1 flex flex-col items-center p-3 border border-slate-custom-200 dark:border-slate-custom-800 rounded-xl bg-slate-custom-50 dark:bg-slate-custom-800 hover:border-primary transition-colors cursor-pointer group">
+<span class="material-symbols-outlined text-3xl text-slate-custom-400 group-hover:text-primary mb-1">credit_card</span>
+<span class="text-[10px] font-bold">CARD</span>
+</div>
+<div class="flex-1 flex flex-col items-center p-3 border border-slate-custom-200 dark:border-slate-custom-800 rounded-xl bg-slate-custom-50 dark:bg-slate-custom-800 hover:border-primary transition-colors cursor-pointer group">
+<span class="material-symbols-outlined text-3xl text-slate-custom-400 group-hover:text-primary mb-1">contactless</span>
+<span class="text-[10px] font-bold">NFC</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Pause History -->
+<div class="mt-6 bg-white dark:bg-slate-custom-900 rounded-xl shadow-sm border border-slate-custom-200 dark:border-slate-custom-800 overflow-hidden">
+<div class="p-6 border-b border-slate-custom-200 dark:border-slate-custom-800 flex items-center justify-between">
+<h3 class="text-lg font-bold flex items-center gap-2">
+<span class="material-symbols-outlined text-primary">history</span>
+                        Pause History
+                    </h3>
+<span class="bg-slate-custom-100 dark:bg-slate-custom-800 px-3 py-1 rounded-full text-xs font-bold">Total Pause Time: 12m 30s</span>
+</div>
+<div class="p-6 space-y-6">
+<div class="relative pl-8">
+<!-- Timeline Line -->
+<div class="absolute left-[11px] top-2 bottom-0 w-[2px] bg-slate-custom-200 dark:bg-slate-custom-800"></div>
+<!-- Timeline Items -->
+<div class="relative mb-8">
+<div class="absolute -left-[27px] top-1 size-4 rounded-full bg-primary ring-4 ring-primary/20"></div>
+<div class="flex flex-col md:flex-row md:items-center justify-between gap-2">
+<div>
+<p class="font-bold">Session Start</p>
+<p class="text-sm text-slate-custom-500">Table initialized for session</p>
+</div>
+<p class="text-sm font-medium text-slate-custom-400 bg-slate-custom-50 dark:bg-slate-custom-800 px-3 py-1 rounded-lg">14:30 PM</p>
+</div>
+</div>
+<div class="relative mb-8">
+<div class="absolute -left-[27px] top-1 size-4 rounded-full bg-amber-500 ring-4 ring-amber-500/20"></div>
+<div class="flex flex-col md:flex-row md:items-center justify-between gap-2">
+<div>
+<p class="font-bold flex items-center gap-2">
+                                        Paused (08:15)
+                                        <span class="text-[10px] bg-amber-100 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400 px-2 py-0.5 rounded uppercase">Snack Break</span>
+</p>
+<p class="text-sm text-slate-custom-500">Players ordered appetizers at the bar</p>
+</div>
+<p class="text-sm font-medium text-slate-custom-400 bg-slate-custom-50 dark:bg-slate-custom-800 px-3 py-1 rounded-lg">15:10 PM - 15:18 PM</p>
+</div>
+</div>
+<div class="relative">
+<div class="absolute -left-[27px] top-1 size-4 rounded-full bg-amber-500 ring-4 ring-amber-500/20"></div>
+<div class="flex flex-col md:flex-row md:items-center justify-between gap-2">
+<div>
+<p class="font-bold flex items-center gap-2">
+                                        Paused (04:15)
+                                        <span class="text-[10px] bg-amber-100 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400 px-2 py-0.5 rounded uppercase">Equipment Change</span>
+</p>
+<p class="text-sm text-slate-custom-500">Requested a different set of cues</p>
+</div>
+<p class="text-sm font-medium text-slate-custom-400 bg-slate-custom-50 dark:bg-slate-custom-800 px-3 py-1 rounded-lg">16:02 PM - 16:06 PM</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+<footer class="bg-white dark:bg-slate-custom-900 border-t border-slate-custom-200 dark:border-slate-custom-800 py-6 px-6 lg:px-20 mt-12">
+<div class="max-w-5xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
+<p class="text-sm text-slate-custom-500">© 2024 RackShare Pool Hall Management. All rights reserved.</p>
+<div class="flex gap-6">
+<a class="text-sm text-slate-custom-500 hover:text-primary transition-colors" href="#">Support</a>
+<a class="text-sm text-slate-custom-500 hover:text-primary transition-colors" href="#">Privacy Policy</a>
+<a class="text-sm text-slate-custom-500 hover:text-primary transition-colors" href="#">Documentation</a>
+</div>
+</div>
+</footer>
+</div>
+</body></html>

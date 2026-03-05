@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>RackMaster | Premium Pool Hall Management SaaS</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#059467",
+                        "background-light": "#f8fafc",
+                        "background-dark": "#0f231d",
+                        "slate-custom": "#334155",
+                    },
+                    fontFamily: {
+                        "display": ["Manrope", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.5rem",
+                        "lg": "1rem",
+                        "xl": "1.5rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+<style>
+        body { font-family: 'Manrope', sans-serif; }
+        .glass-card { background: rgba(255, 255, 255, 0.7); backdrop-filter: blur(10px); }
+        .soft-shadow { box-shadow: 0 10px 30px -10px rgba(5, 148, 103, 0.1); }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark text-slate-custom font-display selection:bg-primary/20">
+<div class="relative flex min-h-screen w-full flex-col overflow-x-hidden">
+<header class="sticky top-0 z-50 w-full border-b border-slate-200/50 bg-white/80 backdrop-blur-md px-6 md:px-20 py-4">
+<div class="max-w-7xl mx-auto flex items-center justify-between">
+<div class="flex items-center gap-2">
+<div class="bg-primary p-1.5 rounded-lg">
+<span class="material-symbols-outlined text-white text-2xl">sports_golf</span>
+</div>
+<h2 class="text-slate-900 dark:text-slate-100 text-xl font-bold tracking-tight">RackMaster</h2>
+</div>
+<nav class="hidden md:flex items-center gap-10">
+<a class="text-slate-600 hover:text-primary text-sm font-semibold transition-colors" href="#floorplan">Floor Plan</a>
+<a class="text-slate-600 hover:text-primary text-sm font-semibold transition-colors" href="#revenue">Revenue</a>
+<a class="text-slate-600 hover:text-primary text-sm font-semibold transition-colors" href="#billing">Smart Split</a>
+<a class="text-slate-600 hover:text-primary text-sm font-semibold transition-colors" href="#pricing">Pricing</a>
+</nav>
+<div class="flex items-center gap-4">
+<button class="hidden sm:block text-slate-600 text-sm font-semibold hover:text-primary">Log In</button>
+<button class="bg-primary text-white px-6 py-2.5 rounded-xl text-sm font-bold shadow-lg shadow-primary/20 hover:scale-105 active:scale-95 transition-all">
+                        Book a Demo
+                    </button>
+</div>
+</div>
+</header>
+<main class="flex-1">
+<section class="relative pt-20 pb-32 px-6 overflow-hidden">
+<div class="max-w-7xl mx-auto grid lg:grid-cols-2 gap-16 items-center">
+<div class="z-10">
+<span class="inline-block py-1 px-3 rounded-full bg-primary/10 text-primary text-xs font-bold tracking-wider uppercase mb-6">Version 2.0 Live</span>
+<h1 class="text-slate-900 dark:text-white text-5xl md:text-7xl font-extrabold leading-[1.1] mb-8 tracking-tight">
+                            The Future of <span class="text-primary">Hall Management</span>
+</h1>
+<p class="text-slate-600 dark:text-slate-300 text-lg md:text-xl leading-relaxed mb-10 max-w-lg">
+                            Streamline your pool hall operations with the most intuitive digital floor plan, real-time analytics, and automated billing system.
+                        </p>
+<div class="flex flex-col sm:flex-row gap-4">
+<button class="bg-primary text-white px-8 py-4 rounded-xl text-lg font-bold shadow-xl shadow-primary/30 hover:shadow-primary/40 transition-all">
+                                Get Started Free
+                            </button>
+<button class="flex items-center justify-center gap-2 border-2 border-slate-200 bg-white px-8 py-4 rounded-xl text-lg font-bold text-slate-700 hover:bg-slate-50 transition-all">
+<span class="material-symbols-outlined">play_circle</span> Watch Video
+                            </button>
+</div>
+<div class="mt-12 flex items-center gap-4">
+<div class="flex -space-x-3">
+<div class="w-10 h-10 rounded-full border-2 border-white bg-slate-200" data-alt="User avatar 1" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuANnhfDMKN-JGbm8aJ3lymx265oQeV28bo0L0ygTdUghLCCu3Q-sIUvqxMWggAKVsZISIoO5bsyoTd1EQ1IhHwu1dEBL0IL3hOBp5sN3McckHdTZzLvtbFAw4JD8aSq7yFdXtQmzzRqd7px45M4jx9D6DzfzK08Zw1RunlutFHy9hrC-PjrS3-fWB1CW0xC36PvxLne5vmrXDvdLp8N-Hsbv3gMsv7fCeqlH4X2DmjYl4P1-DRvCLfwP-mpBABLCiQ6mL3oKsgF727-')"></div>
+<div class="w-10 h-10 rounded-full border-2 border-white bg-slate-300" data-alt="User avatar 2" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBSQ9Tz-ixAUbislO9wON5NKeHd1nCV1nUyYlhqvEEDTbwgti4Nrjjjb2MuMDHysl6MlG0c3bkAUmnw0FBwGCN4cBJVxWx5ZSVdCty334VH6t4mp1uYSGE3JuAXhQCpseOPIezwOGR3cklh6p-d41r5dlCphZDRoSuvFgSt2FQlLlm_DVWhrT4ML8j0Gn9u3zc3pLR-j0E4Ni05kZ_VQ8fuBpdrim35lRvMsQfM-9KzA5MVRnsdGIODxVQZhZQ9zqiOi2-sssmO1Kca')"></div>
+<div class="w-10 h-10 rounded-full border-2 border-white bg-slate-400" data-alt="User avatar 3" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuByGM7AiPSo0PN6nckjdZl6yVqcF0jBC5yT7bR48sMOSdq-RVE6b3e5_R2ocGshqBNTXgEj6FTT7BSJTUWg0K981RIcu-TtxutJK4gKuNq6gLpbpvUI8oPHnTOQMRe8OkeqjV7TtG04BCkLtZ8YcyVDw0Iy6yDX0Udn9osLrQ6Wh2da_5uLmQ_K8NQRma-uQ04rsgVax6ZrpBkK8Fq2w8RUxRbN9cddchgQMOgNlv0KvwH11Y0HeUeyN5eQGpLiZDVkfEv49OdglDyX')"></div>
+</div>
+<p class="text-slate-500 text-sm font-medium">Trusted by 200+ venues worldwide</p>
+</div>
+</div>
+<div class="relative">
+<div class="absolute -top-20 -right-20 w-96 h-96 bg-primary/10 rounded-full blur-3xl"></div>
+<div class="bg-white rounded-[2rem] p-4 shadow-2xl border border-slate-100 soft-shadow relative z-10 overflow-hidden group">
+<img class="rounded-2xl w-full" data-alt="Digital tablet showing pool hall floor plan interface" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCrYOEydVhcwjHaZr5ewBSa9x0CEHBcY_1PWgbl92EKKETBBSbbXDxSDKW6zr2g5RpnDwGHSqQaNl_dIAOR5KU4ldEiyxFYnaaTCUKKE72stwwtswtGvdxbC17tuQt2Q271d5oo76pBvXPTdTQTluO6iL9gy_YOEPeEVrLPumTRejZIDnsantj3LlbfK5b41bcQH5WZ3ZgkiotEBdIOW6Nl6ElWYVGDKO3DtNIUoE_GsxQAMz6F9pH7OnOd9flp5rhn18jlMaVy4S0r"/>
+<div class="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent pointer-events-none"></div>
+</div>
+<div class="absolute -bottom-8 -left-8 bg-white p-6 rounded-2xl shadow-xl border border-slate-50 z-20 flex items-center gap-4">
+<div class="bg-green-100 p-3 rounded-full">
+<span class="material-symbols-outlined text-green-600">trending_up</span>
+</div>
+<div>
+<p class="text-xs text-slate-500 font-bold uppercase tracking-widest">Revenue Today</p>
+<p class="text-2xl font-black text-slate-900">$2,482.00</p>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section class="py-24 px-6 bg-white" id="floorplan">
+<div class="max-w-7xl mx-auto">
+<div class="text-center max-w-3xl mx-auto mb-16">
+<h2 class="text-3xl md:text-4xl font-bold text-slate-900 mb-4">Interactive Floor Plan</h2>
+<p class="text-slate-600">Manage your entire hall layout from a single screen. Click to open tables, assign players, and track durations in real-time.</p>
+</div>
+<div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+<div class="p-6 rounded-xl border border-primary/20 bg-primary/5 soft-shadow flex flex-col gap-4">
+<div class="flex justify-between items-start">
+<span class="text-primary font-bold">T-01</span>
+<span class="bg-primary text-white text-[10px] px-2 py-0.5 rounded-full font-bold">ACTIVE</span>
+</div>
+<div class="text-center py-4">
+<span class="material-symbols-outlined text-4xl text-primary">square_foot</span>
+<p class="text-sm text-slate-500 mt-2">1h 42m</p>
+</div>
+<button class="w-full py-2 bg-primary text-white text-xs font-bold rounded-lg uppercase tracking-wider">Close Table</button>
+</div>
+<div class="p-6 rounded-xl border border-slate-100 bg-white soft-shadow flex flex-col gap-4 hover:border-primary/40 transition-all cursor-pointer">
+<div class="flex justify-between items-start">
+<span class="text-slate-400 font-bold">T-02</span>
+<span class="bg-slate-100 text-slate-400 text-[10px] px-2 py-0.5 rounded-full font-bold">VACANT</span>
+</div>
+<div class="text-center py-4">
+<span class="material-symbols-outlined text-4xl text-slate-200">square_foot</span>
+<p class="text-sm text-slate-400 mt-2">Ready</p>
+</div>
+<button class="w-full py-2 border border-primary text-primary text-xs font-bold rounded-lg uppercase tracking-wider hover:bg-primary hover:text-white transition-all">Start Session</button>
+</div>
+<div class="p-6 rounded-xl border border-slate-100 bg-white soft-shadow flex flex-col gap-4">
+<div class="flex justify-between items-start">
+<span class="text-slate-900 font-bold">T-03</span>
+<span class="bg-orange-100 text-orange-600 text-[10px] px-2 py-0.5 rounded-full font-bold">RESERVED</span>
+</div>
+<div class="text-center py-4 text-orange-600">
+<span class="material-symbols-outlined text-4xl opacity-50">event</span>
+<p class="text-sm mt-2 font-medium">Starts 7:00 PM</p>
+</div>
+<button class="w-full py-2 bg-slate-100 text-slate-500 text-xs font-bold rounded-lg uppercase tracking-wider">View Details</button>
+</div>
+<div class="p-6 rounded-xl border border-primary/20 bg-primary/5 soft-shadow flex flex-col gap-4">
+<div class="flex justify-between items-start">
+<span class="text-primary font-bold">VIP-01</span>
+<span class="bg-primary text-white text-[10px] px-2 py-0.5 rounded-full font-bold">ACTIVE</span>
+</div>
+<div class="text-center py-4">
+<span class="material-symbols-outlined text-4xl text-primary">workspace_premium</span>
+<p class="text-sm text-slate-500 mt-2">0h 25m</p>
+</div>
+<button class="w-full py-2 bg-primary text-white text-xs font-bold rounded-lg uppercase tracking-wider">Close Table</button>
+</div>
+</div>
+</div>
+</section>
+<section class="py-24 px-6" id="revenue">
+<div class="max-w-7xl mx-auto flex flex-col lg:flex-row gap-16 items-center">
+<div class="w-full lg:w-1/2 order-2 lg:order-1">
+<div class="bg-white p-8 rounded-3xl soft-shadow border border-slate-100">
+<div class="flex items-center justify-between mb-8">
+<h3 class="font-bold text-xl text-slate-900">Revenue Pulse</h3>
+<select class="text-sm bg-slate-50 border-none rounded-lg text-slate-600 focus:ring-primary">
+<option>Last 7 Days</option>
+<option>Monthly</option>
+</select>
+</div>
+<div class="space-y-6">
+<div class="relative h-48 w-full bg-slate-50 rounded-xl overflow-hidden flex items-end justify-between px-6 pb-4">
+<div class="w-8 bg-primary/20 rounded-t-lg transition-all h-[40%] hover:bg-primary"></div>
+<div class="w-8 bg-primary/20 rounded-t-lg transition-all h-[65%] hover:bg-primary"></div>
+<div class="w-8 bg-primary/20 rounded-t-lg transition-all h-[55%] hover:bg-primary"></div>
+<div class="w-8 bg-primary/20 rounded-t-lg transition-all h-[90%] hover:bg-primary"></div>
+<div class="w-8 bg-primary rounded-t-lg transition-all h-[100%] shadow-[0_0_15px_rgba(5,148,103,0.3)]"></div>
+<div class="w-8 bg-primary/20 rounded-t-lg transition-all h-[75%] hover:bg-primary"></div>
+<div class="w-8 bg-primary/20 rounded-t-lg transition-all h-[80%] hover:bg-primary"></div>
+</div>
+<div class="grid grid-cols-2 gap-4">
+<div class="bg-slate-50 p-4 rounded-2xl">
+<p class="text-xs text-slate-500 font-bold uppercase tracking-wider mb-1">Avg Ticket</p>
+<p class="text-2xl font-black text-slate-900">$42.50</p>
+<p class="text-xs text-green-600 font-bold flex items-center mt-1">
+<span class="material-symbols-outlined text-[14px]">trending_up</span> +12.5%
+                                        </p>
+</div>
+<div class="bg-slate-50 p-4 rounded-2xl">
+<p class="text-xs text-slate-500 font-bold uppercase tracking-wider mb-1">Table Util.</p>
+<p class="text-2xl font-black text-slate-900">84%</p>
+<p class="text-xs text-green-600 font-bold flex items-center mt-1">
+<span class="material-symbols-outlined text-[14px]">trending_up</span> +5.2%
+                                        </p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="w-full lg:w-1/2 order-1 lg:order-2">
+<h2 class="text-3xl md:text-4xl font-bold text-slate-900 mb-6">Real-time Revenue Monitoring</h2>
+<p class="text-slate-600 text-lg mb-8">
+                            Make data-driven decisions with our Revenue Pulse dashboard. Watch your earnings grow in real-time, identify peak hours, and optimize your table turnover.
+                        </p>
+<ul class="space-y-4">
+<li class="flex items-center gap-3 font-semibold text-slate-700">
+<span class="material-symbols-outlined text-primary bg-primary/10 p-1 rounded-full text-lg">check</span>
+                                Heatmap of peak utilization hours
+                            </li>
+<li class="flex items-center gap-3 font-semibold text-slate-700">
+<span class="material-symbols-outlined text-primary bg-primary/10 p-1 rounded-full text-lg">check</span>
+                                Automatic daily earnings reports
+                            </li>
+<li class="flex items-center gap-3 font-semibold text-slate-700">
+<span class="material-symbols-outlined text-primary bg-primary/10 p-1 rounded-full text-lg">check</span>
+                                Integrated POS for drinks and snacks
+                            </li>
+</ul>
+</div>
+</div>
+</section>
+<section class="py-24 px-6 bg-slate-900 text-white rounded-[3rem] mx-6" id="billing">
+<div class="max-w-7xl mx-auto flex flex-col lg:flex-row gap-16 items-center">
+<div class="w-full lg:w-1/2">
+<h2 class="text-3xl md:text-5xl font-bold mb-6">Smart Split Billing</h2>
+<p class="text-slate-300 text-lg mb-10">
+                            Never struggle with complex math again. Split table costs by duration, fixed amounts, or let players pay for their own drinks and time separately.
+                        </p>
+<div class="space-y-8">
+<div class="flex items-start gap-6 group">
+<div class="bg-primary/20 text-primary p-4 rounded-2xl group-hover:bg-primary group-hover:text-white transition-all">
+<span class="material-symbols-outlined text-3xl">groups</span>
+</div>
+<div>
+<h4 class="text-xl font-bold mb-1">Multi-Player Sessions</h4>
+<p class="text-slate-400">Add unlimited players to any table and manage individual tabs effortlessly.</p>
+</div>
+</div>
+<div class="flex items-start gap-6 group">
+<div class="bg-primary/20 text-primary p-4 rounded-2xl group-hover:bg-primary group-hover:text-white transition-all">
+<span class="material-symbols-outlined text-3xl">call_split</span>
+</div>
+<div>
+<h4 class="text-xl font-bold mb-1">Duration Pro-rating</h4>
+<p class="text-slate-400">Automatically calculate costs based on the exact second a player joins or leaves.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="w-full lg:w-1/2">
+<div class="bg-white/10 backdrop-blur-md p-8 rounded-3xl border border-white/10">
+<div class="flex justify-between items-center mb-6">
+<span class="text-sm font-bold tracking-widest text-primary">CHECKOUT T-04</span>
+<span class="bg-white/10 px-3 py-1 rounded-full text-xs font-bold">4 PLAYERS</span>
+</div>
+<div class="space-y-4 mb-8">
+<div class="flex items-center justify-between p-4 bg-white/5 rounded-2xl border border-white/5">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center font-bold">JD</div>
+<span>James D.</span>
+</div>
+<span class="font-bold">$24.00</span>
+</div>
+<div class="flex items-center justify-between p-4 bg-white/5 rounded-2xl border border-white/5">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 bg-orange-500 rounded-full flex items-center justify-center font-bold">MK</div>
+<span>Mila K.</span>
+</div>
+<span class="font-bold">$18.50</span>
+</div>
+<div class="flex items-center justify-between p-4 bg-white/20 rounded-2xl border border-primary/50">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 bg-primary rounded-full flex items-center justify-center font-bold text-white">
+<span class="material-symbols-outlined">person</span>
+</div>
+<span class="text-primary font-bold">Add Player</span>
+</div>
+<span class="material-symbols-outlined text-primary">add_circle</span>
+</div>
+</div>
+<div class="border-t border-white/10 pt-6">
+<div class="flex justify-between items-center mb-6">
+<span class="text-slate-400">Total Balance</span>
+<span class="text-3xl font-black text-white">$42.50</span>
+</div>
+<button class="w-full bg-primary py-4 rounded-xl font-bold text-lg hover:brightness-110 transition-all">Finalize &amp; Print Receipt</button>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section class="py-24 px-6 bg-white" id="pricing">
+<div class="max-w-7xl mx-auto">
+<div class="flex flex-col md:flex-row justify-between items-end mb-16">
+<div class="max-w-2xl">
+<h2 class="text-3xl md:text-4xl font-bold text-slate-900 mb-4">Dynamic Pricing Schedule</h2>
+<p class="text-slate-600">Maximize profitability with automated price changes based on time of day, day of the week, or special events.</p>
+</div>
+<div class="mt-6 md:mt-0">
+<div class="bg-slate-100 p-1 rounded-xl inline-flex">
+<button class="bg-white px-6 py-2 rounded-lg text-sm font-bold shadow-sm">Daily</button>
+<button class="px-6 py-2 rounded-lg text-sm font-bold text-slate-500 hover:text-slate-700">Weekly</button>
+</div>
+</div>
+</div>
+<div class="grid md:grid-cols-3 gap-8">
+<div class="p-8 rounded-3xl border border-slate-100 soft-shadow group hover:border-primary/20 transition-all">
+<div class="w-12 h-12 bg-primary/10 rounded-2xl flex items-center justify-center text-primary mb-6">
+<span class="material-symbols-outlined text-3xl">light_mode</span>
+</div>
+<h4 class="text-2xl font-bold mb-2">Happy Hour</h4>
+<p class="text-slate-500 mb-6">Mon - Fri • 12PM - 4PM</p>
+<div class="flex items-baseline gap-1 mb-6">
+<span class="text-4xl font-black text-slate-900">$10</span>
+<span class="text-slate-500">/hour</span>
+</div>
+<ul class="space-y-3 mb-8 text-sm text-slate-600">
+<li class="flex items-center gap-2"><span class="material-symbols-outlined text-primary text-lg">check_circle</span> 50% off beverages</li>
+<li class="flex items-center gap-2"><span class="material-symbols-outlined text-primary text-lg">check_circle</span> Unlimited cues</li>
+</ul>
+<button class="w-full py-3 rounded-xl border-2 border-slate-100 text-slate-700 font-bold group-hover:border-primary/30 group-hover:bg-primary/5 transition-all">Configure Rule</button>
+</div>
+<div class="p-8 rounded-3xl border-2 border-primary soft-shadow bg-primary/5 relative">
+<div class="absolute -top-4 left-1/2 -translate-x-1/2 bg-primary text-white px-4 py-1 rounded-full text-xs font-bold uppercase tracking-widest">Most Popular</div>
+<div class="w-12 h-12 bg-primary rounded-2xl flex items-center justify-center text-white mb-6">
+<span class="material-symbols-outlined text-3xl">star</span>
+</div>
+<h4 class="text-2xl font-bold mb-2">Prime Time</h4>
+<p class="text-slate-500 mb-6">Fri - Sun • 6PM - Close</p>
+<div class="flex items-baseline gap-1 mb-6">
+<span class="text-4xl font-black text-slate-900">$25</span>
+<span class="text-slate-500">/hour</span>
+</div>
+<ul class="space-y-3 mb-8 text-sm text-slate-600">
+<li class="flex items-center gap-2"><span class="material-symbols-outlined text-primary text-lg">check_circle</span> Table reservations included</li>
+<li class="flex items-center gap-2"><span class="material-symbols-outlined text-primary text-lg">check_circle</span> VIP area access</li>
+</ul>
+<button class="w-full py-3 rounded-xl bg-primary text-white font-bold shadow-lg shadow-primary/20 transition-all">Configure Rule</button>
+</div>
+<div class="p-8 rounded-3xl border border-slate-100 soft-shadow group hover:border-primary/20 transition-all">
+<div class="w-12 h-12 bg-primary/10 rounded-2xl flex items-center justify-center text-primary mb-6">
+<span class="material-symbols-outlined text-3xl">dark_mode</span>
+</div>
+<h4 class="text-2xl font-bold mb-2">After Dark</h4>
+<p class="text-slate-500 mb-6">Nightly • 12AM - 4AM</p>
+<div class="flex items-baseline gap-1 mb-6">
+<span class="text-4xl font-black text-slate-900">$18</span>
+<span class="text-slate-500">/hour</span>
+</div>
+<ul class="space-y-3 mb-8 text-sm text-slate-600">
+<li class="flex items-center gap-2"><span class="material-symbols-outlined text-primary text-lg">check_circle</span> Late night menu access</li>
+<li class="flex items-center gap-2"><span class="material-symbols-outlined text-primary text-lg">check_circle</span> Membership discount active</li>
+</ul>
+<button class="w-full py-3 rounded-xl border-2 border-slate-100 text-slate-700 font-bold group-hover:border-primary/30 group-hover:bg-primary/5 transition-all">Configure Rule</button>
+</div>
+</div>
+</div>
+</section>
+</main>
+<footer class="bg-slate-50 border-t border-slate-200 py-20 px-6">
+<div class="max-w-7xl mx-auto">
+<div class="grid md:grid-cols-4 gap-12 mb-16">
+<div class="col-span-2">
+<div class="flex items-center gap-2 mb-6">
+<div class="bg-primary p-1.5 rounded-lg text-white">
+<span class="material-symbols-outlined text-2xl">sports_golf</span>
+</div>
+<h2 class="text-2xl font-bold text-slate-900">RackMaster</h2>
+</div>
+<p class="text-slate-500 max-w-sm mb-8">
+                            Empowering venue owners with digital-first management tools to grow revenue and enhance guest experience.
+                        </p>
+<div class="flex gap-4">
+<a class="w-10 h-10 rounded-full bg-slate-200 flex items-center justify-center text-slate-600 hover:bg-primary hover:text-white transition-all" href="#">
+<span class="material-symbols-outlined text-xl">public</span>
+</a>
+<a class="w-10 h-10 rounded-full bg-slate-200 flex items-center justify-center text-slate-600 hover:bg-primary hover:text-white transition-all" href="#">
+<span class="material-symbols-outlined text-xl">alternate_email</span>
+</a>
+</div>
+</div>
+<div>
+<h5 class="font-bold text-slate-900 mb-6 uppercase tracking-widest text-xs">Product</h5>
+<ul class="space-y-4 text-slate-500 text-sm font-medium">
+<li><a class="hover:text-primary transition-colors" href="#">Digital Floor Plan</a></li>
+<li><a class="hover:text-primary transition-colors" href="#">Billing &amp; POS</a></li>
+<li><a class="hover:text-primary transition-colors" href="#">Revenue Analytics</a></li>
+<li><a class="hover:text-primary transition-colors" href="#">Mobile App</a></li>
+</ul>
+</div>
+<div>
+<h5 class="font-bold text-slate-900 mb-6 uppercase tracking-widest text-xs">Company</h5>
+<ul class="space-y-4 text-slate-500 text-sm font-medium">
+<li><a class="hover:text-primary transition-colors" href="#">About Us</a></li>
+<li><a class="hover:text-primary transition-colors" href="#">Careers</a></li>
+<li><a class="hover:text-primary transition-colors" href="#">Success Stories</a></li>
+<li><a class="hover:text-primary transition-colors" href="#">Contact</a></li>
+</ul>
+</div>
+</div>
+<div class="pt-8 border-t border-slate-200 flex flex-col md:flex-row justify-between items-center gap-4 text-slate-400 text-xs font-bold uppercase tracking-widest">
+<p>© 2024 RackMaster Technologies Inc.</p>
+<div class="flex gap-8">
+<a class="hover:text-slate-600" href="#">Privacy Policy</a>
+<a class="hover:text-slate-600" href="#">Terms of Service</a>
+<a class="hover:text-slate-600" href="#">Cookie Policy</a>
+</div>
+</div>
+</div>
+</footer>
+</div>
+</body></html>

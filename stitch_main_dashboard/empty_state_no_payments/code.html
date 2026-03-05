@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Pool Hall Manager - Payments</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@200..800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#059467",
+                        "background-light": "#f5f8f7",
+                        "background-dark": "#0f231d",
+                    },
+                    fontFamily: {
+                        "display": ["Manrope", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.5rem",
+                        "lg": "1rem",
+                        "xl": "1.5rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+<style>
+        @keyframes pulse-subtle {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        .animate-pulse-subtle {
+            animation: pulse-subtle 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-slate-100 transition-colors duration-300">
+<div class="relative flex h-auto min-h-screen w-full flex-col overflow-x-hidden">
+<div class="layout-container flex h-full grow flex-col">
+<div class="px-4 md:px-10 lg:px-20 xl:px-40 flex flex-1 justify-center py-5">
+<div class="layout-content-container flex flex-col max-w-[1200px] flex-1">
+<header class="flex items-center justify-between whitespace-nowrap border-b border-solid border-primary/10 px-4 md:px-10 py-4 bg-white dark:bg-slate-900/50 rounded-t-xl">
+<div class="flex items-center gap-4 text-primary">
+<div class="size-8 flex items-center justify-center bg-primary/10 rounded-lg">
+<span class="material-symbols-outlined text-primary">poker_chip</span>
+</div>
+<h2 class="text-slate-900 dark:text-slate-100 text-lg font-extrabold leading-tight tracking-tight">Pool Hall Manager</h2>
+</div>
+<div class="flex flex-1 justify-end gap-4 items-center">
+<div class="flex gap-2">
+<button class="flex items-center justify-center rounded-xl h-10 w-10 bg-primary/10 text-primary hover:bg-primary/20 transition-colors">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<button class="flex items-center justify-center rounded-xl h-10 w-10 bg-primary/10 text-primary hover:bg-primary/20 transition-colors">
+<span class="material-symbols-outlined">settings</span>
+</button>
+</div>
+<div class="h-10 w-10 rounded-full bg-primary/20 border-2 border-primary/30 overflow-hidden" data-alt="User profile avatar placeholder">
+<img alt="User profile" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBdIFN3QCDf0gFRLBsswd19y3OleOZtiedS_ZHPWRrDOTv53tcv1Zau-rLoOe6FlVOkZ7NLO2Ixz5Fp_d1ZnvIQNIEBMgm8vEzWvauF37lQSHVtwGLQn08SF52Gkvh27DBlQa0yGq1Y0XnLCpfwsRNKhv8E5LO2d4zqcxBRiUv7R47zDReKbAI_fbtkaFc02HwTh9iS70Bx6T4kREJZpY5KmdpEHzM-qnmZTxs1T0jsbNZa6NIRsc7b6izoOQ-k1LU3kf7y9b4vbux5"/>
+</div>
+</div>
+</header>
+<main class="flex h-full min-h-[800px] flex-row bg-white dark:bg-slate-900/40 rounded-b-xl shadow-sm overflow-hidden">
+<aside class="hidden md:flex w-64 flex-col gap-4 border-r border-primary/5 p-6">
+<div class="flex items-center gap-3 mb-6">
+<div class="bg-primary/10 p-2 rounded-lg">
+<span class="material-symbols-outlined text-primary">diamond</span>
+</div>
+<div class="flex flex-col">
+<h1 class="text-slate-900 dark:text-slate-100 text-sm font-bold">Emerald Cue</h1>
+<p class="text-primary text-xs font-medium">Premium Club</p>
+</div>
+</div>
+<nav class="flex flex-col gap-1">
+<a class="flex items-center gap-3 px-4 py-3 text-slate-600 dark:text-slate-400 hover:bg-primary/5 rounded-xl transition-all group" href="#">
+<span class="material-symbols-outlined group-hover:text-primary">dashboard</span>
+<span class="text-sm font-semibold">Dashboard</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-slate-600 dark:text-slate-400 hover:bg-primary/5 rounded-xl transition-all group" href="#">
+<span class="material-symbols-outlined group-hover:text-primary">table_restaurant</span>
+<span class="text-sm font-semibold">Tables</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 bg-primary text-white rounded-xl shadow-md shadow-primary/20" href="#">
+<span class="material-symbols-outlined">payments</span>
+<span class="text-sm font-semibold">Payments</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-slate-600 dark:text-slate-400 hover:bg-primary/5 rounded-xl transition-all group" href="#">
+<span class="material-symbols-outlined group-hover:text-primary">group</span>
+<span class="text-sm font-semibold">Members</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-slate-600 dark:text-slate-400 hover:bg-primary/5 rounded-xl transition-all group" href="#">
+<span class="material-symbols-outlined group-hover:text-primary">bar_chart</span>
+<span class="text-sm font-semibold">Reports</span>
+</a>
+</nav>
+</aside>
+<div class="flex-1 flex flex-col">
+<div class="flex flex-wrap justify-between items-end gap-3 p-8">
+<div class="flex flex-col gap-1">
+<h2 class="text-slate-900 dark:text-slate-100 text-3xl font-extrabold tracking-tight">Revenue Analytics</h2>
+<p class="text-slate-500 dark:text-slate-400 text-sm font-medium">Real-time payment tracking and financial overview</p>
+</div>
+<div class="flex gap-2">
+<button class="px-4 py-2 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 rounded-lg text-sm font-bold flex items-center gap-2 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors">
+<span class="material-symbols-outlined text-lg">calendar_today</span>
+                                        Last 30 Days
+                                    </button>
+</div>
+</div>
+<div class="px-8 grid grid-cols-1 md:grid-cols-3 gap-6">
+<div class="p-6 bg-slate-50/50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800 rounded-2xl">
+<p class="text-slate-500 dark:text-slate-400 text-xs font-bold uppercase tracking-wider mb-1">Daily Revenue</p>
+<p class="text-slate-900 dark:text-slate-100 text-2xl font-black">$0.00</p>
+<div class="flex items-center gap-1 mt-2 text-slate-400">
+<span class="material-symbols-outlined text-sm">trending_flat</span>
+<span class="text-xs font-semibold">No change from yesterday</span>
+</div>
+</div>
+<div class="p-6 bg-slate-50/50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800 rounded-2xl">
+<p class="text-slate-500 dark:text-slate-400 text-xs font-bold uppercase tracking-wider mb-1">Active Sessions</p>
+<p class="text-slate-900 dark:text-slate-100 text-2xl font-black">0</p>
+<div class="flex items-center gap-1 mt-2 text-slate-400">
+<span class="material-symbols-outlined text-sm">pause_circle</span>
+<span class="text-xs font-semibold">Waiting for players</span>
+</div>
+</div>
+<div class="p-6 bg-slate-50/50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800 rounded-2xl">
+<p class="text-slate-500 dark:text-slate-400 text-xs font-bold uppercase tracking-wider mb-1">Average Ticket</p>
+<p class="text-slate-900 dark:text-slate-100 text-2xl font-black">$0.00</p>
+<div class="flex items-center gap-1 mt-2 text-slate-400">
+<span class="material-symbols-outlined text-sm">analytics</span>
+<span class="text-xs font-semibold">N/A</span>
+</div>
+</div>
+</div>
+<div class="flex-1 flex flex-col items-center justify-center p-8 mt-10">
+<div class="relative w-full max-w-md bg-slate-50/50 dark:bg-slate-800/30 rounded-3xl p-10 border border-slate-100 dark:border-slate-800/50 shadow-inner">
+<div class="flex flex-col items-center gap-10">
+<div class="flex items-end gap-3 h-32 w-full justify-center px-4 animate-pulse-subtle">
+<div class="w-12 bg-slate-200 dark:bg-slate-700 rounded-t-lg transition-all duration-700" style="height: 40%"></div>
+<div class="w-12 bg-slate-200 dark:bg-slate-700 rounded-t-lg transition-all duration-700" style="height: 65%"></div>
+<div class="w-12 bg-slate-200 dark:bg-slate-700 rounded-t-lg transition-all duration-700" style="height: 50%"></div>
+<div class="w-12 bg-primary/20 dark:bg-primary/20 rounded-t-lg transition-all duration-700 border-t-4 border-primary/30" style="height: 85%"></div>
+<div class="w-12 bg-slate-200 dark:bg-slate-700 rounded-t-lg transition-all duration-700" style="height: 30%"></div>
+<div class="w-12 bg-slate-200 dark:bg-slate-700 rounded-t-lg transition-all duration-700" style="height: 55%"></div>
+</div>
+<div class="flex flex-col items-center text-center gap-4">
+<div class="bg-primary/10 p-4 rounded-full mb-2">
+<span class="material-symbols-outlined text-primary text-4xl">payments</span>
+</div>
+<h3 class="text-slate-900 dark:text-slate-100 text-xl font-extrabold">No transactions yet</h3>
+<p class="text-slate-500 dark:text-slate-400 text-sm max-w-xs leading-relaxed">
+                                                Your revenue data will appear here once sessions are completed and paid. Let's get the balls rolling!
+                                            </p>
+</div>
+<button class="group flex items-center justify-center gap-2 px-8 py-4 bg-primary text-white rounded-xl font-bold shadow-lg shadow-primary/30 hover:shadow-primary/40 hover:-translate-y-0.5 transition-all">
+<span class="material-symbols-outlined group-hover:rotate-12 transition-transform">add_circle</span>
+                                            Start New Session
+                                        </button>
+</div>
+<div class="absolute -top-4 -left-4 w-24 h-24 bg-primary/5 rounded-full blur-2xl"></div>
+<div class="absolute -bottom-8 -right-8 w-32 h-32 bg-primary/5 rounded-full blur-3xl"></div>
+</div>
+</div>
+<footer class="p-8 border-t border-primary/5 flex justify-between items-center text-slate-400 text-xs font-semibold uppercase tracking-widest">
+<span>Session History</span>
+<div class="flex gap-4">
+<span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-slate-200 dark:bg-slate-700"></span> Empty</span>
+<span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-primary/40"></span> Active</span>
+</div>
+</footer>
+</div>
+</main>
+</div>
+</div>
+</div>
+</div>
+</body></html>
