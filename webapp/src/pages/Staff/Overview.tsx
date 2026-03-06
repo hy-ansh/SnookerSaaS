@@ -27,18 +27,21 @@ const TABLE_STATUS_CONFIG = {
     MAINTENANCE: { label: 'Maintenance', color: 'bg-red-500', border: 'border-red-400/50', glow: 'shadow-red-500/20', text: 'text-red-500', bg: 'bg-red-500/10', icon: 'build' },
 };
 
-function LiveTimer({ startedAt, pausedSecs }: { startedAt: string; pausedSecs: number }) {
+function LiveTimer({ startedAt, pausedSecs, activePauseAt }: { startedAt: string; pausedSecs: number; activePauseAt?: string }) {
     const [elapsed, setElapsed] = useState(0);
 
     useEffect(() => {
         const calc = () => {
-            const diff = Math.floor((Date.now() - new Date(startedAt).getTime()) / 1000) - pausedSecs;
+            const now = activePauseAt ? new Date(activePauseAt).getTime() : Date.now();
+            const diff = Math.floor((now - new Date(startedAt).getTime()) / 1000) - pausedSecs;
             setElapsed(Math.max(0, diff));
         };
         calc();
-        const interval = setInterval(calc, 1000);
-        return () => clearInterval(interval);
-    }, [startedAt, pausedSecs]);
+        if (!activePauseAt) {
+            const interval = setInterval(calc, 1000);
+            return () => clearInterval(interval);
+        }
+    }, [startedAt, pausedSecs, activePauseAt]);
 
     const hh = Math.floor(elapsed / 3600).toString().padStart(2, '0');
     const mm = Math.floor((elapsed % 3600) / 60).toString().padStart(2, '0');
@@ -59,7 +62,8 @@ export default function StaffOverview() {
     const [playerSearch, setPlayerSearch] = useState('');
     const [playerResults, setPlayerResults] = useState<PlayerResult[]>([]);
     const [searchingPlayers, setSearchingPlayers] = useState(false);
-    const [gameType, setGameType] = useState<'SPLIT' | 'LTP'>('SPLIT');
+    type GameMode = 'OPEN' | 'SOLO' | 'SPLIT' | 'LTP';
+    const [gameMode, setGameMode] = useState<GameMode>('OPEN');
 
     const fetchTables = async () => {
         try {
@@ -105,12 +109,23 @@ export default function StaffOverview() {
 
     const handleStartSession = async () => {
         if (!selectedTable) return;
+
+        if (gameMode === 'SOLO' && pickedPlayers.length !== 1) {
+            alert('Please select exactly 1 player for a SOLO session.');
+            return;
+        }
+        if ((gameMode === 'SPLIT' || gameMode === 'LTP') && pickedPlayers.length < 2) {
+            alert('Please select at least 2 players for SPLIT or LTP sessions.');
+            return;
+        }
+
         setStartingSession(true);
         try {
-            const res = await sessionService.startSession(selectedTable.id, pickedPlayers.map(p => p.id), gameType);
+            const apiGameType = gameMode === 'OPEN' ? 'SOLO' : gameMode;
+            const res = await sessionService.startSession(selectedTable.id, gameMode === 'OPEN' ? [] : pickedPlayers.map(p => p.id), apiGameType);
             setSelectedTable(null);
             setPickedPlayers([]);
-            setGameType('SPLIT');
+            setGameMode('OPEN');
             navigate(`/staff/live/${res.session.id}`);
         } catch (e: any) {
             alert('Could not start session: ' + e.message);
@@ -207,11 +222,13 @@ export default function StaffOverview() {
                                 {isPlaying && sess && (
                                     <div className="mt-3 w-full border-t border-slate-100 dark:border-slate-800 pt-3 space-y-1">
                                         <p className="text-xs font-bold text-slate-500 uppercase tracking-wider">Duration</p>
-                                        <p className={`text-sm font-black ${cfg.text}`}>
-                                            {sess.status === 'ACTIVE'
-                                                ? <LiveTimer startedAt={sess.startedAt} pausedSecs={sess.pausedDurationSecs || 0} />
-                                                : '⏸ Paused'
-                                            }
+                                        <p className={`text-sm font-black ${cfg.text} flex items-center justify-center gap-1`}>
+                                            <LiveTimer
+                                                startedAt={sess.startedAt}
+                                                pausedSecs={sess.pausedDurationSecs || 0}
+                                                activePauseAt={sess.status === 'PAUSED' ? (sess as any).pauses?.[0]?.pausedAt || new Date().toISOString() : undefined}
+                                            />
+                                            {sess.status === 'PAUSED' && <span className="text-[10px] bg-amber-100 text-amber-700 px-1.5 py-0.5 rounded font-bold">PAUSED</span>}
                                         </p>
                                         {sess.players?.length > 0 && (
                                             <p className="text-xs text-slate-500 truncate">{sess.players.map((p: any) => p.player?.fullName).join(', ')}</p>
@@ -252,64 +269,90 @@ export default function StaffOverview() {
                         {/* Game Type Selection */}
                         <div>
                             <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Match Type</label>
-                            <div className="grid grid-cols-2 gap-2">
+                            <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
                                 <button
                                     type="button"
-                                    onClick={() => setGameType('SPLIT')}
-                                    className={`flex flex-col items-center gap-1.5 p-3.5 rounded-2xl border-2 font-bold text-sm transition-all ${gameType === 'SPLIT'
+                                    onClick={() => { setGameMode('OPEN'); setPickedPlayers([]); }}
+                                    className={`flex flex-col items-center gap-1.5 p-3 rounded-2xl border-2 font-bold text-xs transition-all ${gameMode === 'OPEN'
+                                        ? 'border-emerald-500 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400'
+                                        : 'border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:border-slate-300'
+                                        }`}
+                                >
+                                    <span className="material-symbols-outlined text-xl">public</span>
+                                    <span>OPEN</span>
+                                </button>
+                                <button
+                                    type="button"
+                                    onClick={() => setGameMode('SOLO')}
+                                    className={`flex flex-col items-center gap-1.5 p-3 rounded-2xl border-2 font-bold text-xs transition-all ${gameMode === 'SOLO'
+                                        ? 'border-purple-500 bg-purple-500/10 text-purple-600 dark:text-purple-400'
+                                        : 'border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:border-slate-300'
+                                        }`}
+                                >
+                                    <span className="material-symbols-outlined text-xl">person</span>
+                                    <span>SOLO</span>
+                                </button>
+                                <button
+                                    type="button"
+                                    onClick={() => setGameMode('SPLIT')}
+                                    className={`flex flex-col items-center gap-1.5 p-3 rounded-2xl border-2 font-bold text-xs transition-all ${gameMode === 'SPLIT'
                                         ? 'border-primary bg-primary/10 text-primary'
                                         : 'border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:border-slate-300'
                                         }`}
                                 >
-                                    <span className="material-symbols-outlined text-2xl">call_split</span>
+                                    <span className="material-symbols-outlined text-xl">call_split</span>
                                     <span>SPLIT</span>
-                                    <span className="text-[10px] font-normal opacity-70">Cost shared equally</span>
                                 </button>
                                 <button
                                     type="button"
-                                    onClick={() => setGameType('LTP')}
-                                    className={`flex flex-col items-center gap-1.5 p-3.5 rounded-2xl border-2 font-bold text-sm transition-all ${gameType === 'LTP'
+                                    onClick={() => setGameMode('LTP')}
+                                    className={`flex flex-col items-center gap-1.5 p-3 rounded-2xl border-2 font-bold text-xs transition-all ${gameMode === 'LTP'
                                         ? 'border-amber-500 bg-amber-500/10 text-amber-600 dark:text-amber-400'
                                         : 'border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:border-slate-300'
                                         }`}
                                 >
-                                    <span className="material-symbols-outlined text-2xl">emoji_events</span>
+                                    <span className="material-symbols-outlined text-xl">emoji_events</span>
                                     <span>LTP</span>
-                                    <span className="text-[10px] font-normal opacity-70">Loser pays the bill</span>
                                 </button>
                             </div>
                         </div>
 
                         {/* Player search */}
-                        <div>
-                            <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Add Players <span className="text-slate-400 font-normal">(optional)</span></label>
-                            <div className="relative">
-                                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 material-symbols-outlined text-[20px]">search</span>
-                                <input type="text" value={playerSearch} onChange={e => setPlayerSearch(e.target.value)}
-                                    placeholder="Search players by name or email..."
-                                    className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white text-sm font-medium outline-none focus:ring-2 focus:ring-primary" />
-                            </div>
-                            {/* Search results dropdown */}
-                            {(playerResults.length > 0 || searchingPlayers) && (
-                                <div className="mt-1 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl shadow-lg overflow-hidden max-h-40 overflow-y-auto">
-                                    {searchingPlayers && <p className="text-xs text-slate-500 p-3 text-center">Searching...</p>}
-                                    {playerResults.map(p => (
-                                        <button key={p.id} type="button" onClick={() => addPickedPlayer(p)}
-                                            className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-primary/5 text-left transition-colors">
-                                            <div className="size-7 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold text-xs shrink-0">{p.fullName?.charAt(0)}</div>
-                                            <div className="min-w-0">
-                                                <p className="font-bold text-slate-900 dark:text-white text-sm truncate">{p.fullName}</p>
-                                                <p className="text-xs text-slate-500 truncate">{p.email}</p>
-                                            </div>
-                                            <span className="material-symbols-outlined text-primary text-[18px] ml-auto shrink-0">add_circle</span>
-                                        </button>
-                                    ))}
+                        {gameMode !== 'OPEN' && (
+                            <div>
+                                <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">
+                                    Add Players <span className="text-slate-400 font-normal">
+                                        {gameMode === 'SOLO' ? '(Pick 1)' : '(Pick 2+)'}
+                                    </span>
+                                </label>
+                                <div className="relative">
+                                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 material-symbols-outlined text-[20px]">search</span>
+                                    <input type="text" value={playerSearch} onChange={e => setPlayerSearch(e.target.value)}
+                                        placeholder="Search players by name or email..."
+                                        className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white text-sm font-medium outline-none focus:ring-2 focus:ring-primary" />
                                 </div>
-                            )}
-                        </div>
+                                {/* Search results dropdown */}
+                                {(playerResults.length > 0 || searchingPlayers) && (
+                                    <div className="mt-1 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl shadow-lg overflow-hidden max-h-40 overflow-y-auto">
+                                        {searchingPlayers && <p className="text-xs text-slate-500 p-3 text-center">Searching...</p>}
+                                        {playerResults.map(p => (
+                                            <button key={p.id} type="button" onClick={() => addPickedPlayer(p)}
+                                                className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-primary/5 text-left transition-colors">
+                                                <div className="size-7 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold text-xs shrink-0">{p.fullName?.charAt(0)}</div>
+                                                <div className="min-w-0">
+                                                    <p className="font-bold text-slate-900 dark:text-white text-sm truncate">{p.fullName}</p>
+                                                    <p className="text-xs text-slate-500 truncate">{p.email}</p>
+                                                </div>
+                                                <span className="material-symbols-outlined text-primary text-[18px] ml-auto shrink-0">add_circle</span>
+                                            </button>
+                                        ))}
+                                    </div>
+                                )}
+                            </div>
+                        )}
 
                         {/* Picked player chips */}
-                        {pickedPlayers.length > 0 && (
+                        {gameMode !== 'OPEN' && pickedPlayers.length > 0 && (
                             <div className="flex flex-wrap gap-2">
                                 {pickedPlayers.map(p => (
                                     <div key={p.id} className="flex items-center gap-1.5 bg-primary/10 text-primary px-3 py-1.5 rounded-full text-sm font-bold">
@@ -322,18 +365,20 @@ export default function StaffOverview() {
                             </div>
                         )}
 
-                        {pickedPlayers.length === 0 && (
-                            <p className="text-xs text-slate-500 italic">No players added — session will run as an open table.</p>
+                        {gameMode === 'OPEN' && (
+                            <p className="text-xs text-slate-500 italic p-3 bg-slate-50 dark:bg-slate-800 rounded-xl border border-slate-100 dark:border-slate-700 text-center">
+                                This will start an anonymous session for walk-in customers.
+                            </p>
                         )}
 
                         {/* Actions */}
                         <div className="flex gap-3 pt-1">
-                            <button onClick={() => { setSelectedTable(null); setPickedPlayers([]); setPlayerSearch(''); setGameType('SPLIT'); }}
+                            <button onClick={() => { setSelectedTable(null); setPickedPlayers([]); setPlayerSearch(''); setGameMode('OPEN'); }}
                                 className="flex-1 py-3 rounded-xl font-bold text-slate-600 dark:text-slate-300 bg-slate-100 dark:bg-slate-800">Cancel</button>
                             <button onClick={handleStartSession} disabled={startingSession}
                                 className="flex-1 py-3 rounded-xl font-bold text-white bg-primary hover:bg-primary/90 shadow-md shadow-primary/20 flex items-center justify-center gap-2 disabled:opacity-60">
                                 {startingSession ? <span className="animate-spin rounded-full h-4 w-4 border-b-2 border-white" /> : <span className="material-symbols-outlined">play_circle</span>}
-                                {startingSession ? 'Starting...' : `Start ${gameType} Session`}
+                                {startingSession ? 'Starting...' : `Start ${gameMode} Session`}
                             </button>
                         </div>
                     </div>

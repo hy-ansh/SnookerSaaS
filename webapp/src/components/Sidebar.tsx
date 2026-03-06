@@ -1,6 +1,7 @@
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { useSubscription, type FeatureKey } from '../hooks/useSubscription';
+import { AdSidebar } from './Ads/AdSidebar';
 
 // ── Sidebar nav items ─────────────────────────────────────────────
 interface NavItem {
@@ -20,12 +21,14 @@ const OWNER_NAV: NavItem[] = [
     { to: '/owner/dues', icon: 'account_balance_wallet', label: 'Dues Management', feature: 'dues_management' },
     { to: '/owner/payments', icon: 'payments', label: 'Payments' },
     { to: '/owner/onboarding', icon: 'group_add', label: 'Team & Players', feature: 'team_management' },
+    { to: '/owner/settings', icon: 'settings', label: 'Settings' },
 ];
 
 const STAFF_NAV: NavItem[] = [
     { to: '/staff', icon: 'sensors', label: 'Live Tables', exact: true },
     { to: '/staff/sessions', icon: 'receipt_long', label: 'Session History' },
     { to: '/staff/players', icon: 'leaderboard', label: 'Player Analytics' },
+    { to: '/staff/dues', icon: 'account_balance_wallet', label: 'Dues Management' },
     { to: '/staff/pos', icon: 'point_of_sale', label: 'POS Entry', feature: 'pos' },
 ];
 
@@ -33,6 +36,7 @@ const ADMIN_NAV: NavItem[] = [
     { to: '/admin', icon: 'public', label: 'Global Metrics', exact: true },
     { to: '/admin/organizations', icon: 'corporate_fare', label: 'Organizations' },
     { to: '/admin/plans', icon: 'workspace_premium', label: 'Subscription Plans' },
+    { to: '/admin/ads', icon: 'campaign', label: 'Advertisements' },
     { to: '/admin/settings', icon: 'settings', label: 'Settings' },
 ];
 
@@ -62,8 +66,8 @@ function NavLink({ item, isActive }: { item: NavItem; isActive: boolean }) {
         <Link
             to={item.to}
             className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-colors ${isActive
-                    ? 'bg-primary/10 text-primary font-semibold'
-                    : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800'
+                ? 'bg-primary/10 text-primary font-semibold'
+                : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800'
                 }`}
         >
             <span className="material-symbols-outlined text-xl">{item.icon}</span>
@@ -158,8 +162,8 @@ export default function Sidebar() {
                         <Link
                             to="/owner/subscription"
                             className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-colors ${location.pathname === '/owner/subscription'
-                                    ? 'bg-primary/10 text-primary font-semibold'
-                                    : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800'
+                                ? 'bg-primary/10 text-primary font-semibold'
+                                : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800'
                                 }`}
                         >
                             <span className="material-symbols-outlined text-xl">card_membership</span>
@@ -192,6 +196,9 @@ export default function Sidebar() {
                     <NavSection items={PLAYER_NAV} pathname={location.pathname} />
                 )}
             </nav>
+
+            {/* Sub/Free Trial Ads */}
+            <AdSidebar placement="dashboard_sidebar" className="mb-4" />
 
             {/* Footer */}
             <div className="p-4 border-t border-slate-200 dark:border-slate-800 space-y-2">

@@ -48,38 +48,50 @@ export const getAnalyticsSummary = async (req: Request, res: Response): Promise<
         const firstOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
         const isSuperAdmin = req.user?.role === 'SUPER_ADMIN';
 
+        const period = req.query.period as string;
+        let dateFilterQuery: any = {};
+        if (period === '30d') {
+            dateFilterQuery = { gte: new Date(now.getFullYear(), now.getMonth(), now.getDate() - 30) };
+        } else if (period === '7d') {
+            dateFilterQuery = { gte: new Date(now.getFullYear(), now.getMonth(), now.getDate() - 7) };
+        } else {
+            // "all" or default can just not have the gte if it's all time, actually the issue asks for "all time".
+            // If it's all time, no gte. If nothing is specified, let's keep it 'all time' or whatever is asked.
+            if (period === 'all') {
+                dateFilterQuery = undefined;
+            } else {
+                dateFilterQuery = { gte: firstOfMonth };
+            }
+        }
+
+        const dateFilter = dateFilterQuery ? { createdAt: dateFilterQuery } : {};
+        const sessionDateFilter = dateFilterQuery ? { startedAt: dateFilterQuery } : {};
+
         const sessionFilter: any = isSuperAdmin
-            ? { status: 'COMPLETED' }
-            : { status: 'COMPLETED', branch: { organizationId } };
+            ? { status: 'COMPLETED', ...sessionDateFilter }
+            : { status: 'COMPLETED', branch: { organizationId }, ...sessionDateFilter };
 
-        const monthlySessionFilter: any = isSuperAdmin
-            ? { status: 'COMPLETED', endedAt: { gte: firstOfMonth } }
-            : { status: 'COMPLETED', endedAt: { gte: firstOfMonth }, branch: { organizationId } };
-
-        // ── Monthly revenue: session + POS orders + settled dues ──
-        const [sessionRevAgg, posRevAgg, duesRevAgg] = await Promise.all([
-            prisma.session.aggregate({
-                _sum: { totalAmount: true },
-                where: monthlySessionFilter
+        // ── Monthly revenue: actual payments received + POS orders ──
+        // NO session.totalAmount — that causes double-counting when dues exist
+        const [paymentRevAgg, posRevAgg] = await Promise.all([
+            // All successful payments (includes session immediate + dues settlements + pos orders with players)
+            prisma.payment.aggregate({
+                _sum: { amount: true },
+                where: isSuperAdmin
+                    ? { status: 'SUCCESS', ...dateFilter }
+                    : { status: 'SUCCESS', ...dateFilter, payer: { organizationId } }
             }),
             prisma.order.aggregate({
                 _sum: { totalAmount: true },
                 where: isSuperAdmin
-                    ? { status: 'COMPLETED', paymentMethod: { in: ['CASH', 'UPI', 'CARD', 'WALLET'] }, createdAt: { gte: firstOfMonth } }
-                    : { status: 'COMPLETED', paymentMethod: { in: ['CASH', 'UPI', 'CARD', 'WALLET'] }, createdAt: { gte: firstOfMonth }, branch: { organizationId } }
-            }),
-            prisma.ledgerEntry.aggregate({
-                _sum: { debit: true },
-                where: isSuperAdmin
-                    ? { referenceType: 'DUES_SETTLEMENT', createdAt: { gte: firstOfMonth }, accountId: { in: ['CASH', 'UPI', 'CARD', 'WALLET'] } }
-                    : { referenceType: 'DUES_SETTLEMENT', createdAt: { gte: firstOfMonth }, accountId: { in: ['CASH', 'UPI', 'CARD', 'WALLET'] }, organizationId }
+                    ? { playerId: null, status: 'COMPLETED', paymentMethod: { in: ['CASH', 'UPI', 'CARD', 'WALLET'] }, ...dateFilter }
+                    : { playerId: null, status: 'COMPLETED', paymentMethod: { in: ['CASH', 'UPI', 'CARD', 'WALLET'] }, ...dateFilter, branch: { organizationId } }
             })
         ]);
 
         const monthlyRevenue =
-            Number(sessionRevAgg._sum.totalAmount || 0) +
-            Number(posRevAgg._sum.totalAmount || 0) +
-            Number(duesRevAgg._sum.debit || 0);
+            Number(paymentRevAgg._sum.amount || 0) +
+            Number(posRevAgg._sum.totalAmount || 0);
 
         // ── Session stats ──
         const [completedSessions, activePlayers] = await Promise.all([
@@ -104,37 +116,31 @@ export const getAnalyticsSummary = async (req: Request, res: Response): Promise<
             ? Math.round((totalSessions / Math.max(tableIds.length, 1) / 30) * 10) / 10
             : 0;
 
-        // ── Revenue trend: last 6 months (same formula as accounting controller) ──
+        // ── Revenue trend: last 6 months (payments-based) ──
         const revenueTrend: { label: string; revenue: number }[] = [];
         for (let i = 5; i >= 0; i--) {
             const start = new Date(now.getFullYear(), now.getMonth() - i, 1);
             const end = new Date(now.getFullYear(), now.getMonth() - i + 1, 0, 23, 59, 59, 999);
             const label = start.toLocaleString('default', { month: 'short', year: '2-digit' });
 
-            const [sRev, pRev, dRev] = await Promise.all([
-                prisma.session.aggregate({
-                    _sum: { totalAmount: true },
+            const [pRev, oRev] = await Promise.all([
+                prisma.payment.aggregate({
+                    _sum: { amount: true },
                     where: isSuperAdmin
-                        ? { status: 'COMPLETED', endedAt: { gte: start, lte: end } }
-                        : { status: 'COMPLETED', endedAt: { gte: start, lte: end }, branch: { organizationId } }
+                        ? { status: 'SUCCESS', createdAt: { gte: start, lte: end } }
+                        : { status: 'SUCCESS', createdAt: { gte: start, lte: end }, payer: { organizationId } }
                 }),
                 prisma.order.aggregate({
                     _sum: { totalAmount: true },
                     where: isSuperAdmin
-                        ? { status: 'COMPLETED', paymentMethod: { in: ['CASH', 'UPI', 'CARD', 'WALLET'] }, createdAt: { gte: start, lte: end } }
-                        : { status: 'COMPLETED', paymentMethod: { in: ['CASH', 'UPI', 'CARD', 'WALLET'] }, createdAt: { gte: start, lte: end }, branch: { organizationId } }
-                }),
-                prisma.ledgerEntry.aggregate({
-                    _sum: { debit: true },
-                    where: isSuperAdmin
-                        ? { referenceType: 'DUES_SETTLEMENT', createdAt: { gte: start, lte: end }, accountId: { in: ['CASH', 'UPI', 'CARD', 'WALLET'] } }
-                        : { referenceType: 'DUES_SETTLEMENT', createdAt: { gte: start, lte: end }, accountId: { in: ['CASH', 'UPI', 'CARD', 'WALLET'] }, organizationId }
+                        ? { playerId: null, status: 'COMPLETED', paymentMethod: { in: ['CASH', 'UPI', 'CARD', 'WALLET'] }, createdAt: { gte: start, lte: end } }
+                        : { playerId: null, status: 'COMPLETED', paymentMethod: { in: ['CASH', 'UPI', 'CARD', 'WALLET'] }, createdAt: { gte: start, lte: end }, branch: { organizationId } }
                 })
             ]);
 
             revenueTrend.push({
                 label,
-                revenue: Number(sRev._sum.totalAmount || 0) + Number(pRev._sum.totalAmount || 0) + Number(dRev._sum.debit || 0)
+                revenue: Number(pRev._sum.amount || 0) + Number(oRev._sum.totalAmount || 0)
             });
         }
 
@@ -165,7 +171,7 @@ export const getOperationalStats = async (req: Request, res: Response): Promise<
         const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
         const branchFilter = isSuperAdmin ? {} : { branch: { organizationId } };
 
-        const [totalTables, occupiedSessions, todayCompletedSessions, recentSessions] = await Promise.all([
+        const [totalTables, occupiedSessions, todayPayments, recentSessions] = await Promise.all([
             // Total tables in this org
             prisma.table.count({
                 where: isSuperAdmin ? {} : { branch: { organizationId } }
@@ -175,10 +181,12 @@ export const getOperationalStats = async (req: Request, res: Response): Promise<
                 where: { status: { in: ['ACTIVE', 'PAUSED'] }, ...branchFilter },
                 select: { tableId: true }
             }),
-            // Today's completed sessions for revenue run rate
-            prisma.session.aggregate({
-                _sum: { totalAmount: true },
-                where: { status: 'COMPLETED', endedAt: { gte: todayStart }, ...branchFilter }
+            // Today's revenue: actual payments received today
+            prisma.payment.aggregate({
+                _sum: { amount: true },
+                where: isSuperAdmin
+                    ? { status: 'SUCCESS', createdAt: { gte: todayStart } }
+                    : { status: 'SUCCESS', createdAt: { gte: todayStart }, payer: { organizationId } }
             }),
             // Recent 8 sessions (any status) for the activity feed
             prisma.session.findMany({
@@ -202,7 +210,7 @@ export const getOperationalStats = async (req: Request, res: Response): Promise<
             ? Math.round((occupiedCount / totalTables) * 100)
             : 0;
 
-        const todayRevenue = Number(todayCompletedSessions._sum.totalAmount || 0);
+        const todayRevenue = Number(todayPayments._sum.amount || 0);
 
         // Calculate revenue per hour for today (hours elapsed since midnight)
         const hoursElapsed = Math.max((now.getTime() - todayStart.getTime()) / (1000 * 60 * 60), 1);
@@ -246,4 +254,3 @@ export const getOperationalStats = async (req: Request, res: Response): Promise<
         res.status(500).json({ error: 'Internal server error' });
     }
 };
-

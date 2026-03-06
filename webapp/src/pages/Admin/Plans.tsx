@@ -14,6 +14,10 @@ interface PlanFeatures {
 interface SubscriptionPlan {
     id: string;
     name: string;
+    type: string;
+    billingCycle: string;
+    adsEnabled: boolean;
+    isActive: boolean;
     price: number;
     features: PlanFeatures;
 }
@@ -45,6 +49,10 @@ export default function AdminPlans() {
 
     // Form State
     const [name, setName] = useState('');
+    const [type, setType] = useState('pro');
+    const [billingCycle, setBillingCycle] = useState('monthly');
+    const [adsEnabled, setAdsEnabled] = useState(false);
+    const [isActive, setIsActive] = useState(true);
     const [price, setPrice] = useState<number | ''>('');
     const [features, setFeatures] = useState<PlanFeatures>({ ...DEFAULT_FEATURES });
     const [processing, setProcessing] = useState(false);
@@ -65,6 +73,10 @@ export default function AdminPlans() {
 
     const openCreateModal = () => {
         setName('');
+        setType('pro');
+        setBillingCycle('monthly');
+        setAdsEnabled(false);
+        setIsActive(true);
         setPrice('');
         setFeatures({ ...DEFAULT_FEATURES });
         setSelectedPlan(null);
@@ -74,6 +86,10 @@ export default function AdminPlans() {
     const openEditModal = (plan: SubscriptionPlan) => {
         setSelectedPlan(plan);
         setName(plan.name);
+        setType(plan.type || 'pro');
+        setBillingCycle(plan.billingCycle || 'monthly');
+        setAdsEnabled(plan.adsEnabled || false);
+        setIsActive(plan.isActive ?? true);
         setPrice(Number(plan.price));
         // Merge stored features with defaults to avoid missing keys
         setFeatures({ ...DEFAULT_FEATURES, ...(plan.features || {}) });
@@ -98,7 +114,7 @@ export default function AdminPlans() {
         e.preventDefault();
         setProcessing(true);
         try {
-            const payload = { name, price: Number(price), features };
+            const payload = { name, type, billingCycle, adsEnabled, isActive, price: Number(price), features };
             if (activeModal === 'CREATE') {
                 const newPlan = await apiFetch('/admin/plans', { method: 'POST', body: JSON.stringify(payload) });
                 setPlans([...plans, newPlan]);
@@ -142,23 +158,30 @@ export default function AdminPlans() {
                     return (
                         <div key={plan.id} className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-6 shadow-sm flex flex-col justify-between gap-4">
                             <div>
-                                <div className="flex justify-between items-start mb-4">
-                                    <h2 className="text-2xl font-black text-slate-900 dark:text-white">{plan.name}</h2>
-                                    <h3 className="text-xl font-black text-primary">${Number(plan.price).toFixed(2)}<span className="text-xs text-slate-500 font-bold ml-1">/mo</span></h3>
-                                </div>
+                                <h2 className="text-2xl font-black text-slate-900 dark:text-white flex items-center gap-2">
+                                    {plan.name}
+                                    {!plan.isActive && <span className="text-xs bg-red-100 text-red-700 px-2 py-1 rounded-md ml-2 uppercase font-bold tracking-widest">Inactive</span>}
+                                </h2>
+                                <h3 className="text-xl font-black text-primary">₹{Number(plan.price).toFixed(2)}<span className="text-xs text-slate-500 font-bold ml-1">/{plan.billingCycle === 'yearly' ? 'yr' : 'mo'}</span></h3>
 
                                 {/* Branch limit badge */}
                                 <div className="flex items-center gap-2 mb-4">
                                     <span className="material-symbols-outlined text-slate-400 text-base">corporate_fare</span>
                                     <span className="text-sm font-bold text-slate-600 dark:text-slate-300">
-                                        {(f as any).max_branches === 0 ? 'Unlimited Branches' : `Up to ${(f as any).max_branches ?? 1} Branch${(f as any).max_branches > 1 ? 'es' : ''}`}
+                                        {(f as any).max_branches === 0 ? 'Unlimited Branches' : `Up to ₹{(f as any).max_branches ?? 1} Branch₹{(f as any).max_branches > 1 ? 'es' : ''}`}
+                                    </span>
+                                </div>
+                                <div className="flex items-center gap-2 mb-4">
+                                    <span className="material-symbols-outlined text-slate-400 text-base">campaign</span>
+                                    <span className={`text-sm font-bold ₹{plan.adsEnabled ? 'text-orange-600 dark:text-orange-400' : 'text-emerald-600 dark:text-emerald-400'}`}>
+                                        {plan.adsEnabled ? 'Ads Displayed' : 'Ad-Free Experience'}
                                     </span>
                                 </div>
 
                                 {/* Enabled modules */}
                                 <div className="space-y-2">
                                     {MODULE_OPTIONS.map(m => (
-                                        <div key={m.key} className={`flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-sm font-medium ${f[m.key] ? 'text-emerald-700 dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-500/10' : 'text-slate-400 dark:text-slate-600'}`}>
+                                        <div key={m.key} className={`flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-sm font-medium ₹{f[m.key] ? 'text-emerald-700 dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-500/10' : 'text-slate-400 dark:text-slate-600'}`}>
                                             <span className="material-symbols-outlined text-sm">{f[m.key] ? 'check_circle' : 'cancel'}</span>
                                             {m.label}
                                         </div>
@@ -216,7 +239,7 @@ export default function AdminPlans() {
                                     />
                                 </div>
                                 <div>
-                                    <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Monthly Price ($)</label>
+                                    <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Monthly Price (₹)</label>
                                     <input
                                         type="number"
                                         step="0.01"
@@ -228,6 +251,60 @@ export default function AdminPlans() {
                                         className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white font-medium outline-none focus:ring-2 focus:ring-primary"
                                     />
                                 </div>
+                            </div>
+
+                            <div className="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Billing Cycle</label>
+                                    <select
+                                        value={billingCycle}
+                                        onChange={e => setBillingCycle(e.target.value)}
+                                        className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white font-medium outline-none focus:ring-2 focus:ring-primary appearance-none"
+                                    >
+                                        <option value="monthly">Monthly</option>
+                                        <option value="yearly">Yearly</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Plan Type</label>
+                                    <select
+                                        value={type}
+                                        onChange={e => setType(e.target.value)}
+                                        className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white font-medium outline-none focus:ring-2 focus:ring-primary appearance-none"
+                                    >
+                                        <option value="free">Free / Trial</option>
+                                        <option value="pro">Pro / Premium</option>
+                                        <option value="enterprise">Enterprise</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div className="grid grid-cols-2 gap-4">
+                                <label className="flex items-center gap-3 p-4 rounded-xl border border-slate-200 dark:border-slate-700 cursor-pointer bg-slate-50 dark:bg-slate-800 hover:border-primary/50 transition-colors">
+                                    <input
+                                        type="checkbox"
+                                        checked={isActive}
+                                        onChange={(e) => setIsActive(e.target.checked)}
+                                        className="w-5 h-5 rounded text-primary focus:ring-primary"
+                                    />
+                                    <div>
+                                        <div className="font-bold text-slate-900 dark:text-white text-sm">Active Plan</div>
+                                        <div className="text-xs text-slate-500">Available for signups</div>
+                                    </div>
+                                </label>
+
+                                <label className="flex items-center gap-3 p-4 rounded-xl border border-slate-200 dark:border-slate-700 cursor-pointer bg-slate-50 dark:bg-slate-800 hover:border-primary/50 transition-colors">
+                                    <input
+                                        type="checkbox"
+                                        checked={adsEnabled}
+                                        onChange={(e) => setAdsEnabled(e.target.checked)}
+                                        className="w-5 h-5 rounded text-primary focus:ring-primary"
+                                    />
+                                    <div>
+                                        <div className="font-bold text-slate-900 dark:text-white text-sm">Show Ads</div>
+                                        <div className="text-xs text-slate-500">Inject banners in UI</div>
+                                    </div>
+                                </label>
                             </div>
 
                             {/* Branch Limit */}

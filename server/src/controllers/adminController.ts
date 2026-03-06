@@ -126,7 +126,7 @@ export const getSubscriptionPlans = async (req: Request, res: Response): Promise
 // Create Subscription Plan
 export const createSubscriptionPlan = async (req: Request, res: Response): Promise<void> => {
     try {
-        const { name, price, features } = req.body;
+        const { name, type, price, billingCycle, features, adsEnabled, isActive } = req.body;
 
         if (!name || price === undefined) {
             res.status(400).json({ error: 'Plan name and price are required' });
@@ -136,8 +136,12 @@ export const createSubscriptionPlan = async (req: Request, res: Response): Promi
         const plan = await prisma.subscriptionPlan.create({
             data: {
                 name,
+                type: type || 'pro',
                 price: Number(price),
-                features: features || {}
+                billingCycle: billingCycle || 'monthly',
+                features: features || {},
+                adsEnabled: adsEnabled !== undefined ? Boolean(adsEnabled) : false,
+                isActive: isActive !== undefined ? Boolean(isActive) : true
             }
         });
 
@@ -261,12 +265,16 @@ export const updateTenantSubscription = async (req: Request, res: Response): Pro
 export const updateSubscriptionPlan = async (req: Request, res: Response): Promise<void> => {
     try {
         const { id } = req.params as { id: string };
-        const { name, price, features } = req.body;
+        const { name, type, price, billingCycle, features, adsEnabled, isActive } = req.body;
 
         const updateData: any = {};
         if (name !== undefined) updateData.name = name;
+        if (type !== undefined) updateData.type = type;
         if (price !== undefined) updateData.price = Number(price);
+        if (billingCycle !== undefined) updateData.billingCycle = billingCycle;
         if (features !== undefined) updateData.features = features;
+        if (adsEnabled !== undefined) updateData.adsEnabled = Boolean(adsEnabled);
+        if (isActive !== undefined) updateData.isActive = Boolean(isActive);
 
         const plan = await prisma.subscriptionPlan.update({
             where: { id },
@@ -302,6 +310,53 @@ export const deleteSubscriptionPlan = async (req: Request, res: Response): Promi
             res.status(409).json({ error: 'Cannot delete plan because it is referenced by existing subscriptions or invoices.' });
             return;
         }
+        res.status(500).json({ error: 'Internal server error' });
+    }
+};
+
+// Get Global Settings (e.g., Free Trial Duration)
+export const getSettings = async (req: Request, res: Response): Promise<void> => {
+    try {
+        let settings = await prisma.globalSetting.findUnique({ where: { id: 'global' } });
+
+        if (!settings) {
+            settings = await prisma.globalSetting.create({
+                data: {
+                    id: 'global',
+                    freeTrialDays: 3
+                }
+            });
+        }
+
+        res.json(settings);
+    } catch (error) {
+        console.error('Error fetching global settings:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+};
+
+// Update Global Settings
+export const updateSettings = async (req: Request, res: Response): Promise<void> => {
+    try {
+        const { freeTrialDays } = req.body;
+
+        const updateData: any = {};
+        if (freeTrialDays !== undefined) {
+            updateData.freeTrialDays = Number(freeTrialDays);
+        }
+
+        const settings = await prisma.globalSetting.upsert({
+            where: { id: 'global' },
+            create: {
+                id: 'global',
+                ...updateData
+            },
+            update: updateData
+        });
+
+        res.json(settings);
+    } catch (error) {
+        console.error('Error updating global settings:', error);
         res.status(500).json({ error: 'Internal server error' });
     }
 };

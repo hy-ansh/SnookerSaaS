@@ -2,6 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = require("express");
 const organizationController_1 = require("../controllers/organizationController");
+const adController_1 = require("../controllers/adController");
 const auth_1 = require("../middleware/auth");
 const router = (0, express_1.Router)();
 router.use(auth_1.authenticate);
@@ -9,4 +10,7 @@ router.get('/subscription', (0, auth_1.authorize)(['STORE_OWNER', 'SUPER_ADMIN']
 router.get('/plans', (0, auth_1.authorize)(['STORE_OWNER', 'SUPER_ADMIN']), organizationController_1.getAvailablePlans);
 router.put('/subscription/change', (0, auth_1.authorize)(['STORE_OWNER', 'SUPER_ADMIN']), organizationController_1.updateOwnerSubscription);
 router.get('/users', (0, auth_1.authorize)(['STORE_OWNER', 'SUPER_ADMIN']), organizationController_1.getOrganizationUsers);
+router.get('/ads', (0, auth_1.authorize)(['STORE_OWNER', 'SUPER_ADMIN']), adController_1.getActiveAds);
+const organizationController_2 = require("../controllers/organizationController");
+router.put('/payment-methods', (0, auth_1.authorize)(['STORE_OWNER', 'SUPER_ADMIN']), organizationController_2.updatePaymentMethods);
 exports.default = router;

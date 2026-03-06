@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deleteSubscriptionPlan = exports.updateSubscriptionPlan = exports.updateTenantSubscription = exports.updateTenantStatus = exports.resolveFraudAlert = exports.getFraudAlerts = exports.createSubscriptionPlan = exports.getSubscriptionPlans = exports.getTenants = exports.getGlobalMetrics = exports.getSubscription = void 0;
+exports.updateSettings = exports.getSettings = exports.deleteSubscriptionPlan = exports.updateSubscriptionPlan = exports.updateTenantSubscription = exports.updateTenantStatus = exports.resolveFraudAlert = exports.getFraudAlerts = exports.createSubscriptionPlan = exports.getSubscriptionPlans = exports.getTenants = exports.getGlobalMetrics = exports.getSubscription = void 0;
 const client_1 = require("@prisma/client");
 const prisma = new client_1.PrismaClient();
 // Get Subscription Details for a Tenant
@@ -72,11 +72,38 @@ const getTenants = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
             include: {
                 subscriptions: {
                     include: { plan: true }
+                },
+                branches: {
+                    select: { id: true }
+                },
+                users: {
+                    include: { role: true }
                 }
             },
             orderBy: { createdAt: 'desc' }
         });
-        res.json(tenants);
+        // Enrich each tenant: find the primary owner user and count branches
+        const enriched = tenants.map((tenant) => {
+            var _a;
+            const ownerUser = tenant.users.find((u) => { var _a; return ((_a = u.role) === null || _a === void 0 ? void 0 : _a.name) === 'STORE_OWNER'; }) || tenant.users.find((u) => { var _a; return ((_a = u.role) === null || _a === void 0 ? void 0 : _a.name) === 'ADMIN'; }) || tenant.users[0];
+            return {
+                id: tenant.id,
+                name: tenant.name,
+                isActive: tenant.isActive,
+                subscriptionTier: tenant.subscriptionTier,
+                createdAt: tenant.createdAt,
+                featureFlags: tenant.featureFlags,
+                subscriptions: tenant.subscriptions,
+                branchCount: tenant.branches.length,
+                owner: ownerUser ? {
+                    id: ownerUser.id,
+                    email: ownerUser.email,
+                    fullName: ownerUser.fullName,
+                    role: (_a = ownerUser.role) === null || _a === void 0 ? void 0 : _a.name
+                } : null
+            };
+        });
+        res.json(enriched);
     }
     catch (error) {
         console.error('Error fetching tenants:', error);
@@ -101,7 +128,7 @@ exports.getSubscriptionPlans = getSubscriptionPlans;
 // Create Subscription Plan
 const createSubscriptionPlan = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const { name, price, features } = req.body;
+        const { name, type, price, billingCycle, features, adsEnabled, isActive } = req.body;
         if (!name || price === undefined) {
             res.status(400).json({ error: 'Plan name and price are required' });
             return;
@@ -109,8 +136,12 @@ const createSubscriptionPlan = (req, res) => __awaiter(void 0, void 0, void 0, f
         const plan = yield prisma.subscriptionPlan.create({
             data: {
                 name,
+                type: type || 'pro',
                 price: Number(price),
-                features: features || {}
+                billingCycle: billingCycle || 'monthly',
+                features: features || {},
+                adsEnabled: adsEnabled !== undefined ? Boolean(adsEnabled) : false,
+                isActive: isActive !== undefined ? Boolean(isActive) : true
             }
         });
         res.status(201).json(plan);
@@ -165,10 +196,11 @@ const updateTenantStatus = (req, res) => __awaiter(void 0, void 0, void 0, funct
             res.status(400).json({ error: 'isActive must be a boolean' });
             return;
         }
-        const org = yield prisma.organization.update({
-            where: { id },
-            data: { isActive }
-        });
+        // Use raw SQL to bypass stale Prisma client (isActive was just added to schema)
+        yield prisma.$executeRaw `UPDATE "Organization" SET "isActive" = ${isActive}, "updatedAt" = NOW() WHERE "id" = ${id}`;
+        // Return the updated org (using any to bypass type-checking for new field)
+        const orgs = yield prisma.$queryRaw `SELECT * FROM "Organization" WHERE "id" = ${id} LIMIT 1`;
+        const org = orgs[0] || { id, isActive };
         res.json(org);
     }
     catch (error) {
@@ -225,14 +257,22 @@ exports.updateTenantSubscription = updateTenantSubscription;
 const updateSubscriptionPlan = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { id } = req.params;
-        const { name, price, features } = req.body;
+        const { name, type, price, billingCycle, features, adsEnabled, isActive } = req.body;
         const updateData = {};
         if (name !== undefined)
             updateData.name = name;
+        if (type !== undefined)
+            updateData.type = type;
         if (price !== undefined)
             updateData.price = Number(price);
+        if (billingCycle !== undefined)
+            updateData.billingCycle = billingCycle;
         if (features !== undefined)
             updateData.features = features;
+        if (adsEnabled !== undefined)
+            updateData.adsEnabled = Boolean(adsEnabled);
+        if (isActive !== undefined)
+            updateData.isActive = Boolean(isActive);
         const plan = yield prisma.subscriptionPlan.update({
             where: { id },
             data: updateData
@@ -270,3 +310,44 @@ const deleteSubscriptionPlan = (req, res) => __awaiter(void 0, void 0, void 0, f
     }
 });
 exports.deleteSubscriptionPlan = deleteSubscriptionPlan;
+// Get Global Settings (e.g., Free Trial Duration)
+const getSettings = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        let settings = yield prisma.globalSetting.findUnique({ where: { id: 'global' } });
+        if (!settings) {
+            settings = yield prisma.globalSetting.create({
+                data: {
+                    id: 'global',
+                    freeTrialDays: 3
+                }
+            });
+        }
+        res.json(settings);
+    }
+    catch (error) {
+        console.error('Error fetching global settings:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+exports.getSettings = getSettings;
+// Update Global Settings
+const updateSettings = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const { freeTrialDays } = req.body;
+        const updateData = {};
+        if (freeTrialDays !== undefined) {
+            updateData.freeTrialDays = Number(freeTrialDays);
+        }
+        const settings = yield prisma.globalSetting.upsert({
+            where: { id: 'global' },
+            create: Object.assign({ id: 'global' }, updateData),
+            update: updateData
+        });
+        res.json(settings);
+    }
+    catch (error) {
+        console.error('Error updating global settings:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+exports.updateSettings = updateSettings;

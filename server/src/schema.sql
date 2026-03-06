@@ -30,6 +30,7 @@ create table public.stores (
   id uuid default uuid_generate_v4() primary key,
   owner_id uuid references public.profiles(id) on delete set null,
   name text not null,
+  allowed_payment_methods jsonb default '["CASH", "UPI", "CARD", "WALLET"]',
   created_at timestamp with time zone default timezone('utc'::text, now()) not null
 );
 
@@ -101,7 +102,7 @@ create table public.session_players (
 create table public.payments (
   id uuid default uuid_generate_v4() primary key,
   session_id uuid references public.sessions(id) on delete set null,
-  payer_id uuid references public.profiles(id) on delete cascade not null,
+  payer_id uuid references public.profiles(id) on delete cascade,
   amount numeric not null,
   method text check (method in ('CASH', 'UPI', 'CARD', 'WALLET')) not null,
   status text check (status in ('SUCCESS', 'FAILED', 'PENDING')) default 'SUCCESS',

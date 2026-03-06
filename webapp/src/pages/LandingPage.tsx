@@ -48,40 +48,40 @@ export default function LandingPage() {
 
             <main>
                 {/* Hero Section */}
-                <section className="relative pt-16 pb-24 overflow-hidden">
-                    <div className="max-w-7xl mx-auto px-6 grid lg:grid-cols-2 gap-16 items-center">
-                        <div className="relative z-10">
-                            <div className="inline-flex items-center gap-2 bg-primary/10 text-primary px-4 py-2 rounded-full mb-6">
+                <section className="relative overflow-hidden min-h-[90vh] flex items-center justify-center pt-1">
+                    {/* Interactive 3D Hero Scene as Background */}
+                    <div className="absolute inset-0 z-0 w-full h-full opacity-80">
+                        <HeroScene />
+                    </div>
+
+                    <div className="max-w-7xl mx-auto px-6 relative z-10 w-full flex justify-center text-center">
+                        <div className="max-w-3xl p-10 md:p-14 flex flex-col items-center">
+                            <div className="inline-flex items-center gap-2 bg-primary/20 text-primary px-5 py-2.5 rounded-full mb-8 font-bold border border-primary/20 backdrop-blur-md">
                                 <span className="material-symbols-outlined text-sm">bolt</span>
-                                <span className="text-xs font-bold uppercase tracking-wider">The New Standard in Hall Management</span>
+                                <span className="text-xs uppercase tracking-widest">The New Standard in Hall Management</span>
                             </div>
-                            <h1 className="text-5xl lg:text-7xl font-800 text-slate-900 leading-[1.1] mb-6">
-                                Smart Management for <span className="text-primary">Pool & Snooker</span> Halls
+                            <h1 className="text-5xl md:text-7xl font-800 text-slate-900 leading-[1.1] tracking-tight mb-8">
+                                Smart Management for <span className="text-primary drop-shadow-sm">Pool & Snooker</span> Halls
                             </h1>
-                            <p className="text-lg text-slate-custom mb-10 leading-relaxed max-w-lg">
+                            <p className="text-lg md:text-xl text-slate-800 font-medium mb-12 leading-relaxed max-w-2xl">
                                 Streamline your tables, track live earnings, and manage bookings with the industry's most intuitive floor plan. Designed for the modern hall owner.
                             </p>
-                            <div className="flex flex-wrap gap-4">
+                            <div className="flex flex-col sm:flex-row flex-wrap justify-center gap-4">
                                 {session ? (
-                                    <button onClick={() => navigate(getDashboardPath())} className="bg-primary text-white px-8 py-4 rounded-xl font-bold text-lg hover:shadow-xl hover:shadow-primary/40 transition-all flex items-center gap-2">
-                                        Go to Dashboard <span className="material-symbols-outlined">arrow_forward</span>
+                                    <button onClick={() => navigate(getDashboardPath())} className="bg-primary text-white px-8 py-4 rounded-2xl font-800 text-lg hover:shadow-2xl hover:shadow-primary/40 hover:-translate-y-1 transition-all flex items-center justify-center gap-3">
+                                        Go to Dashboard <span className="material-symbols-outlined font-bold">arrow_forward</span>
                                     </button>
                                 ) : (
                                     <>
-                                        <Link to="/register" className="bg-primary text-white px-8 py-4 rounded-xl font-bold text-lg hover:shadow-xl hover:shadow-primary/40 transition-all flex items-center gap-2">
-                                            Start Free Trial <span className="material-symbols-outlined">arrow_forward</span>
+                                        <Link to="/register" className="bg-primary text-white px-8 py-4 rounded-2xl font-800 text-lg hover:shadow-2xl hover:shadow-primary/40 hover:-translate-y-1 transition-all flex items-center justify-center gap-3">
+                                            Start Free Trial <span className="material-symbols-outlined font-bold">arrow_forward</span>
                                         </Link>
-                                        <button className="bg-white border border-slate-200 text-slate-900 px-8 py-4 rounded-xl font-bold text-lg hover:bg-slate-50 transition-all">
+                                        <button className="bg-white/80 backdrop-blur border border-slate-200/50 text-slate-900 px-8 py-4 rounded-2xl font-800 text-lg hover:bg-white hover:-translate-y-1 hover:shadow-xl transition-all">
                                             Book a Demo
                                         </button>
                                     </>
                                 )}
                             </div>
-                        </div>
-
-                        {/* Interactive 3D Hero Scene */}
-                        <div className="relative z-20 w-full h-full flex items-center justify-center">
-                            <HeroScene />
                         </div>
                     </div>
                 </section>

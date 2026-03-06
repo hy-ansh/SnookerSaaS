@@ -1,0 +1,35 @@
+STDOUT:
+Prisma schema loaded from prisma\schema.prisma
+Datasource "db": PostgreSQL database "postgres", schema "public" at "db.xuqynbvzldxazemylpko.supabase.co:5432"
+
+
+STDERR:
+warn The configuration property `package.json#prisma` is deprecated and will be removed in Prisma 7. Please migrate to a Prisma config file (e.g., `prisma.config.ts`).
+For more information, see: https://pris.ly/prisma-config
+
+Loaded Prisma config from prisma.config.ts.
+
+warn The Prisma config file in prisma.config.ts overrides the deprecated `package.json#prisma` property in package.json.
+  For more information, see: https://pris.ly/prisma-config
+
+Prisma config detected, skipping environment variable loading.
+Error: P4002
+
+The schema of the introspected database was inconsistent: The schema of the introspected database was inconsistent: Cross schema references are only allowed when the target schema is listed in the schemas property of your datasource. `public.profiles` points to `auth.users` in constraint `profiles_id_fkey`. Please add `auth` to your `schemas` property and run this command again.
+
+
+ERROR:
+Command failed: npx prisma db push
+warn The configuration property `package.json#prisma` is deprecated and will be removed in Prisma 7. Please migrate to a Prisma config file (e.g., `prisma.config.ts`).
+For more information, see: https://pris.ly/prisma-config
+
+Loaded Prisma config from prisma.config.ts.
+
+warn The Prisma config file in prisma.config.ts overrides the deprecated `package.json#prisma` property in package.json.
+  For more information, see: https://pris.ly/prisma-config
+
+Prisma config detected, skipping environment variable loading.
+Error: P4002
+
+The schema of the introspected database was inconsistent: The schema of the introspected database was inconsistent: Cross schema references are only allowed when the target schema is listed in the schemas property of your datasource. `public.profiles` points to `auth.users` in constraint `profiles_id_fkey`. Please add `auth` to your `schemas` property and run this command again.
+

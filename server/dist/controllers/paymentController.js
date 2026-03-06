@@ -171,7 +171,7 @@ const addDues = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
 });
 exports.addDues = addDues;
 const getPaymentSummary = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    var _a, _b, _c, _d;
+    var _a, _b, _c, _d, _e;
     try {
         const organizationId = (_a = req.user) === null || _a === void 0 ? void 0 : _a.storeId;
         if (!organizationId && ((_b = req.user) === null || _b === void 0 ? void 0 : _b.role) !== 'SUPER_ADMIN') {
@@ -180,11 +180,15 @@ const getPaymentSummary = (req, res) => __awaiter(void 0, void 0, void 0, functi
         }
         const period = req.query.period;
         let dateFilterQuery = {};
+        const now = new Date();
         if (period === '30d') {
-            dateFilterQuery = { createdAt: { gte: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000) } };
+            dateFilterQuery = { createdAt: { gte: new Date(now.getFullYear(), now.getMonth(), now.getDate() - 30) } };
         }
         else if (period === '7d') {
-            dateFilterQuery = { createdAt: { gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000) } };
+            dateFilterQuery = { createdAt: { gte: new Date(now.getFullYear(), now.getMonth(), now.getDate() - 7) } };
+        }
+        else if (period === 'daily') {
+            dateFilterQuery = { createdAt: { gte: new Date(now.getFullYear(), now.getMonth(), now.getDate()) } };
         }
         // Scope by payer's organizationId — more reliable than session->branch->org (session can be null)
         const paymentFilter = ((_c = req.user) === null || _c === void 0 ? void 0 : _c.role) === 'SUPER_ADMIN'
@@ -194,7 +198,7 @@ const getPaymentSummary = (req, res) => __awaiter(void 0, void 0, void 0, functi
             ? Object.assign({ status: 'PENDING' }, dateFilterQuery) : Object.assign({ status: 'PENDING', player: { organizationId } }, dateFilterQuery);
         const methods = ['CASH', 'UPI', 'CARD', 'WALLET'];
         // Aggregate totals per payment method and dues
-        const [methodTotals, recentPayments, dueTotalResult, recentDues] = yield Promise.all([
+        const [methodTotals, recentPayments, dueTotalResult, recentDues, recentOrders] = yield Promise.all([
             Promise.all(methods.map(method => prisma_1.default.payment.aggregate({
                 _sum: { amount: true },
                 where: Object.assign(Object.assign({}, paymentFilter), { method })
@@ -224,10 +228,28 @@ const getPaymentSummary = (req, res) => __awaiter(void 0, void 0, void 0, functi
                 },
                 orderBy: { createdAt: 'desc' },
                 take: 20
+            }),
+            prisma_1.default.order.findMany({
+                where: Object.assign(Object.assign({ playerId: null, status: 'COMPLETED', paymentMethod: { in: ['CASH', 'UPI', 'CARD', 'WALLET'] } }, (((_e = req.user) === null || _e === void 0 ? void 0 : _e.role) === 'SUPER_ADMIN' ? {} : { branch: { organizationId } })), dateFilterQuery),
+                include: { items: { include: { inventoryItem: { select: { name: true } } } } },
+                orderBy: { createdAt: 'desc' },
+                take: 20
             })
         ]);
         const formattedDues = recentDues.map(d => (Object.assign(Object.assign({}, d), { method: 'DUE' })));
-        const combinedPayments = [...recentPayments, ...formattedDues]
+        const formattedAnonymousOrders = (recentOrders || []).map((o) => {
+            const itemNames = o.items.map((i) => `${i.inventoryItem.name} x${i.quantity}`).join(', ');
+            return {
+                id: o.id,
+                amount: o.totalAmount,
+                method: o.paymentMethod,
+                createdAt: o.createdAt,
+                status: 'SUCCESS',
+                payer: { fullName: `Walk-in Guest (${itemNames})` },
+                session: null
+            };
+        });
+        const combinedPayments = [...recentPayments, ...formattedDues, ...formattedAnonymousOrders]
             .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
             .slice(0, 20);
         methodTotals.push({

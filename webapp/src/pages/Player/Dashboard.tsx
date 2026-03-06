@@ -1,4 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { Link } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { playerService } from '../../api/player';
 import { apiFetch } from '../../api/apiClient';
@@ -134,13 +135,19 @@ export default function PlayerDashboard() {
                                 <p className="text-xs text-red-400 font-bold mt-1">⚠ ₹{Number(stats!.pendingDues!).toFixed(2)} in dues</p>
                             )}
                         </div>
-                        <button
-                            onClick={handleRecharge}
-                            disabled={rechargeMutation.isPending}
-                            className="flex items-center gap-2 px-4 py-2 bg-primary text-white text-xs font-bold rounded-lg hover:bg-primary/90 transition-colors disabled:opacity-50">
-                            <span className="material-symbols-outlined text-sm">add</span>
-                            {rechargeMutation.isPending ? 'ADDING...' : 'ADD FUNDS'}
-                        </button>
+                        <div className="flex flex-col gap-2 relative z-10">
+                            <button
+                                onClick={handleRecharge}
+                                disabled={rechargeMutation.isPending}
+                                className="flex items-center justify-center gap-2 px-4 py-2 bg-primary text-white text-xs font-bold rounded-lg hover:bg-primary/90 transition-colors disabled:opacity-50">
+                                <span className="material-symbols-outlined text-sm">add</span>
+                                {rechargeMutation.isPending ? 'ADDING...' : 'ADD FUNDS'}
+                            </button>
+                            <Link to="/player/dues" className="flex items-center justify-center gap-2 px-4 py-2 bg-rose-500/10 text-rose-500 hover:bg-rose-500/20 text-xs font-bold rounded-lg transition-colors">
+                                <span className="material-symbols-outlined text-sm">payments</span>
+                                PAY DUES
+                            </Link>
+                        </div>
                     </div>
                 </div>
             </div>

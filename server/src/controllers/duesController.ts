@@ -24,7 +24,7 @@ export const getStoreDues = async (req: Request, res: Response): Promise<void> =
                 player: { select: { id: true, fullName: true, email: true } },
                 session: {
                     select: {
-                        id: true, startedAt: true, totalAmount: true, gameType: true,
+                        id: true, startedAt: true, totalAmount: true, gameType: true, branchId: true,
                         table: { select: { nameOrNumber: true } }
                     }
                 }
@@ -33,7 +33,7 @@ export const getStoreDues = async (req: Request, res: Response): Promise<void> =
         });
 
         // For POS dues (no session), find the nearest matching order and embed item names
-        const enrichedDues = await Promise.all(dues.map(async (due) => {
+        let enrichedDues = await Promise.all(dues.map(async (due) => {
             if (due.sessionId) return { ...due, posOrder: null };
 
             // Find the closest order for this player within 60 seconds of due creation
@@ -56,6 +56,16 @@ export const getStoreDues = async (req: Request, res: Response): Promise<void> =
 
             return { ...due, posOrder: order };
         }));
+
+        // Scope by branchId if user is STAFF or restricted to a branch
+        if (user.role !== 'SUPER_ADMIN' && user.role !== 'STORE_OWNER' && user.branchId) {
+            enrichedDues = enrichedDues.filter(d => {
+                if (d.sessionId) return (d.session as any)?.branchId === user.branchId;
+                if (d.posOrder) return d.posOrder.branchId === user.branchId;
+                // If we can't determine the branch for a POS due, hide it from branch-restricted staff
+                return false;
+            });
+        }
 
         res.json({ dues: enrichedDues });
     } catch (err) {
@@ -102,13 +112,41 @@ export const settlePlayerDues = async (req: Request, res: Response): Promise<voi
         const { method = 'CASH' } = req.body;
 
         // Scope by player.organizationId instead of session.branch so POS dues are included
-        const duesToSettle = await prisma.due.findMany({
+        let duesToSettle = await prisma.due.findMany({
             where: {
                 playerId: playerId as string,
                 status: 'PENDING',
                 player: { organizationId: user.storeId }
+            },
+            include: {
+                session: {
+                    select: { branchId: true }
+                }
             }
         });
+
+        // Filter by branchId if user is STAFF
+        if (user.role !== 'SUPER_ADMIN' && user.role !== 'STORE_OWNER' && user.branchId) {
+            const enriched = await Promise.all(duesToSettle.map(async d => {
+                if (d.sessionId) return { ...d, posOrder: null };
+                const order = await prisma.order.findFirst({
+                    where: {
+                        playerId: d.playerId,
+                        createdAt: {
+                            gte: new Date(d.createdAt.getTime() - 60_000),
+                            lte: new Date(d.createdAt.getTime() + 60_000)
+                        }
+                    }
+                });
+                return { ...d, posOrder: order };
+            }));
+
+            duesToSettle = enriched.filter(d => {
+                if (d.sessionId) return (d.session as any)?.branchId === user.branchId;
+                if (d.posOrder) return d.posOrder.branchId === user.branchId;
+                return false;
+            });
+        }
 
         if (duesToSettle.length === 0) {
             res.status(404).json({ error: 'No pending dues found for this player in your organization.' });
@@ -190,6 +228,29 @@ export const settleSpecificDue = async (req: Request, res: Response): Promise<vo
         if (dueOrg !== user.storeId && user.role !== 'SUPER_ADMIN') {
             res.status(403).json({ error: 'Forbidden' });
             return;
+        }
+
+        // Check branch scope for Staff
+        if (user.role !== 'SUPER_ADMIN' && user.role !== 'STORE_OWNER' && user.branchId) {
+            let matchesBranch = false;
+            if (due.sessionId) {
+                matchesBranch = (due.session as any)?.branchId === user.branchId;
+            } else {
+                const order = await prisma.order.findFirst({
+                    where: {
+                        playerId: due.playerId,
+                        createdAt: {
+                            gte: new Date(due.createdAt.getTime() - 60_000),
+                            lte: new Date(due.createdAt.getTime() + 60_000)
+                        }
+                    }
+                });
+                if (order?.branchId === user.branchId) matchesBranch = true;
+            }
+            if (!matchesBranch) {
+                res.status(403).json({ error: 'Forbidden: Due belongs to a different branch' });
+                return;
+            }
         }
 
         if (due.status === 'SETTLED') {

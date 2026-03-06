@@ -34,6 +34,7 @@ export const getMe = async (req: Request, res: Response): Promise<void> => {
                 organizationName: null,
                 orgIsActive: true,
                 branchId: null,
+                allowedPaymentMethods: ['CASH', 'UPI', 'CARD', 'WALLET'],
             });
             return;
         }
@@ -48,6 +49,7 @@ export const getMe = async (req: Request, res: Response): Promise<void> => {
             orgIsActive: record.organization?.isActive ?? true,
             orgCreatedAt: record.organization?.createdAt?.toISOString() ?? null,
             branchId: record.branchId ?? null,
+            allowedPaymentMethods: record.organization?.allowedPaymentMethods ?? ['CASH', 'UPI', 'CARD', 'WALLET'],
         });
     } catch (err) {
         console.error('GetMe Error:', err);

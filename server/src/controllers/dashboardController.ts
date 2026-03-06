@@ -15,50 +15,56 @@ export const getDashboardSummary = async (req: Request, res: Response): Promise<
         const oneWeekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
         const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
 
-        const sessionScopeFilter = req.user?.role === 'SUPER_ADMIN'
-            ? { status: 'COMPLETED' as const }
-            : { status: 'COMPLETED' as const, branch: { organizationId } };
+        const isSuperAdmin = req.user?.role === 'SUPER_ADMIN';
 
-        const [todaySessions, weeklySessions, monthlySessions, activeSessionsCount, unpaidDues] = await Promise.all([
-            // Today's revenue: sum Session.totalAmount for sessions that ENDED today
-            prisma.session.aggregate({
-                _sum: { totalAmount: true },
-                where: { ...sessionScopeFilter, endedAt: { gte: todayStart } }
+        // Revenue = actual payments received, NOT session.totalAmount
+        // This prevents double-counting when sessions are paid via Dues
+        const payerFilter = isSuperAdmin ? {} : { payer: { organizationId } };
+
+        const [todayPayments, weeklyPayments, monthlyPayments, activeSessionsCount, unpaidDues] = await Promise.all([
+            // Today's revenue: payments received today
+            prisma.payment.aggregate({
+                _sum: { amount: true },
+                where: { status: 'SUCCESS', createdAt: { gte: todayStart }, ...payerFilter }
             }),
             // Weekly revenue
-            prisma.session.aggregate({
-                _sum: { totalAmount: true },
-                where: { ...sessionScopeFilter, endedAt: { gte: oneWeekAgo } }
+            prisma.payment.aggregate({
+                _sum: { amount: true },
+                where: { status: 'SUCCESS', createdAt: { gte: oneWeekAgo }, ...payerFilter }
             }),
             // Monthly revenue
-            prisma.session.aggregate({
-                _sum: { totalAmount: true },
-                where: { ...sessionScopeFilter, endedAt: { gte: monthStart } }
+            prisma.payment.aggregate({
+                _sum: { amount: true },
+                where: { status: 'SUCCESS', createdAt: { gte: monthStart }, ...payerFilter }
             }),
             prisma.session.count({
                 where: {
                     status: { in: ['ACTIVE', 'PAUSED'] },
-                    ...(req.user?.role === 'SUPER_ADMIN' ? {} : { branch: { organizationId } })
+                    ...(isSuperAdmin ? {} : { branch: { organizationId } })
                 }
             }),
             prisma.due.aggregate({
                 _sum: { amount: true },
                 where: {
                     status: 'PENDING',
-                    session: req.user?.role !== 'SUPER_ADMIN' ? { branch: { organizationId } } : undefined
+                    player: isSuperAdmin ? undefined : { organizationId }
                 }
             })
         ]);
 
         // Count today's completed sessions too
         const todaySessionCount = await prisma.session.count({
-            where: { ...sessionScopeFilter, endedAt: { gte: todayStart } }
+            where: {
+                status: 'COMPLETED',
+                endedAt: { gte: todayStart },
+                ...(isSuperAdmin ? {} : { branch: { organizationId } })
+            }
         });
 
         res.json({
-            today_earnings: Number(todaySessions._sum.totalAmount || 0),
-            weekly_earnings: Number(weeklySessions._sum.totalAmount || 0),
-            monthly_earnings: Number(monthlySessions._sum.totalAmount || 0),
+            today_earnings: Number(todayPayments._sum.amount || 0),
+            weekly_earnings: Number(weeklyPayments._sum.amount || 0),
+            monthly_earnings: Number(monthlyPayments._sum.amount || 0),
             active_sessions_count: activeSessionsCount,
             today_sessions: todaySessionCount,
             unpaid_dues: Number(unpaidDues._sum.amount || 0)
@@ -78,25 +84,42 @@ export const getRevenueData = async (req: Request, res: Response): Promise<void>
             return;
         }
 
-        // Prisma groupBy (aggregating revenue by table)
-        const revenueAggregation = await prisma.session.groupBy({
-            by: ['tableId'],
-            _sum: { totalAmount: true },
+        const isSuperAdmin = req.user?.role === 'SUPER_ADMIN';
+
+        // Revenue by table — aggregate payments linked to sessions, grouped by table
+        const sessionsWithPayments = await prisma.session.findMany({
             where: {
                 status: 'COMPLETED',
-                branch: req.user?.role === 'SUPER_ADMIN' ? undefined : { organizationId }
+                ...(isSuperAdmin ? {} : { branch: { organizationId } })
+            },
+            select: {
+                tableId: true,
+                payments: {
+                    where: { status: 'SUCCESS' },
+                    select: { amount: true }
+                }
             }
         });
 
+        // Aggregate by table
+        const tableRevMap = new Map<string, number>();
+        for (const s of sessionsWithPayments) {
+            const current = tableRevMap.get(s.tableId) || 0;
+            const sessionPayments = s.payments.reduce((sum, p) => sum + Number(p.amount), 0);
+            tableRevMap.set(s.tableId, current + sessionPayments);
+        }
+
         // Map table names
-        const enrichedData = await Promise.all(revenueAggregation.map(async (agg) => {
-            const table = await prisma.table.findUnique({ where: { id: agg.tableId } });
-            return {
-                table_id: agg.tableId,
-                table_name: table?.nameOrNumber || agg.tableId,
-                revenue: Number(agg._sum.totalAmount || 0)
-            };
-        }));
+        const enrichedData = await Promise.all(
+            Array.from(tableRevMap.entries()).map(async ([tableId, revenue]) => {
+                const table = await prisma.table.findUnique({ where: { id: tableId } });
+                return {
+                    table_id: tableId,
+                    table_name: table?.nameOrNumber || tableId,
+                    revenue
+                };
+            })
+        );
 
         res.json(enrichedData);
     } catch (err) {

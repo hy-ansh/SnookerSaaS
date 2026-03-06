@@ -2,8 +2,10 @@ import { Router } from 'express';
 import {
     getSubscription, getGlobalMetrics, getFraudAlerts, resolveFraudAlert,
     getTenants, getSubscriptionPlans, createSubscriptionPlan,
-    updateTenantStatus, updateTenantSubscription, updateSubscriptionPlan, deleteSubscriptionPlan
+    updateTenantStatus, updateTenantSubscription, updateSubscriptionPlan, deleteSubscriptionPlan,
+    getSettings, updateSettings
 } from '../controllers/adminController';
+import { getAdvertisements, createAdvertisement, updateAdvertisement, deleteAdvertisement } from '../controllers/adController';
 import { authenticate, authorize } from '../middleware/auth';
 
 const router = Router();
@@ -27,5 +29,15 @@ router.get('/plans', authorize(admin), getSubscriptionPlans);
 router.post('/plans', authorize(admin), createSubscriptionPlan);
 router.put('/plans/:id', authorize(admin), updateSubscriptionPlan);
 router.delete('/plans/:id', authorize(admin), deleteSubscriptionPlan);
+
+// Advertisement Admin routes
+router.get('/ads', authorize(admin), getAdvertisements);
+router.post('/ads', authorize(admin), createAdvertisement);
+router.put('/ads/:id', authorize(admin), updateAdvertisement);
+router.delete('/ads/:id', authorize(admin), deleteAdvertisement);
+
+// Global settings routes
+router.get('/settings', authorize(admin), getSettings);
+router.put('/settings', authorize(admin), updateSettings);
 
 export default router;

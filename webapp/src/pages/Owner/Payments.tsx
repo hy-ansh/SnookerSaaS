@@ -23,8 +23,34 @@ export default function AdminPayments() {
     const methodBreakdown: { method: string; total: number }[] = summary?.methodBreakdown || [];
     const recentPayments: any[] = summary?.recentPayments || [];
 
-    const totalRevenue: number = summary?.totalRevenue || 0;
-    const nonDueRevenue = methodBreakdown.filter(m => m.method !== 'DUE').reduce((a, m) => a + m.total, 0);
+    const handleExport = () => {
+        if (!recentPayments.length) {
+            alert("No data available to export.");
+            return;
+        }
+
+        const headers = ['Date', 'Method', 'Amount', 'Status', 'Payer/Table'];
+        const csvRows = [headers.join(',')];
+
+        recentPayments.forEach(p => {
+            const dateStr = new Date(p.createdAt).toLocaleString().replace(/,/g, '');
+            const method = p.method;
+            const amount = p.amount;
+            const status = p.status || (method === 'DUE' ? 'PENDING' : 'SUCCESS');
+            const payerLabel = p.payer?.fullName || (p.session?.table?.nameOrNumber ? `Table ${p.session.table.nameOrNumber}` : 'Walk-in');
+
+            csvRows.push([dateStr, method, amount, status, `"${payerLabel}"`].join(','));
+        });
+
+        const csvString = csvRows.join('\\n');
+        const blob = new Blob([csvString], { type: 'text/csv' });
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `revenue_report_${dateFilter}_${new Date().toISOString().split('T')[0]}.csv`;
+        a.click();
+        window.URL.revokeObjectURL(url);
+    };
 
     return (
         <div className="max-w-7xl mx-auto w-full font-display pb-10">
@@ -51,6 +77,7 @@ export default function AdminPayments() {
                             <option value="all">All Time</option>
                             <option value="30d">Last 30 Days</option>
                             <option value="7d">Last 7 Days</option>
+                            <option value="daily">Today</option>
                         </select>
                         <span className="material-symbols-outlined absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 text-sm pointer-events-none">expand_more</span>
                     </div>
@@ -58,7 +85,7 @@ export default function AdminPayments() {
                         <span className="material-symbols-outlined text-sm">refresh</span>
                         Refresh
                     </button>
-                    <button className="flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-lg font-semibold text-sm shadow-lg shadow-primary/20 hover:bg-primary/90 transition-all">
+                    <button onClick={handleExport} className="flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-lg font-semibold text-sm shadow-lg shadow-primary/20 hover:bg-primary/90 transition-all">
                         <span className="material-symbols-outlined text-sm">ios_share</span>
                         Export Report
                     </button>

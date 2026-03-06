@@ -13,15 +13,7 @@ export const requireFeature = (featureName: string) => {
 
             // Fetch the organization and their active subscription
             const org = await prisma.organization.findUnique({
-                where: { id: organizationId },
-                include: {
-                    subscriptions: {
-                        where: { status: 'ACTIVE' },
-                        include: { plan: true },
-                        orderBy: { createdAt: 'desc' },
-                        take: 1
-                    }
-                }
+                where: { id: organizationId }
             });
 
             if (!org) {
@@ -29,36 +21,28 @@ export const requireFeature = (featureName: string) => {
                 return;
             }
 
-            // If it's a legacy org without a proper Subscription relation, allow access to ease transition,
-            // or strictly check based on string. For production, strictly evaluate the JSON.
-            // If it's a trial org (no active subscription), check creation date
-            if (!org.subscriptions || org.subscriptions.length === 0) {
-                const THREE_DAYS_MS = 3 * 24 * 60 * 60 * 1000;
-                const createdAt = (org as any).createdAt;
-                const isInTrial = createdAt && (Date.now() - new Date(createdAt).getTime() < THREE_DAYS_MS);
-                if (isInTrial) {
-                    // Free trial — grant access to all features
-                    next();
-                    return;
-                }
-                // Legacy subscriptionTier check for older records
-                if (org.subscriptionTier && org.subscriptionTier !== 'FREE_TRIAL') {
-                    next();
-                    return;
-                }
-                res.status(403).json({ error: `Subscription required for feature: ${featureName}` });
+            // Or strictly check based on string. For production, strictly evaluate the JSON.
+            // If it's a trial org, check creation date
+            // Note: In an ideal scenario we could check the attached `SubscriptionPlan`,
+            // but `requireFeature` operates at an organization string tier level right now for simplicity.
+
+            const THREE_DAYS_MS = 3 * 24 * 60 * 60 * 1000;
+            const createdAt = (org as any).createdAt;
+            const isInTrial = createdAt && (Date.now() - new Date(createdAt).getTime() < THREE_DAYS_MS);
+
+            if (isInTrial) {
+                // Free trial — grant access to all features
+                next();
                 return;
             }
 
-            const activePlan = org.subscriptions[0].plan;
-
             // Check the features JSON payload
-            const features = activePlan?.features as Record<string, any>;
+            const features = org.featureFlags as Record<string, any>;
 
             if (!features || !features[featureName]) {
                 res.status(403).json({
                     error: `Upgrade Required`,
-                    message: `Your current plan (${activePlan?.name}) does not include ${featureName}.`
+                    message: `Your current plan (${org.subscriptionTier}) does not include ${featureName}.`
                 });
                 return;
             }

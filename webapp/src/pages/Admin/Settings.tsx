@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom';
+import { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { apiFetch } from '../../api/apiClient';
 
@@ -12,6 +12,10 @@ const MODULE_OPTIONS = [
 ];
 
 export default function AdminSettings() {
+    const [freeTrialDays, setFreeTrialDays] = useState<number>(3);
+    const [savingSettings, setSavingSettings] = useState(false);
+    const [settingsSuccess, setSettingsSuccess] = useState<string | null>(null);
+
     const { data: plans = [], isLoading: loadingPlans } = useQuery({
         queryKey: ['adminPlans'],
         queryFn: () => apiFetch('/admin/plans')
@@ -22,12 +26,93 @@ export default function AdminSettings() {
         queryFn: () => apiFetch('/admin/tenants')
     });
 
+    const { data: settings } = useQuery({
+        queryKey: ['adminSettings'],
+        queryFn: () => apiFetch('/admin/settings')
+    });
+
+    useEffect(() => {
+        if (settings?.freeTrialDays !== undefined) {
+            setFreeTrialDays(settings.freeTrialDays);
+        }
+    }, [settings]);
+
+    const handleSaveGlobalSettings = async () => {
+        setSavingSettings(true);
+        setSettingsSuccess(null);
+        try {
+            await apiFetch('/admin/settings', {
+                method: 'PUT',
+                body: JSON.stringify({ freeTrialDays })
+            });
+            setSettingsSuccess('Global platform settings updated');
+            setTimeout(() => setSettingsSuccess(null), 3000);
+        } catch (err: any) {
+            console.error('Failed to update global settings', err);
+        } finally {
+            setSavingSettings(false);
+        }
+    };
+
     return (
         <div className="flex flex-col gap-8 h-full font-display pb-10">
             <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
                 <div className="space-y-1">
                     <h1 className="text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">Global System Settings</h1>
                     <p className="text-slate-500 dark:text-slate-400 font-medium">Overview of SaaS tiers and active platform tenants</p>
+                </div>
+            </div>
+
+            {/* Global Properties Settings Panel */}
+            <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-6 shadow-sm">
+                <div className="flex justify-between items-start mb-6">
+                    <div>
+                        <h2 className="text-xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                            <span className="material-symbols-outlined text-primary">public</span>
+                            Platform Tuning
+                        </h2>
+                        <p className="text-sm text-slate-500 max-w-2xl mt-1">Configure global platform-wide variables that apply to all tenants.</p>
+                    </div>
+                    {settingsSuccess && (
+                        <span className="text-xs font-bold px-3 py-1.5 bg-emerald-100 text-emerald-700 dark:bg-emerald-500/20 dark:text-emerald-300 rounded-lg flex items-center gap-1.5">
+                            <span className="material-symbols-outlined text-sm">check_circle</span>
+                            {settingsSuccess}
+                        </span>
+                    )}
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <div className="space-y-2">
+                        <label className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Free Trial Duration</label>
+                        <div className="relative">
+                            <input
+                                type="number"
+                                min={0}
+                                value={freeTrialDays}
+                                onChange={(e) => setFreeTrialDays(parseInt(e.target.value) || 0)}
+                                className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-2.5 font-bold text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-primary/50"
+                            />
+                            <span className="absolute right-4 top-1/2 -translate-y-1/2 text-sm font-bold text-slate-400 dark:text-slate-500">Days</span>
+                        </div>
+                        <p className="text-[11px] text-slate-400">Total number of days new tenants securely receive all pro features for free before being locked out.</p>
+                    </div>
+                </div>
+
+                <div className="mt-6 flex justify-end">
+                    <button
+                        onClick={handleSaveGlobalSettings}
+                        disabled={savingSettings || (settings?.freeTrialDays === freeTrialDays)}
+                        className={`px-6 py-2.5 text-sm font-bold rounded-xl flex items-center gap-2 transition-all ${savingSettings || (settings?.freeTrialDays === freeTrialDays)
+                                ? 'bg-slate-100 text-slate-400 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 cursor-not-allowed'
+                                : 'bg-primary text-white hover:-translate-y-0.5 shadow-md shadow-primary/20'
+                            }`}
+                    >
+                        {savingSettings ? (
+                            <><span className="material-symbols-outlined text-sm animate-spin">sync</span> Saving...</>
+                        ) : (
+                            <><span className="material-symbols-outlined text-sm">save</span> Save Changes</>
+                        )}
+                    </button>
                 </div>
             </div>
 
@@ -68,7 +153,7 @@ export default function AdminSettings() {
                                     <div key={p.id} className="border border-slate-200 dark:border-slate-700 rounded-2xl p-4 bg-slate-50 dark:bg-slate-800/20 flex flex-col gap-3">
                                         <div className="flex justify-between items-center">
                                             <h3 className="font-black text-lg text-slate-900 dark:text-white uppercase tracking-tight">{p.name}</h3>
-                                            <span className="text-xl font-black text-primary">${Number(p.price).toFixed(2)}<span className="text-xs text-slate-500 font-bold ml-0.5">/mo</span></span>
+                                            <span className="text-xl font-black text-primary">₹{Number(p.price).toFixed(2)}<span className="text-xs text-slate-500 font-bold ml-0.5">/mo</span></span>
                                         </div>
                                         {/* Branch badge */}
                                         <div className="flex items-center gap-1.5 text-xs font-bold text-slate-500 dark:text-slate-400">

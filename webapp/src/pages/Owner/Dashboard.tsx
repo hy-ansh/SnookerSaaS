@@ -4,6 +4,8 @@ import { tableService } from '../../api/tables';
 import { sessionService, type SessionData } from '../../api/sessions';
 import { dashboardService, type DashboardSummary } from '../../api/dashboard';
 import { apiFetch } from '../../api/apiClient';
+import { AdBanner } from '../../components/Ads/AdBanner';
+import { UpiConfigModal } from '../../components/Owner/UpiConfigModal';
 
 const TABLE_STATUS_CONFIG = {
     AVAILABLE: { label: 'Available', color: 'bg-emerald-500', border: 'border-emerald-400/50', glow: 'shadow-emerald-500/20', text: 'text-emerald-500', bg: 'bg-emerald-500/10', icon: 'check_circle' },
@@ -12,14 +14,19 @@ const TABLE_STATUS_CONFIG = {
     MAINTENANCE: { label: 'Maint.', color: 'bg-red-500', border: 'border-red-400/50', glow: 'shadow-red-500/20', text: 'text-red-500', bg: 'bg-red-500/10', icon: 'build' },
 };
 
-function LiveTimer({ startedAt, pausedSecs }: { startedAt: string; pausedSecs: number }) {
+function LiveTimer({ startedAt, pausedSecs, activePauseAt }: { startedAt: string; pausedSecs: number; activePauseAt?: string }) {
     const [elapsed, setElapsed] = useState(0);
     useEffect(() => {
-        const calc = () => setElapsed(Math.max(0, Math.floor((Date.now() - new Date(startedAt).getTime()) / 1000) - pausedSecs));
+        const calc = () => {
+            const now = activePauseAt ? new Date(activePauseAt).getTime() : Date.now();
+            setElapsed(Math.max(0, Math.floor((now - new Date(startedAt).getTime()) / 1000) - pausedSecs));
+        };
         calc();
-        const iv = setInterval(calc, 1000);
-        return () => clearInterval(iv);
-    }, [startedAt, pausedSecs]);
+        if (!activePauseAt) {
+            const iv = setInterval(calc, 1000);
+            return () => clearInterval(iv);
+        }
+    }, [startedAt, pausedSecs, activePauseAt]);
     const hh = Math.floor(elapsed / 3600).toString().padStart(2, '0');
     const mm = Math.floor((elapsed % 3600) / 60).toString().padStart(2, '0');
     const ss = (elapsed % 60).toString().padStart(2, '0');
@@ -387,19 +394,28 @@ export default function OwnerDashboard() {
     const [editingBranch, setEditingBranch] = useState<Branch | null>(null);
     const [deletingBranch, setDeletingBranch] = useState<Branch | null>(null);
 
+    // UPI setup modal
+    const [showUpiModal, setShowUpiModal] = useState(false);
+    const [upiConfigRequired, setUpiConfigRequired] = useState(false);
+
     const loadData = useCallback(async (showSpinner = true) => {
         try {
             if (showSpinner) setLoading(true);
-            const [tablesData, sessionsData, summaryData, branchesData] = await Promise.all([
+            const [tablesData, sessionsData, summaryData, branchesData, upiData] = await Promise.all([
                 tableService.getTables(),
                 sessionService.getActiveSessions(),
                 dashboardService.getSummary(),
                 apiFetch('/branches'),
+                apiFetch('/upi/config').catch(() => null),
             ]);
             setTables(tablesData || []);
             setActiveSessions(sessionsData || []);
             setSummary(summaryData || null);
             setBranches(Array.isArray(branchesData) ? branchesData : []);
+            if (!upiData?.upiId) {
+                setShowUpiModal(true);
+                setUpiConfigRequired(true);
+            }
         } catch (err) {
             console.error('Error loading dashboard:', err);
         } finally {
@@ -483,6 +499,9 @@ export default function OwnerDashboard() {
 
     return (
         <div className="space-y-6 font-display bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 flex-1 px-2 lg:px-6">
+
+            <AdBanner placement="dashboard_top" className="h-24 md:h-32 mb-6" />
+
             {/* Modals */}
             {showAddTable && <TableModal branches={branches} onClose={() => setShowAddTable(false)} onSave={handleAddTable} />}
             {editingTable && <TableModal branches={branches} table={editingTable} onClose={() => setEditingTable(null)} onSave={handleEditTable} />}
@@ -491,6 +510,7 @@ export default function OwnerDashboard() {
             {editingBranch && <BranchModal mode="edit" branch={editingBranch} onClose={() => setEditingBranch(null)} onSave={handleEditBranch} />}
             {deletingBranch && <DeleteConfirm label={`Branch "${deletingBranch.name}"`} onConfirm={handleDeleteBranch} onClose={() => setDeletingBranch(null)} />}
             {pricingBranch && <PricingModal branch={pricingBranch} onClose={() => setPricingBranch(null)} />}
+            {showUpiModal && <UpiConfigModal required={upiConfigRequired} onClose={() => setShowUpiModal(false)} onSaveSuccess={() => { setShowUpiModal(false); setUpiConfigRequired(false); }} />}
 
             {/* Header */}
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
@@ -616,11 +636,13 @@ export default function OwnerDashboard() {
                                             {isPlaying && sess && (
                                                 <div className="mt-2.5 w-full border-t border-slate-100 dark:border-slate-800 pt-2.5 space-y-1">
                                                     <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Duration</p>
-                                                    <p className={`text-sm font-black ${cfg.text}`}>
-                                                        {sess.status === 'ACTIVE'
-                                                            ? <LiveTimer startedAt={sess.startedAt} pausedSecs={(sess as any).pausedDurationSecs || 0} />
-                                                            : '⏸ Paused'
-                                                        }
+                                                    <p className={`text-sm font-black ${cfg.text} flex items-center justify-center gap-1`}>
+                                                        <LiveTimer
+                                                            startedAt={sess.startedAt}
+                                                            pausedSecs={(sess as any).pausedDurationSecs || 0}
+                                                            activePauseAt={sess.status === 'PAUSED' ? ((sess as any).pauses?.[0]?.pausedAt || new Date().toISOString()) : undefined}
+                                                        />
+                                                        {sess.status === 'PAUSED' && <span className="text-[8px] bg-amber-100 text-amber-700 px-1 py-0.5 rounded font-bold">PAUSED</span>}
                                                     </p>
                                                     <p className="text-[10px] text-slate-400">₹{(sess as any).hourlyRateApplied ?? '—'}/hr</p>
                                                 </div>

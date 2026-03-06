@@ -14,10 +14,12 @@ model Organization {
   subscriptionTier String         @default("FREE_TRIAL")
   isActive         Boolean        @default(true)
   featureFlags     Json? // E.g., { "canteenPOS": false }
+  allowedPaymentMethods Json? @default("[\"CASH\", \"UPI\", \"CARD\", \"WALLET\"]")
   branches         Branch[]
   users            User[] // Users associated with org
   subscriptions    Subscription[]
   fraudAlerts      FraudAlert[]
+  upiConfig        UpiConfig?
   createdAt        DateTime       @default(now())
   updatedAt        DateTime       @updatedAt
   roles            Role[]
@@ -79,7 +81,7 @@ model Table {
   branchId         String
   nameOrNumber     String
   status           TableStatus @default(AVAILABLE) // AVAILABLE, PLAYING, RESERVED, MAINTENANCE
-  customHourlyRate Decimal?    // Optional override rate just for this specific table (e.g. VIP table)
+  customHourlyRate Decimal? // Optional override rate just for this specific table (e.g. VIP table)
   branch           Branch      @relation(fields: [branchId], references: [id])
   sessions         Session[]
 }
@@ -162,12 +164,12 @@ model Payment {
   id             String        @id @default(uuid())
   idempotencyKey String?       @unique // Prevent duplicate charges
   sessionId      String?
-  payerId        String
+  payerId        String?
   amount         Decimal
   method         PaymentMethod // CASH, UPI, CARD, WALLET
   status         PaymentStatus @default(PENDING) // SUCCESS, FAILED
   session        Session?      @relation(fields: [sessionId], references: [id])
-  payer          User          @relation(fields: [payerId], references: [id])
+  payer          User?         @relation(fields: [payerId], references: [id])
   createdAt      DateTime      @default(now())
 }
 
@@ -372,11 +374,19 @@ model AssetMaintenance {
 // ==========================================
 
 model SubscriptionPlan {
-  id            String         @id @default(uuid())
-  name          String // E.g., 'STARTER', 'PRO', 'ENTERPRISE'
-  price         Decimal
-  features      Json // E.g., { "canteenPOS": true, "maxTables": 10 }
-  subscriptions Subscription[]
+  id             String             @id @default(uuid())
+  name           String // E.g., 'STARTER', 'PRO', 'ENTERPRISE'
+  type           String             @default("pro") // free, pro, enterprise
+  price          Decimal
+  billingCycle   String             @default("monthly")
+  features       Json // E.g., { "canteenPOS": true, "maxTables": 10 }
+  maxBranches    Int                @default(0) // 0 = unlimited
+  maxTables      Int                @default(0) // 0 = unlimited
+  adsEnabled     Boolean            @default(false)
+  isActive       Boolean            @default(true)
+  createdAt      DateTime           @default(now())
+  subscriptions  Subscription[]
+  adVisibilities AdPlanVisibility[]
 }
 
 model Subscription {
@@ -435,4 +445,65 @@ enum AlertSeverity {
   MEDIUM
   HIGH
   CRITICAL
+}
+
+// ==========================================
+// PHASE 5: ADVERTISEMENT MANAGEMENT
+// ==========================================
+
+model Advertisement {
+  id          String    @id @default(uuid())
+  title       String
+  imageUrl    String
+  redirectUrl String?
+  isActive    Boolean   @default(true)
+  startDate   DateTime?
+  endDate     DateTime?
+  priority    Int       @default(0)
+  createdAt   DateTime  @default(now())
+
+  placements       AdPlacement[]
+  planVisibilities AdPlanVisibility[]
+}
+
+model AdPlacement {
+  id              String @id @default(uuid())
+  advertisementId String
+  placementName   String
+
+  advertisement Advertisement @relation(fields: [advertisementId], references: [id], onDelete: Cascade)
+}
+
+model AdPlanVisibility {
+  id              String  @id @default(uuid())
+  advertisementId String
+  planId          String? // If null, applies to all plans that have adsEnabled = true
+
+  advertisement Advertisement     @relation(fields: [advertisementId], references: [id], onDelete: Cascade)
+  plan          SubscriptionPlan? @relation(fields: [planId], references: [id], onDelete: Cascade)
+}
+
+// ==========================================
+// UPI PAYMENT CONFIGURATION
+// ==========================================
+
+model UpiConfig {
+  id              String       @id @default(uuid())
+  organizationId  String       @unique
+  upiId           String       // e.g. merchant@upi
+  merchantName    String       // Display name on payment apps
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
+
+  organization Organization @relation(fields: [organizationId], references: [id])
+}
+
+// ==========================================
+// PLATFORM GLOBAL SETTINGS
+// ==========================================
+
+model GlobalSetting {
+  id            String   @id @default("global")
+  freeTrialDays Int      @default(3)
+  updatedAt     DateTime @updatedAt
 }

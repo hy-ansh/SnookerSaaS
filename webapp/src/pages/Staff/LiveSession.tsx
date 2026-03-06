@@ -1,6 +1,8 @@
 import { useEffect, useState, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { sessionService, type CheckoutPayload } from '../../api/sessions';
+import { UpiQrCode } from '../../components/Shared/UpiQrCode';
+import { CheckoutPaymentModal } from '../../components/Shared/CheckoutPaymentModal';
 
 // ── Types ──────────────────────────────────────────────────────────────────────
 interface PlayerSearchResult { id: string; fullName: string; email: string; playerProfile?: { nickname?: string } }
@@ -78,15 +80,15 @@ function AddPlayerModal({ onAdd, onClose }: { onAdd: (player: PlayerSearchResult
     );
 }
 
-// ── Checkout Modal ─────────────────────────────────────────────────────────────
-function CheckoutModal({
-    totalAmount, players, durationMins, gameType: sessionGameType, onConfirm, onClose
+// ── Session Summary Modal (Step 1) ──────────────────────────────────────────────
+function SessionSummaryModal({
+    totalAmount, players, durationMins, gameType: sessionGameType, onNext, onClose
 }: {
     totalAmount: number;
     players: any[];
     durationMins: number;
     gameType?: string;
-    onConfirm: (payload: CheckoutPayload) => Promise<void>;
+    onNext: (payload: any) => void;
     onClose: () => void;
 }) {
     const [gameType, setGameType] = useState<'LTP' | 'SPLIT' | 'SOLO'>(
@@ -94,68 +96,22 @@ function CheckoutModal({
     );
     const [winnerIds, setWinnerIds] = useState<string[]>([]);
 
-    const payingPlayers = gameType === 'LTP' && winnerIds.length > 0 && winnerIds.length < players.length
-        ? players.filter(p => !winnerIds.includes(p.playerId))
-        : players;
-
-    const [mode, setMode] = useState<PayMode>('CASH');
-    const [splitModes, setSplitModes] = useState<Record<string, PayMode>>(() => {
-        const init: Record<string, PayMode> = {};
-        players.forEach(p => { init[p.playerId] = 'DUES'; });
-        return init;
-    });
-    const [submitting, setSubmitting] = useState(false);
-
-    const perPlayer = payingPlayers.length > 0 ? totalAmount / payingPlayers.length : totalAmount;
-
-    const PAY_OPTIONS: { value: PayMode; label: string; icon: string; color: string }[] = [
-        { value: 'CASH', label: 'Cash', icon: 'payments', color: 'text-emerald-600' },
-        { value: 'CARD', label: 'Card', icon: 'credit_card', color: 'text-blue-600' },
-        { value: 'UPI', label: 'UPI', icon: 'qr_code_scanner', color: 'text-violet-600' },
-        { value: 'WALLET', label: 'Wallet', icon: 'account_balance_wallet', color: 'text-amber-600' },
-        { value: 'DUES', label: 'Add to Dues', icon: 'account_balance', color: 'text-red-500' },
-        ...(payingPlayers.length > 1 ? [{ value: 'SPLIT' as PayMode, label: 'Split Payments', icon: 'call_split', color: 'text-indigo-600' }] : []),
-    ];
-
     const toggleWinner = (playerId: string) => {
         setWinnerIds(prev => prev.includes(playerId) ? prev.filter(id => id !== playerId) : [...prev, playerId]);
     };
 
-    const handleConfirm = async () => {
-        setSubmitting(true);
-        try {
-            let payload: CheckoutPayload;
-
-            // If DUES or SPLIT is chosen with LTP, we construct a manual split payment for the backend.
-            if (mode === 'SPLIT' || (mode === 'DUES' && gameType === 'LTP')) {
-                payload = {
-                    paymentMethod: 'SPLIT',
-                    splitPayments: payingPlayers.map(sp => ({
-                        playerId: sp.playerId,
-                        method: mode === 'DUES' ? 'DUES' : (splitModes[sp.playerId] || 'CASH'),
-                        amount: perPlayer
-                    })),
-                    gameType,
-                    winnerIds,
-                };
-            } else {
-                payload = { paymentMethod: mode, gameType, winnerIds };
-            }
-            await onConfirm(payload);
-        } finally {
-            setSubmitting(false);
-        }
+    const handleNext = () => {
+        onNext({ gameType, winnerIds });
     };
 
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
             <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={onClose} />
             <div className="relative bg-white dark:bg-slate-900 rounded-3xl shadow-2xl border border-slate-200 dark:border-slate-800 w-full max-w-md overflow-hidden max-h-[90vh] flex flex-col">
-                {/* Header */}
                 <div className="p-6 border-b border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/50 shrink-0">
                     <div className="flex items-center justify-between">
                         <div>
-                            <h2 className="text-xl font-black text-slate-900 dark:text-white">Checkout</h2>
+                            <h2 className="text-xl font-black text-slate-900 dark:text-white">Session Summary</h2>
                             <p className="text-sm text-slate-500 mt-0.5">{durationMins} min session</p>
                         </div>
                         <div className="text-right">
@@ -208,60 +164,12 @@ function CheckoutModal({
                         </div>
                     )}
 
-                    {/* Payment mode selection */}
-                    <div>
-                        <p className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-3">Select Payment Mode</p>
-                        <div className="grid grid-cols-3 gap-2">
-                            {PAY_OPTIONS.map(opt => (
-                                <button key={opt.value} onClick={() => setMode(opt.value)}
-                                    className={`flex flex-col items-center justify-center p-3 rounded-2xl border-2 transition-all gap-1.5 ${mode === opt.value ? 'border-primary bg-primary/5 shadow-sm shadow-primary/20' : 'border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50 hover:border-slate-300'}`}>
-                                    <span className={`material-symbols-outlined text-2xl ${mode === opt.value ? 'text-primary' : opt.color}`}>{opt.icon}</span>
-                                    <span className={`text-[10px] font-bold uppercase tracking-wide ${mode === opt.value ? 'text-primary' : 'text-slate-600 dark:text-slate-400'}`}>{opt.label}</span>
-                                </button>
-                            ))}
-                        </div>
-                    </div>
-
-                    {/* DUES warning */}
-                    {mode === 'DUES' && (
-                        <div className="flex items-start gap-3 p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl text-sm text-red-600">
-                            <span className="material-symbols-outlined text-[18px] shrink-0 mt-0.5">warning</span>
-                            <p>This will create pending dues for {payingPlayers.length > 0 ? 'the paying players' : 'the session'}.</p>
-                        </div>
-                    )}
-
-                    {/* SPLIT mode per-player selectors */}
-                    {mode === 'SPLIT' && payingPlayers.length > 0 && (
-                        <div className="space-y-2">
-                            <p className="text-xs font-bold text-slate-500 uppercase tracking-wider">Per-Player Split (₹{perPlayer.toFixed(2)} each)</p>
-                            {payingPlayers.map((sp: any) => (
-                                <div key={sp.playerId} className="flex items-center justify-between p-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50 gap-3">
-                                    <div className="flex items-center gap-2 min-w-0">
-                                        <div className="size-8 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold text-xs shrink-0">
-                                            {sp.player?.fullName?.charAt(0) || '?'}
-                                        </div>
-                                        <p className="font-bold text-slate-900 dark:text-white text-sm truncate">{sp.player?.fullName || 'Player'}</p>
-                                    </div>
-                                    <select value={splitModes[sp.playerId] || 'DUES'} onChange={e => setSplitModes(prev => ({ ...prev, [sp.playerId]: e.target.value as PayMode }))}
-                                        className="text-xs font-bold bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg px-2 py-1.5 outline-none">
-                                        <option value="CASH">Cash</option>
-                                        <option value="CARD">Card</option>
-                                        <option value="UPI">UPI</option>
-                                        <option value="WALLET">Wallet</option>
-                                        <option value="DUES">Add to Dues</option>
-                                    </select>
-                                </div>
-                            ))}
-                        </div>
-                    )}
-
-                    {/* Action buttons */}
                     <div className="flex gap-3 pt-2">
                         <button onClick={onClose} className="flex-1 py-3 rounded-2xl font-bold text-slate-600 dark:text-slate-300 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 transition-colors">Cancel</button>
-                        <button onClick={handleConfirm} disabled={submitting}
-                            className="flex-1 py-3 rounded-2xl font-bold text-white bg-primary hover:bg-primary/90 shadow-lg shadow-primary/20 transition-all disabled:opacity-60 flex items-center justify-center gap-2">
-                            {submitting ? <span className="animate-spin rounded-full h-4 w-4 border-b-2 border-white" /> : <span className="material-symbols-outlined text-[18px]">check_circle</span>}
-                            Confirm & Close
+                        <button onClick={handleNext}
+                            className="flex-1 py-3 rounded-2xl font-bold text-white bg-primary hover:bg-primary/90 shadow-lg shadow-primary/20 transition-all flex items-center justify-center gap-2">
+                            Proceed to Payment
+                            <span className="material-symbols-outlined text-[18px]">arrow_forward</span>
                         </button>
                     </div>
                 </div>
@@ -286,8 +194,10 @@ export default function StaffLiveSession() {
     // Add Player Modal
     const [showAddPlayer, setShowAddPlayer] = useState(false);
 
-    // Checkout Modal
-    const [showCheckout, setShowCheckout] = useState(false);
+    // Checkout Modals State
+    const [showSummary, setShowSummary] = useState(false);
+    const [showPayment, setShowPayment] = useState(false);
+    const [checkoutPayload, setCheckoutPayload] = useState<any>({});
 
     // Live Timer
     const [elapsedSeconds, setElapsedSeconds] = useState(0);
@@ -300,8 +210,10 @@ export default function StaffLiveSession() {
             if (data?.status === 'ACTIVE' && data.startedAt) {
                 const diffSecs = Math.floor((Date.now() - new Date(data.startedAt).getTime()) / 1000) - (data.pausedDurationSecs || 0);
                 setElapsedSeconds(Math.max(0, diffSecs));
-            } else if (data?.status === 'PAUSED') {
-                const diffSecs = Math.floor((new Date(data.updatedAt).getTime() - new Date(data.startedAt).getTime()) / 1000) - (data.pausedDurationSecs || 0);
+            } else if (data?.status === 'PAUSED' && data.startedAt) {
+                const activePause = data.pauses?.[0];
+                const pausedAtTime = activePause ? new Date(activePause.pausedAt).getTime() : Date.now();
+                const diffSecs = Math.floor((pausedAtTime - new Date(data.startedAt).getTime()) / 1000) - (data.pausedDurationSecs || 0);
                 setElapsedSeconds(Math.max(0, diffSecs));
             }
         } catch (error) {
@@ -335,7 +247,8 @@ export default function StaffLiveSession() {
         if (!session) return;
         try {
             const res = await sessionService.endSession(session.id, payload);
-            setShowCheckout(false);
+            setShowPayment(false);
+            setCheckoutPayload({});
             navigate(-1);
             // Brief notification shown to user
             alert(`✅ Session Closed\n⏱ Duration: ${res.durationMinutes}m\n💰 Total: ₹${res.totalAmount?.toFixed(2)}`);
@@ -395,16 +308,30 @@ export default function StaffLiveSession() {
         <div className="max-w-5xl mx-auto w-full font-display">
             {/* Modals */}
             {showAddPlayer && <AddPlayerModal onAdd={handleAddPlayer} onClose={() => setShowAddPlayer(false)} />}
-            {showCheckout && (
-                <CheckoutModal
+            {showSummary && (
+                <SessionSummaryModal
                     totalAmount={Number(currentFee)}
                     players={session.players || []}
                     durationMins={durationMins}
                     gameType={session.gameType}
-                    onConfirm={handleCheckout}
-                    onClose={() => setShowCheckout(false)}
+                    onNext={(payload) => {
+                        setCheckoutPayload(payload);
+                        setShowSummary(false);
+                        setShowPayment(true);
+                    }}
+                    onClose={() => setShowSummary(false)}
                 />
             )}
+            <CheckoutPaymentModal
+                isOpen={showPayment}
+                onClose={() => setShowPayment(false)}
+                totalAmount={Number(currentFee)}
+                title="Checkout Session"
+                subtitle={`Table ${session.table?.nameOrNumber}`}
+                players={session.players || []}
+                initialPayload={checkoutPayload}
+                onConfirm={handleCheckout}
+            />
             {isEditingRate && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
                     <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setIsEditingRate(false)} />
@@ -464,7 +391,7 @@ export default function StaffLiveSession() {
                     </div>
                     {isLive && (
                         <div className="flex flex-col gap-3 min-w-[200px]">
-                            <button onClick={() => setShowCheckout(true)} disabled={isProcessing}
+                            <button onClick={() => setShowSummary(true)} disabled={isProcessing}
                                 className="w-full bg-primary hover:bg-primary/90 text-white font-bold py-3 px-6 rounded-xl shadow-md shadow-primary/20 flex items-center justify-center gap-2 disabled:opacity-50">
                                 <span className="material-symbols-outlined">stop_circle</span> End &amp; Checkout
                             </button>
@@ -568,7 +495,7 @@ export default function StaffLiveSession() {
                         )}
                     </div>
                     {isLive && (
-                        <button onClick={() => setShowCheckout(true)}
+                        <button onClick={() => setShowSummary(true)}
                             className="mt-auto relative z-10 w-full bg-primary hover:bg-primary/90 text-white font-bold py-3.5 rounded-xl shadow-lg shadow-primary/20 flex items-center justify-center gap-2">
                             <span className="material-symbols-outlined">point_of_sale</span>
                             Checkout &amp; Close Session

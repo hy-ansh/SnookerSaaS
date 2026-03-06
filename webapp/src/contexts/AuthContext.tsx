@@ -16,6 +16,7 @@ export interface AppUser {
     orgIsActive?: boolean;
     orgCreatedAt?: string;
     branchId?: string;
+    allowedPaymentMethods?: string[];
 }
 
 interface AuthContextType {

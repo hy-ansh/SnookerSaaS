@@ -15,6 +15,7 @@ import AdminDashboard from './pages/Admin/Dashboard';
 import AdminSettings from './pages/Admin/Settings';
 import AdminOrganizations from './pages/Admin/Organizations';
 import AdminPlans from './pages/Admin/Plans';
+import AdminAds from './pages/Admin/Ads';
 
 import OwnerDashboard from './pages/Owner/Dashboard';
 import OwnerAccounting from './pages/Owner/Accounting';
@@ -25,17 +26,23 @@ import OwnerPayments from './pages/Owner/Payments';
 import OwnerAssetMaintenance from './pages/Owner/AssetMaintenance';
 import OwnerSubscription from './pages/Owner/Subscription';
 import OwnerOnboarding from './pages/Owner/Onboarding';
+import OwnerSettings from './pages/Owner/Settings';
 
 import StaffLiveSession from './pages/Staff/LiveSession';
 import StaffOverview from './pages/Staff/Overview';
 import StaffSessionHistory from './pages/Staff/SessionHistory';
 import StaffPlayerAnalytics from './pages/Staff/PlayerAnalytics';
+import StaffDues from './pages/Staff/Dues';
 
 import PlayerDashboard from './pages/Player/Dashboard';
 import PlayerMatches from './pages/Player/Matches';
 import PlayerLeaderboard from './pages/Player/Leaderboard';
 import PlayerDues from './pages/Player/Dues';
 import PlayerWallet from './pages/Player/Wallet';
+
+import TermsAndConditions from './pages/Legal/TermsAndConditions';
+import PrivacyPolicy from './pages/Legal/PrivacyPolicy';
+import RefundPolicy from './pages/Legal/RefundPolicy';
 
 import ProtectedRoute from './components/ProtectedRoute';
 
@@ -46,6 +53,9 @@ function App() {
         {/* Public Routes */}
         <Route element={<PublicLayout />}>
           <Route path="/" element={<LandingPage />} />
+          <Route path="/terms" element={<TermsAndConditions />} />
+          <Route path="/privacy" element={<PrivacyPolicy />} />
+          <Route path="/refund" element={<RefundPolicy />} />
         </Route>
 
         {/* Auth Routes */}
@@ -60,6 +70,7 @@ function App() {
             <Route index element={<AdminDashboard />} />
             <Route path="organizations" element={<AdminOrganizations />} />
             <Route path="plans" element={<AdminPlans />} />
+            <Route path="ads" element={<AdminAds />} />
             <Route path="settings" element={<AdminSettings />} />
           </Route>
         </Route>
@@ -77,6 +88,7 @@ function App() {
             <Route path="subscription" element={<OwnerSubscription />} />
             <Route path="live/:id" element={<StaffLiveSession />} />
             <Route path="onboarding" element={<OwnerOnboarding />} />
+            <Route path="settings" element={<OwnerSettings />} />
           </Route>
         </Route>
 
@@ -85,6 +97,7 @@ function App() {
             <Route index element={<StaffOverview />} />
             <Route path="sessions" element={<StaffSessionHistory />} />
             <Route path="players" element={<StaffPlayerAnalytics />} />
+            <Route path="dues" element={<StaffDues />} />
             <Route path="pos" element={<OwnerInventoryPOS />} />
             <Route path="live/:id" element={<StaffLiveSession />} />
           </Route>

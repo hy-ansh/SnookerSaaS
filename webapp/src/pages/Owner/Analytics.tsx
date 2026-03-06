@@ -37,6 +37,7 @@ function AnalyticsContent() {
     const [kpis, setKpis] = useState<KpiData | null>(null);
     const [ops, setOps] = useState<OperationalData | null>(null);
     const [loading, setLoading] = useState(true);
+    const [dateFilter, setDateFilter] = useState('30d');
 
     useEffect(() => {
         const load = async () => {
@@ -44,7 +45,7 @@ function AnalyticsContent() {
                 setLoading(true);
                 const [heatmapRes, summaryRes, opsRes] = await Promise.all([
                     apiFetch('/analytics/heatmap').catch(() => null),
-                    apiFetch('/analytics/summary').catch(() => null),
+                    apiFetch(dateFilter === 'all' ? '/analytics/summary' : `/analytics/summary?period=${dateFilter}`).catch(() => null),
                     apiFetch('/analytics/operational').catch(() => null),
                 ]);
 
@@ -65,7 +66,7 @@ function AnalyticsContent() {
             }
         };
         load();
-    }, []);
+    }, [dateFilter]);
 
     const heatmapChartData = {
         labels: Array.from({ length: 24 }, (_, i) => `${i}:00`),
@@ -132,9 +133,19 @@ function AnalyticsContent() {
                     <p className="text-slate-500 dark:text-slate-400 font-medium">Deep dive into performance & growth metrics</p>
                 </div>
                 <div className="flex items-center gap-4">
-                    <span className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm font-bold rounded-xl shadow-sm text-slate-600 dark:text-slate-300">
-                        <span className="material-symbols-outlined text-sm">calendar_month</span> Last 30 Days
-                    </span>
+                    <div className="relative">
+                        <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm pointer-events-none">calendar_today</span>
+                        <select
+                            value={dateFilter}
+                            onChange={(e) => setDateFilter(e.target.value)}
+                            className="pl-9 pr-8 py-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg text-slate-700 dark:text-slate-300 font-semibold text-sm shadow-sm hover:bg-slate-50 transition-all cursor-pointer appearance-none outline-none focus:ring-2 focus:ring-primary/20"
+                        >
+                            <option value="all">All Time</option>
+                            <option value="30d">Last 30 Days</option>
+                            <option value="7d">Last 7 Days</option>
+                        </select>
+                        <span className="material-symbols-outlined absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 text-sm pointer-events-none">expand_more</span>
+                    </div>
                 </div>
             </div>
 
@@ -260,10 +271,10 @@ function AnalyticsContent() {
                             </div>
                             {!loading && ops && (
                                 <span className={`px-3 py-1 text-xs font-bold rounded-full border ${ops.occupancyPct >= 70
-                                        ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-400 border-emerald-200 dark:border-emerald-500/20'
-                                        : ops.occupancyPct >= 40
-                                            ? 'bg-amber-100 text-amber-700 dark:bg-amber-500/10 dark:text-amber-400 border-amber-200 dark:border-amber-500/20'
-                                            : 'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400 border-slate-200 dark:border-slate-700'
+                                    ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-400 border-emerald-200 dark:border-emerald-500/20'
+                                    : ops.occupancyPct >= 40
+                                        ? 'bg-amber-100 text-amber-700 dark:bg-amber-500/10 dark:text-amber-400 border-amber-200 dark:border-amber-500/20'
+                                        : 'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400 border-slate-200 dark:border-slate-700'
                                     }`}>
                                     {ops.occupancyPct >= 70 ? 'BUSY' : ops.occupancyPct >= 40 ? 'MODERATE' : 'QUIET'}
                                 </span>

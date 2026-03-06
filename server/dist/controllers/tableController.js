@@ -62,6 +62,25 @@ const createTable = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
             res.status(403).json({ error: 'Branch not found or does not belong to your organization' });
             return;
         }
+        // ── Subscription Limit Check ──
+        const subscription = yield prisma_1.default.subscription.findUnique({
+            where: { organizationId },
+            include: { plan: true }
+        });
+        if (subscription === null || subscription === void 0 ? void 0 : subscription.plan) {
+            const maxTables = subscription.plan.maxTables || 0;
+            if (maxTables > 0) {
+                const currentCount = yield prisma_1.default.table.count({
+                    where: { branch: { organizationId } }
+                });
+                if (currentCount >= maxTables) {
+                    res.status(403).json({
+                        error: `Your plan allows a maximum of ${maxTables} table(s). Upgrade to add more.`
+                    });
+                    return;
+                }
+            }
+        }
         const table = yield prisma_1.default.table.create({
             data: Object.assign({ branchId: branchId, nameOrNumber: String(nameOrNumber), status: 'AVAILABLE' }, (customHourlyRate !== undefined ? { customHourlyRate: customHourlyRate === '' ? null : Number(customHourlyRate) } : {})),
             include: {

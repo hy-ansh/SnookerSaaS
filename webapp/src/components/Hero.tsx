@@ -1,4 +1,4 @@
-import { useRef, useState, useMemo } from 'react';
+import { useMemo } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
 import { Environment, PerspectiveCamera, ContactShadows, PresentationControls } from '@react-three/drei';
 import { Physics, useSphere, usePlane } from '@react-three/cannon';
@@ -83,10 +83,29 @@ function BilliardBall({
         // Apply a random energetic impulse to scatter it
         const impulseX = (Math.random() - 0.5) * 15;
         const impulseZ = (Math.random() - 0.5) * 15;
-        api.applyImpulse([impulseX, 0, impulseZ], [0, 0, 0]);
+        const impulseY = (Math.random() - 0.5) * 15;
+        api.applyImpulse([impulseX, impulseY, impulseZ], [0, 0, 0]);
         // Also apply some random spin
         api.applyTorque([(Math.random() - 0.5) * 5, (Math.random() - 0.5) * 5, (Math.random() - 0.5) * 5]);
     };
+
+    // Apply attraction towards mouse cursor continuously
+    useFrame(({ mouse, viewport }) => {
+        const x = (mouse.x * viewport.width) / 2;
+        const y = (mouse.y * viewport.height) / 2;
+        // z target is 0
+
+        // Calculate vector from ball to mouse
+        api.position.subscribe((p) => {
+            const dx = x - p[0];
+            const dy = y - p[1];
+            const dz = 0 - p[2];
+
+            // Apply a small force towards the mouse pointer
+            // Tweak the multiplier to adjust attraction strength
+            api.applyForce([dx * 1.5, dy * 1.5, dz * 1.5], [0, 0, 0]);
+        })();
+    });
 
     return (
         <mesh
@@ -129,69 +148,16 @@ function TableBoundaries() {
     return null;
 }
 
-// A stylised Snooker/Pool Cue
-function PoolCue() {
-    const groupRef = useRef<THREE.Group>(null);
-    const [hovered, setHover] = useState(false);
-
-    useFrame(({ clock, mouse }) => {
-        if (groupRef.current) {
-            // Smoothly track mouse position to point the cue
-            if (hovered) {
-                const targetZ = mouse.x * -2;
-                const targetY = mouse.y * 2 + 1;
-                groupRef.current.position.z += (targetZ - groupRef.current.position.z) * 0.1;
-                groupRef.current.position.y += (targetY - groupRef.current.position.y) * 0.1;
-                groupRef.current.rotation.z = Math.sin(clock.getElapsedTime() * 2) * 0.05;
-            } else {
-                // Return to rested float
-                groupRef.current.position.z += (0 - groupRef.current.position.z) * 0.05;
-                groupRef.current.position.y += (1 - groupRef.current.position.y) * 0.05;
-            }
-        }
-    });
-
-    return (
-        <group
-            ref={groupRef}
-            position={[8, 1, 0]}
-            rotation={[0, 0, Math.PI / 2.2]}
-            onPointerOver={() => setHover(true)}
-            onPointerOut={() => setHover(false)}
-        >
-            {/* Main Shaft (Wood) */}
-            <mesh position={[0, -5, 0]} castShadow>
-                <cylinderGeometry args={[0.2, 0.4, 10, 32]} />
-                <meshStandardMaterial color="#8B5A2B" roughness={0.4} />
-            </mesh>
-            {/* Butt wrap (Black handle) */}
-            <mesh position={[0, -8, 0]} castShadow>
-                <cylinderGeometry args={[0.3, 0.4, 4, 32]} />
-                <meshStandardMaterial color="#1a1a1a" roughness={0.8} />
-            </mesh>
-            {/* Ferrule (White tip base) */}
-            <mesh position={[0, 0.1, 0]} castShadow>
-                <cylinderGeometry args={[0.2, 0.2, 0.2, 32]} />
-                <meshStandardMaterial color="#ffffff" roughness={0.2} />
-            </mesh>
-            {/* Tip (Blue) */}
-            <mesh position={[0, 0.25, 0]} castShadow>
-                <cylinderGeometry args={[0.18, 0.2, 0.1, 32]} />
-                <meshStandardMaterial color="#4169E1" roughness={0.9} />
-            </mesh>
-        </group>
-    );
-}
 
 export default function HeroScene() {
     return (
-        <div className="w-full h-[500px] lg:h-[600px] relative rounded-3xl overflow-hidden shadow-2xl bg-gradient-to-br from-emerald-900/10 to-transparent border border-white/20 backdrop-blur-sm">
+        <div className="w-full h-full absolute inset-0 -z-10 bg-background-light opacity-60 pointer-events-auto">
             <Canvas shadows className="w-full h-full pointer-events-auto">
                 <PerspectiveCamera makeDefault position={[0, 8, 15]} fov={35} />
                 <color attach="background" args={['transparent']} />
 
                 {/* Lighting setup based on a premium pool hall */}
-                <ambientLight intensity={0.4} />
+                <ambientLight intensity={1.2} />
                 <spotLight
                     position={[0, 15, 0]}
                     angle={0.6}
@@ -208,34 +174,44 @@ export default function HeroScene() {
                     polar={[-Math.PI / 3, Math.PI / 3]}
                     azimuth={[-Math.PI / 1.4, Math.PI / 2]}
                 >
-                    <Physics gravity={[0, -20, 0]} allowSleep={false}>
+                    <Physics gravity={[0, 0, 0]} allowSleep={false}>
                         <TableBoundaries />
 
                         {/* Cue Ball */}
-                        <BilliardBall startPosition={[-3, 1, 0]} color="#ffffff" />
-
-                        {/* 8-Ball (Black) */}
-                        <BilliardBall startPosition={[0, 1, 0]} color="#111111" number="8" />
+                        <BilliardBall startPosition={[-3, 0, 0]} color="#ffffff" />
 
                         {/* 1-Ball (Solid Yellow) */}
-                        <BilliardBall startPosition={[1.5, 1, -0.9]} color="#facc15" number="1" />
-
+                        <BilliardBall startPosition={[1.5, 2, -0.9]} color="#facc15" number="1" />
+                        {/* 2-Ball (Solid Blue) */}
+                        <BilliardBall startPosition={[2, -1, 1]} color="#2563eb" number="2" />
                         {/* 3-Ball (Solid Red) */}
                         <BilliardBall startPosition={[1.5, 1, 0.9]} color="#dc2626" number="3" />
-
+                        {/* 4-Ball (Solid Purple) */}
+                        <BilliardBall startPosition={[2.5, 0, -2]} color="#6b21a8" number="4" />
+                        {/* 5-Ball (Solid Orange) */}
+                        <BilliardBall startPosition={[3, 2, 1]} color="#ea580c" number="5" />
+                        {/* 6-Ball (Solid Green) */}
+                        <BilliardBall startPosition={[1, -2, -1]} color="#059467" number="6" />
+                        {/* 7-Ball (Solid Maroon) */}
+                        <BilliardBall startPosition={[0, 2, -2]} color="#7f1d1d" number="7" />
+                        {/* 8-Ball (Black) */}
+                        <BilliardBall startPosition={[0, 0, 0]} color="#111111" number="8" />
                         {/* 9-Ball (Stripe Yellow) */}
-                        <BilliardBall startPosition={[3, 1, 0]} color="#facc15" number="9" isStripe />
-
+                        <BilliardBall startPosition={[3, -2, 0]} color="#facc15" number="9" isStripe />
+                        {/* 10-Ball (Stripe Blue) */}
+                        <BilliardBall startPosition={[-2, 2, 2]} color="#2563eb" number="10" isStripe />
                         {/* 11-Ball (Stripe Red) */}
                         <BilliardBall startPosition={[3, 1, -1.8]} color="#dc2626" number="11" isStripe />
-
+                        {/* 12-Ball (Stripe Purple) */}
+                        <BilliardBall startPosition={[-1, -2, 1]} color="#6b21a8" number="12" isStripe />
+                        {/* 13-Ball (Stripe Orange) */}
+                        <BilliardBall startPosition={[-2, 0, -2]} color="#ea580c" number="13" isStripe />
                         {/* 14-Ball (Stripe Green) */}
                         <BilliardBall startPosition={[3, 1, 1.8]} color="#059467" number="14" isStripe />
+                        {/* 15-Ball (Stripe Maroon) */}
+                        <BilliardBall startPosition={[-3, -1, 2]} color="#7f1d1d" number="15" isStripe />
 
                     </Physics>
-
-                    {/* Visual Pool Cue */}
-                    <PoolCue />
 
                 </PresentationControls>
 
@@ -252,17 +228,13 @@ export default function HeroScene() {
                 <Environment preset="studio" />
             </Canvas>
 
-            {/* Aesthestic Overlays */}
-            <div className="absolute top-4 left-6 px-3 py-1 bg-white/10 backdrop-blur-md rounded-full border border-white/20 text-xs font-bold text-slate-700 dark:text-emerald-100 uppercase tracking-widest flex items-center gap-2 pointer-events-none">
+            {/* <div className="absolute top-4 left-6 px-3 py-1 bg-white/10 backdrop-blur-md rounded-full border border-white/20 text-xs font-bold text-slate-700 dark:text-emerald-100 uppercase tracking-widest flex items-center gap-2 pointer-events-none">
                 <span className="relative flex size-2">
                     <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
                     <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
                 </span>
-                Interactive 3D Engine
-            </div>
-            <div className="absolute bottom-6 left-1/2 -translate-x-1/2 text-xs font-semibold text-slate-500/70 tracking-widest uppercase pointer-events-none">
-                Drag to rotate • Hover to animate
-            </div>
+                Interactive Floating Physics
+            </div> */}
         </div>
     );
 }

@@ -186,10 +186,13 @@ export const getPaymentSummary = async (req: Request, res: Response): Promise<vo
 
         const period = req.query.period as string;
         let dateFilterQuery: any = {};
+        const now = new Date();
         if (period === '30d') {
-            dateFilterQuery = { createdAt: { gte: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000) } };
+            dateFilterQuery = { createdAt: { gte: new Date(now.getFullYear(), now.getMonth(), now.getDate() - 30) } };
         } else if (period === '7d') {
-            dateFilterQuery = { createdAt: { gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000) } };
+            dateFilterQuery = { createdAt: { gte: new Date(now.getFullYear(), now.getMonth(), now.getDate() - 7) } };
+        } else if (period === 'daily') {
+            dateFilterQuery = { createdAt: { gte: new Date(now.getFullYear(), now.getMonth(), now.getDate()) } };
         }
 
         // Scope by payer's organizationId — more reliable than session->branch->org (session can be null)
@@ -205,7 +208,7 @@ export const getPaymentSummary = async (req: Request, res: Response): Promise<vo
         const methods = ['CASH', 'UPI', 'CARD', 'WALLET'] as const;
 
         // Aggregate totals per payment method and dues
-        const [methodTotals, recentPayments, dueTotalResult, recentDues] = await Promise.all([
+        const [methodTotals, recentPayments, dueTotalResult, recentDues, recentOrders] = await Promise.all([
             Promise.all(
                 methods.map(method =>
                     prisma.payment.aggregate({
@@ -239,6 +242,18 @@ export const getPaymentSummary = async (req: Request, res: Response): Promise<vo
                 },
                 orderBy: { createdAt: 'desc' },
                 take: 20
+            }),
+            prisma.order.findMany({
+                where: {
+                    playerId: null, // Only fetch anonymous ones, as others already created payments
+                    status: 'COMPLETED',
+                    paymentMethod: { in: ['CASH', 'UPI', 'CARD', 'WALLET'] },
+                    ...(req.user?.role === 'SUPER_ADMIN' ? {} : { branch: { organizationId } }),
+                    ...dateFilterQuery
+                },
+                include: { items: { include: { inventoryItem: { select: { name: true } } } } },
+                orderBy: { createdAt: 'desc' },
+                take: 20
             })
         ]);
 
@@ -247,7 +262,20 @@ export const getPaymentSummary = async (req: Request, res: Response): Promise<vo
             method: 'DUE'
         }));
 
-        const combinedPayments = [...recentPayments, ...formattedDues]
+        const formattedAnonymousOrders = (recentOrders || []).map((o: any) => {
+            const itemNames = o.items.map((i: any) => `${i.inventoryItem.name} x${i.quantity}`).join(', ');
+            return {
+                id: o.id,
+                amount: o.totalAmount,
+                method: o.paymentMethod,
+                createdAt: o.createdAt,
+                status: 'SUCCESS',
+                payer: { fullName: `Walk-in Guest (${itemNames})` },
+                session: null
+            };
+        });
+
+        const combinedPayments = [...recentPayments, ...formattedDues, ...formattedAnonymousOrders]
             .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
             .slice(0, 20);
 

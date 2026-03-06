@@ -601,7 +601,8 @@ export const getActiveSessions = async (req: Request, res: Response): Promise<vo
             },
             include: {
                 table: true,
-                players: { include: { player: true } }
+                players: { include: { player: true } },
+                pauses: { where: { resumedAt: null } }
             }
         });
 
@@ -620,7 +621,8 @@ export const getSessionById = async (req: Request, res: Response): Promise<void>
             include: {
                 table: true,
                 branch: true,
-                players: { include: { player: true } }
+                players: { include: { player: true } },
+                pauses: { where: { resumedAt: null } }
             }
         });
 

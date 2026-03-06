@@ -21,7 +21,7 @@ const prisma_1 = __importDefault(require("../config/prisma"));
  * register flow), we auto-create a minimal User row so the request proceeds.
  */
 const authenticate = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l;
+    var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k;
     try {
         const authHeader = req.headers.authorization;
         if (!authHeader || !authHeader.startsWith('Bearer ')) {
@@ -62,12 +62,23 @@ const authenticate = (req, res, next) => __awaiter(void 0, void 0, void 0, funct
             });
             console.log(`[auth] Auto-provisioned DB user for ${email} (role: ${roleName})`);
         }
+        // Derive organizationId from branch if missing (common for Staff users)
+        let derivedOrgId = userRecord.organizationId;
+        if (!derivedOrgId && userRecord.branchId) {
+            const branch = yield prisma_1.default.branch.findUnique({
+                where: { id: userRecord.branchId },
+                select: { organizationId: true }
+            });
+            if (branch) {
+                derivedOrgId = branch.organizationId;
+            }
+        }
         req.user = {
             id: user.id,
             email,
             role: (_j = (_h = userRecord.role) === null || _h === void 0 ? void 0 : _h.name) !== null && _j !== void 0 ? _j : 'PLAYER',
-            storeId: (_k = userRecord.organizationId) !== null && _k !== void 0 ? _k : undefined,
-            branchId: (_l = userRecord.branchId) !== null && _l !== void 0 ? _l : undefined,
+            storeId: derivedOrgId !== null && derivedOrgId !== void 0 ? derivedOrgId : undefined,
+            branchId: (_k = userRecord.branchId) !== null && _k !== void 0 ? _k : undefined,
         };
         next();
     }

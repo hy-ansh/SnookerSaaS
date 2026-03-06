@@ -25,39 +25,30 @@ const requireFeature = (featureName) => {
             }
             // Fetch the organization and their active subscription
             const org = yield prisma_1.default.organization.findUnique({
-                where: { id: organizationId },
-                include: {
-                    subscriptions: {
-                        where: { status: 'ACTIVE' },
-                        include: { plan: true },
-                        orderBy: { createdAt: 'desc' },
-                        take: 1
-                    }
-                }
+                where: { id: organizationId }
             });
             if (!org) {
                 res.status(404).json({ error: 'Organization not found' });
                 return;
             }
-            // If it's a legacy org without a proper Subscription relation, allow access to ease transition,
-            // or strictly check based on string. For production, strictly evaluate the JSON.
-            if (!org.subscriptions || org.subscriptions.length === 0) {
-                // Fallback: If they are FREE_TRIAL, they don't get premium features
-                if (org.subscriptionTier === 'FREE_TRIAL') {
-                    res.status(403).json({ error: `Subscription upgrade required for feature: ${featureName}` });
-                    return;
-                }
-                // If they have legacy "PRO", just pass them.
+            // Or strictly check based on string. For production, strictly evaluate the JSON.
+            // If it's a trial org, check creation date
+            // Note: In an ideal scenario we could check the attached `SubscriptionPlan`,
+            // but `requireFeature` operates at an organization string tier level right now for simplicity.
+            const THREE_DAYS_MS = 3 * 24 * 60 * 60 * 1000;
+            const createdAt = org.createdAt;
+            const isInTrial = createdAt && (Date.now() - new Date(createdAt).getTime() < THREE_DAYS_MS);
+            if (isInTrial) {
+                // Free trial — grant access to all features
                 next();
                 return;
             }
-            const activePlan = org.subscriptions[0].plan;
             // Check the features JSON payload
-            const features = activePlan === null || activePlan === void 0 ? void 0 : activePlan.features;
+            const features = org.featureFlags;
             if (!features || !features[featureName]) {
                 res.status(403).json({
                     error: `Upgrade Required`,
-                    message: `Your current plan (${activePlan === null || activePlan === void 0 ? void 0 : activePlan.name}) does not include ${featureName}.`
+                    message: `Your current plan (${org.subscriptionTier}) does not include ${featureName}.`
                 });
                 return;
             }

@@ -35,6 +35,7 @@ const pricingRoutes_1 = __importDefault(require("./routes/pricingRoutes"));
 const accountingRoutes_1 = __importDefault(require("./routes/accountingRoutes"));
 const assetMaintenanceRoutes_1 = __importDefault(require("./routes/assetMaintenanceRoutes"));
 const ownerRoutes_1 = __importDefault(require("./routes/ownerRoutes"));
+const upiRoutes_1 = __importDefault(require("./routes/upiRoutes"));
 const fraudService_1 = require("./services/fraudService");
 // Import routes mapped for MVP
 app.use('/auth', authRoutes_1.default);
@@ -57,6 +58,7 @@ app.use('/accounting', accountingRoutes_1.default);
 app.use('/maintenance', assetMaintenanceRoutes_1.default);
 app.use('/pricing', pricingRoutes_1.default);
 app.use('/owner', ownerRoutes_1.default);
+app.use('/upi', upiRoutes_1.default);
 app.listen(PORT, () => {
     console.log(`🚀 Server running on http://localhost:${PORT}`);
     // Start background jobs/services

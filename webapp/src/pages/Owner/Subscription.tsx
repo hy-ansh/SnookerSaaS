@@ -6,8 +6,11 @@ interface SubscriptionPlan {
     id: string;
     name: string;
     price: number;
+    adsEnabled: boolean;
     features: Record<string, any>;
 }
+
+import { AdBanner } from '../../components/Ads/AdBanner';
 
 export default function OwnerSubscription() {
     const [isUpgradeModalOpen, setIsUpgradeModalOpen] = useState(false);
@@ -99,6 +102,8 @@ export default function OwnerSubscription() {
                 </div>
             </div>
 
+            <AdBanner placement="subscription_modal" className="h-24 md:h-32 mb-4" />
+
             {/* Current Plan Overview */}
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
@@ -143,7 +148,7 @@ export default function OwnerSubscription() {
                     <span className="material-symbols-outlined text-4xl text-primary mb-2 opacity-50">payments</span>
                     <h3 className="text-sm font-bold text-slate-500 uppercase tracking-wider mb-1">Plan Amount</h3>
                     <div className="text-5xl font-black text-slate-900 dark:text-white mb-2">
-                        ${Number(subscription.plan?.price || 0).toFixed(2)}
+                        ₹{Number(subscription.plan?.price || 0).toFixed(2)}
                     </div>
                     <p className="text-sm text-slate-500 mb-8 font-medium">per {subscription.plan?.interval?.toLowerCase() || 'month'}</p>
 
@@ -174,12 +179,12 @@ export default function OwnerSubscription() {
                                         <span className="material-symbols-outlined">receipt</span>
                                     </div>
                                     <div>
-                                        <p className="font-bold text-slate-900 dark:text-white mb-0.5">${Number(invoice.amount).toFixed(2)}</p>
+                                        <p className="font-bold text-slate-900 dark:text-white mb-0.5">₹{Number(invoice.amount).toFixed(2)}</p>
                                         <p className="text-xs font-medium text-slate-500">Due {new Date(invoice.dueDate).toLocaleDateString()}</p>
                                     </div>
                                 </div>
                                 <div className="flex items-center gap-6">
-                                    <span className={`px-2.5 py-1 text-[10px] font-black uppercase tracking-wider border rounded bg-transparent ${invoice.status === 'PAID' ? 'text-emerald-500 border-emerald-500/30' : invoice.status === 'OPEN' ? 'text-amber-500 border-amber-500/30' : 'text-slate-500 border-slate-300 dark:border-slate-700'}`}>
+                                    <span className={`px-2.5 py-1 text-[10px] font-black uppercase tracking-wider border rounded bg-transparent ₹{invoice.status === 'PAID' ? 'text-emerald-500 border-emerald-500/30' : invoice.status === 'OPEN' ? 'text-amber-500 border-amber-500/30' : 'text-slate-500 border-slate-300 dark:border-slate-700'}`}>
                                         {invoice.status}
                                     </span>
                                     <button className="text-primary hover:text-primary/70 font-bold text-sm flex items-center gap-1 transition-colors">
@@ -223,7 +228,7 @@ export default function OwnerSubscription() {
                                         <div className="mb-6">
                                             <h3 className="text-xl font-black text-slate-900 dark:text-white mb-2">{plan.name}</h3>
                                             <div className="flex items-baseline gap-1">
-                                                <span className="text-4xl font-black text-slate-900 dark:text-white">${Number(plan.price).toFixed(2)}</span>
+                                                <span className="text-4xl font-black text-slate-900 dark:text-white">₹{Number(plan.price).toFixed(2)}</span>
                                                 <span className="text-sm font-bold text-slate-500">/mo</span>
                                             </div>
                                         </div>
@@ -254,6 +259,14 @@ export default function OwnerSubscription() {
                                                     </div>
                                                 );
                                             })}
+
+                                            {/* Advertisement Support */}
+                                            {plan.adsEnabled && (
+                                                <div className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-semibold text-amber-700 dark:text-amber-300 bg-amber-50 dark:bg-amber-500/10">
+                                                    <span className="material-symbols-outlined text-sm">campaign</span>
+                                                    Contains Platform Ads
+                                                </div>
+                                            )}
                                         </div>
 
                                         <button

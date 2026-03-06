@@ -85,6 +85,32 @@ export const getOrganization = async (req: Request, res: Response): Promise<void
     }
 };
 
+export const updatePaymentMethods = async (req: Request, res: Response): Promise<void> => {
+    try {
+        const organizationId = req.user?.storeId;
+        const { allowedPaymentMethods } = req.body;
+
+        if (!organizationId) {
+            res.status(403).json({ error: 'No organization linked' });
+            return;
+        }
+        if (!Array.isArray(allowedPaymentMethods)) {
+            res.status(400).json({ error: 'allowedPaymentMethods must be an array' });
+            return;
+        }
+
+        const org = await prisma.organization.update({
+            where: { id: organizationId },
+            data: { allowedPaymentMethods }
+        });
+
+        res.json({ message: 'Payment methods updated successfully', allowedPaymentMethods: org.allowedPaymentMethods });
+    } catch (err) {
+        console.error('Error updating payment methods:', err);
+        res.status(500).json({ error: 'Internal server error updating payment methods' });
+    }
+};
+
 export const getAvailablePlans = async (req: Request, res: Response): Promise<void> => {
     try {
         const plans = await prisma.subscriptionPlan.findMany({
@@ -193,6 +219,7 @@ export const getOwnerSubscription = async (req: Request, res: Response): Promise
                     name: activeSub.plan?.name,
                     price: Number(activeSub.plan?.price ?? 0),
                     interval: 'month',
+                    adsEnabled: activeSub.plan?.adsEnabled ?? true,
                     features: activeSub.plan?.features || {}
                 }
             });

@@ -55,6 +55,26 @@ export const createTable = async (req: Request, res: Response): Promise<void> =>
             return;
         }
 
+        // ── Subscription Limit Check ──
+        const subscription = await prisma.subscription.findUnique({
+            where: { organizationId },
+            include: { plan: true }
+        });
+        if (subscription?.plan) {
+            const maxTables = subscription.plan.maxTables || 0;
+            if (maxTables > 0) {
+                const currentCount = await prisma.table.count({
+                    where: { branch: { organizationId } }
+                });
+                if (currentCount >= maxTables) {
+                    res.status(403).json({
+                        error: `Your plan allows a maximum of ${maxTables} table(s). Upgrade to add more.`
+                    });
+                    return;
+                }
+            }
+        }
+
         const table = await prisma.table.create({
             data: {
                 branchId: branchId as string,

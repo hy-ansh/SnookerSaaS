@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getOrganizationUsers = exports.getOwnerSubscription = exports.updateOwnerSubscription = exports.getAvailablePlans = exports.getOrganization = exports.createOrganization = void 0;
+exports.getOrganizationUsers = exports.getOwnerSubscription = exports.updateOwnerSubscription = exports.getAvailablePlans = exports.updatePaymentMethods = exports.getOrganization = exports.createOrganization = void 0;
 const prisma_1 = __importDefault(require("../config/prisma"));
 const createOrganization = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     var _a;
@@ -92,6 +92,31 @@ const getOrganization = (req, res) => __awaiter(void 0, void 0, void 0, function
     }
 });
 exports.getOrganization = getOrganization;
+const updatePaymentMethods = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a;
+    try {
+        const organizationId = (_a = req.user) === null || _a === void 0 ? void 0 : _a.storeId;
+        const { allowedPaymentMethods } = req.body;
+        if (!organizationId) {
+            res.status(403).json({ error: 'No organization linked' });
+            return;
+        }
+        if (!Array.isArray(allowedPaymentMethods)) {
+            res.status(400).json({ error: 'allowedPaymentMethods must be an array' });
+            return;
+        }
+        const org = yield prisma_1.default.organization.update({
+            where: { id: organizationId },
+            data: { allowedPaymentMethods }
+        });
+        res.json({ message: 'Payment methods updated successfully', allowedPaymentMethods: org.allowedPaymentMethods });
+    }
+    catch (err) {
+        console.error('Error updating payment methods:', err);
+        res.status(500).json({ error: 'Internal server error updating payment methods' });
+    }
+});
+exports.updatePaymentMethods = updatePaymentMethods;
 const getAvailablePlans = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const plans = yield prisma_1.default.subscriptionPlan.findMany({
@@ -154,7 +179,7 @@ const updateOwnerSubscription = (req, res) => __awaiter(void 0, void 0, void 0, 
 });
 exports.updateOwnerSubscription = updateOwnerSubscription;
 const getOwnerSubscription = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    var _a, _b, _c, _d, _e;
+    var _a, _b, _c, _d, _e, _f, _g, _h;
     try {
         const organizationId = (_a = req.user) === null || _a === void 0 ? void 0 : _a.storeId;
         if (!organizationId) {
@@ -165,10 +190,8 @@ const getOwnerSubscription = (req, res) => __awaiter(void 0, void 0, void 0, fun
             where: { id: organizationId },
             include: {
                 subscriptions: {
-                    where: { status: 'ACTIVE' },
                     include: { plan: true },
-                    orderBy: { createdAt: 'desc' },
-                    take: 1
+                    take: 5
                 }
             }
         });
@@ -176,39 +199,26 @@ const getOwnerSubscription = (req, res) => __awaiter(void 0, void 0, void 0, fun
             res.status(404).json({ error: 'Organization not found' });
             return;
         }
-        // If they have a real subscription from the new model:
-        const orgWithSubs = org;
-        if (orgWithSubs.subscriptions && orgWithSubs.subscriptions.length > 0) {
-            const activeSub = orgWithSubs.subscriptions[0];
-            res.json({
-                status: activeSub.status,
-                planId: activeSub.planId,
-                plan: {
+        const orgAny = org;
+        const allSubs = orgAny.subscriptions || [];
+        const activeSub = allSubs.find((s) => s.status === 'ACTIVE');
+        const baseResponse = {
+            orgCreatedAt: org.createdAt,
+            orgIsActive: org.isActive !== false
+        };
+        if (activeSub) {
+            res.json(Object.assign(Object.assign({}, baseResponse), { status: activeSub.status, planId: activeSub.planId, currentPeriodStart: activeSub.currentPeriodStart, currentPeriodEnd: activeSub.currentPeriodEnd, plan: {
                     id: (_b = activeSub.plan) === null || _b === void 0 ? void 0 : _b.id,
                     name: (_c = activeSub.plan) === null || _c === void 0 ? void 0 : _c.name,
-                    price: (_d = activeSub.plan) === null || _d === void 0 ? void 0 : _d.price,
+                    price: Number((_e = (_d = activeSub.plan) === null || _d === void 0 ? void 0 : _d.price) !== null && _e !== void 0 ? _e : 0),
                     interval: 'month',
-                    features: ((_e = activeSub.plan) === null || _e === void 0 ? void 0 : _e.features) || {}
-                },
-                currentPeriodEnd: activeSub.currentPeriodEnd,
-                invoices: [] // To be wired to stripe/actual invoices later
-            });
+                    adsEnabled: (_g = (_f = activeSub.plan) === null || _f === void 0 ? void 0 : _f.adsEnabled) !== null && _g !== void 0 ? _g : true,
+                    features: ((_h = activeSub.plan) === null || _h === void 0 ? void 0 : _h.features) || {}
+                } }));
             return;
         }
-        // Fallback to Legacy structure:
-        const isFree = org.subscriptionTier === 'FREE_TRIAL';
-        res.json({
-            status: 'ACTIVE',
-            plan: {
-                name: org.subscriptionTier || 'FREE_TRIAL',
-                price: isFree ? 0.00 : 149.00,
-                interval: 'month'
-            },
-            currentPeriodEnd: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
-            invoices: isFree ? [] : [
-                { id: 'inv_1', amount: 149.00, dueDate: new Date().toISOString(), status: 'PAID' }
-            ]
-        });
+        // No active subscription — return null plan with org metadata for trial logic
+        res.json(Object.assign(Object.assign({}, baseResponse), { status: 'NO_SUB', plan: null, currentPeriodEnd: null }));
     }
     catch (err) {
         console.error('Error fetching owner sub:', err);

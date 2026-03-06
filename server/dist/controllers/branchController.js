@@ -59,6 +59,23 @@ const createBranch = (req, res) => __awaiter(void 0, void 0, void 0, function* (
             res.status(400).json({ error: 'Branch name is required' });
             return;
         }
+        // ── Subscription Limit Check ──
+        const subscription = yield prisma_1.default.subscription.findUnique({
+            where: { organizationId },
+            include: { plan: true }
+        });
+        if (subscription === null || subscription === void 0 ? void 0 : subscription.plan) {
+            const maxBranches = subscription.plan.maxBranches || 0;
+            if (maxBranches > 0) {
+                const currentCount = yield prisma_1.default.branch.count({ where: { organizationId } });
+                if (currentCount >= maxBranches) {
+                    res.status(403).json({
+                        error: `Your plan allows a maximum of ${maxBranches} branch(es). Upgrade to add more.`
+                    });
+                    return;
+                }
+            }
+        }
         const branch = yield prisma_1.default.branch.create({
             data: { name: String(name).trim(), address: (address === null || address === void 0 ? void 0 : address.trim()) || null, organizationId },
             include: { _count: { select: { tables: true, sessions: true } } }

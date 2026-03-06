@@ -7,9 +7,11 @@ const prisma = new PrismaClient();
 
 export const recordExpense = async (req: Request, res: Response): Promise<void> => {
     try {
-        const { amount, category, description, receiptUrl } = req.body;
-        const branchId = req.user?.branchId;
+        const { amount, category, description, receiptUrl, branchId: bodyBranchId } = req.body;
+        // Fallback: use body branchId if user has no branchId (owner scenario)
+        const branchId = req.user?.branchId || bodyBranchId;
         const recordedById = req.user?.id;
+        const organizationId = (req.user as any)?.storeId;
 
         if (!branchId || !recordedById) {
             res.status(400).json({ error: 'Branch ID and User context required' });
@@ -20,6 +22,17 @@ export const recordExpense = async (req: Request, res: Response): Promise<void> 
         if (!validCategories.includes(category)) {
             res.status(400).json({ error: 'Invalid expense category' });
             return;
+        }
+
+        // Verify branch belongs to user's org
+        if (organizationId) {
+            const branch = await prisma.branch.findFirst({
+                where: { id: branchId, organizationId }
+            });
+            if (!branch) {
+                res.status(403).json({ error: 'Branch not found in your organization' });
+                return;
+            }
         }
 
         const result = await prisma.$transaction(async (tx) => {

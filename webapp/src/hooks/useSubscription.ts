@@ -28,17 +28,18 @@ export interface SubscriptionData {
     status: string;
     orgCreatedAt?: string;
     orgIsActive?: boolean;
+    freeTrialDays?: number;
     currentPeriodEnd: string | null;
     plan: {
         id?: string;
         name: string;
         price: number;
         interval: string;
+        adsEnabled: boolean;
         features: Record<string, any>;
     } | null;
 }
 
-const THREE_DAYS_MS = 3 * 24 * 60 * 60 * 1000;
 const TWO_DAYS_MS = 2 * 24 * 60 * 60 * 1000;
 
 function computeLifecycle(sub: SubscriptionData | null | undefined): SubLifecycleState {
@@ -52,15 +53,18 @@ function computeLifecycle(sub: SubscriptionData | null | undefined): SubLifecycl
         const msLeft = endDate - now;
         if (msLeft > TWO_DAYS_MS) return 'OK';
         if (msLeft > 0) return 'EXPIRING_SOON';
-        // Subscription expired
-        if (now < endDate + THREE_DAYS_MS) return 'GRACE_PERIOD';
+        // Subscription expired. Give a 3-day grace period
+        const gracePeriodMs = 3 * 24 * 60 * 60 * 1000;
+        if (now < endDate + gracePeriodMs) return 'GRACE_PERIOD';
         return 'LOCKED_OUT';
     }
 
     // No active subscription — check free trial window
     if (sub.orgCreatedAt) {
         const created = new Date(sub.orgCreatedAt).getTime();
-        if (now < created + THREE_DAYS_MS) return 'TRIAL';
+        const trialDays = sub.freeTrialDays ?? 3;
+        const trialMs = trialDays * 24 * 60 * 60 * 1000;
+        if (now < created + trialMs) return 'TRIAL';
     }
 
     return 'LOCKED_OUT';

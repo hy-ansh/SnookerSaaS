@@ -57,13 +57,15 @@ const exportToCSV = (entries: any[]) => {
 function AccountingContent() {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [branches, setBranches] = useState<{ id: string; name: string }[]>([]);
 
     // Form State
     const [expenseForm, setExpenseForm] = useState({
         amount: '',
         date: new Date().toISOString().split('T')[0],
         description: '',
-        category: 'MISC'
+        category: 'MISC',
+        branchId: ''
     });
 
     // Live Data State
@@ -72,16 +74,28 @@ function AccountingContent() {
     const [trend, setTrend] = useState<{ label: string; revenue: number; expenses: number }[]>([]);
     const [loading, setLoading] = useState(true);
 
+    const [currentPage, setCurrentPage] = useState(1);
+    const itemsPerPage = 10;
+    const paginatedEntries = entries.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
+
     const fetchLedger = async () => {
         try {
             setLoading(true);
-            const [ledgerData, trendData] = await Promise.all([
+            const [ledgerData, trendData, branchData] = await Promise.all([
                 apiFetch('/accounting'),
-                apiFetch('/accounting/trend')
+                apiFetch('/accounting/trend'),
+                apiFetch('/branches')
             ]);
             setSummary(ledgerData.summary);
             setEntries(ledgerData.entries);
             if (trendData.trend) setTrend(trendData.trend);
+            if (Array.isArray(branchData)) {
+                setBranches(branchData.map((b: any) => ({ id: b.id, name: b.name })));
+                // Auto-select first branch
+                if (branchData.length > 0 && !expenseForm.branchId) {
+                    setExpenseForm(prev => ({ ...prev, branchId: branchData[0].id }));
+                }
+            }
         } catch (error) {
             console.error('Failed to fetch ledger:', error);
         } finally {
@@ -94,12 +108,7 @@ function AccountingContent() {
     }, []);
 
     const handleAddExpense = async () => {
-        if (!expenseForm.amount || !expenseForm.category || isSubmitting) return;
-
-        // We need branchId from the current context. For now, assuming Owner's org has 1 branch or API defaults to it.
-        // Actually, API requires branchId. Let's get branchId from localStorage or default it.
-        const authData = JSON.parse(localStorage.getItem('adminAuth') || '{}');
-        const branchId = authData.user?.branchId || authData.user?.storeId; // If owner has no branchId, might fail if strict. Let's send storeId as branchId for simplicity or assume backend fixes it.
+        if (!expenseForm.amount || !expenseForm.category || !expenseForm.branchId || isSubmitting) return;
 
         try {
             setIsSubmitting(true);
@@ -110,11 +119,11 @@ function AccountingContent() {
                     category: expenseForm.category,
                     description: expenseForm.description,
                     incurredAt: expenseForm.date,
-                    branchId: branchId // Needs to be a valid branchId
+                    branchId: expenseForm.branchId
                 })
             });
             setIsModalOpen(false);
-            setExpenseForm({ amount: '', date: new Date().toISOString().split('T')[0], description: '', category: 'MISC' });
+            setExpenseForm({ amount: '', date: new Date().toISOString().split('T')[0], description: '', category: 'MISC', branchId: branches[0]?.id || '' });
             fetchLedger();
         } catch (error: any) {
             alert(`Failed to add expense: ${error.message}`);
@@ -256,7 +265,7 @@ function AccountingContent() {
                                     ) : entries.length === 0 ? (
                                         <tr><td colSpan={5} className="px-6 py-8 text-center text-slate-500">No ledger entries found.</td></tr>
                                     ) : (
-                                        entries.map(entry => {
+                                        paginatedEntries.map(entry => {
                                             const isRevenue = Number(entry.credit) > 0;
                                             const isPosRevenue = entry.referenceType === 'POS_ORDER' && entry.accountId === 'Revenue_Canteen';
                                             const isDue = entry.accountId === 'ACCOUNTS_RECEIVABLE';
@@ -292,6 +301,25 @@ function AccountingContent() {
                                 </tbody>
                             </table>
                         </div>
+                        {entries.length > itemsPerPage && (
+                            <div className="p-4 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between bg-slate-50 dark:bg-slate-800/50">
+                                <span className="text-xs text-slate-500 font-bold uppercase tracking-wider">
+                                    Showing {(currentPage - 1) * itemsPerPage + 1} to {Math.min(currentPage * itemsPerPage, entries.length)} of {entries.length} entries
+                                </span>
+                                <div className="flex gap-2">
+                                    <button
+                                        disabled={currentPage === 1}
+                                        onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+                                        className="px-3 py-1 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm font-bold text-slate-600 disabled:opacity-50 transition-all hover:bg-slate-50"
+                                    >Prev</button>
+                                    <button
+                                        disabled={currentPage * itemsPerPage >= entries.length}
+                                        onClick={() => setCurrentPage(prev => prev + 1)}
+                                        className="px-3 py-1 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm font-bold text-slate-600 disabled:opacity-50 transition-all hover:bg-slate-50"
+                                    >Next</button>
+                                </div>
+                            </div>
+                        )}
                     </div>
                 </div>
             </div>
@@ -353,6 +381,18 @@ function AccountingContent() {
                                     <option value="SUPPLIES">Supplies</option>
                                     <option value="SALARIES">Salaries</option>
                                     <option value="MISC">Miscellaneous</option>
+                                </select>
+                            </div>
+                            <div className="flex flex-col gap-2">
+                                <label className="text-xs font-bold text-slate-500 uppercase">Branch</label>
+                                <select
+                                    value={expenseForm.branchId}
+                                    onChange={e => setExpenseForm({ ...expenseForm, branchId: e.target.value })}
+                                    className="h-11 px-4 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition-all text-sm font-bold"
+                                >
+                                    {branches.map(b => (
+                                        <option key={b.id} value={b.id}>{b.name}</option>
+                                    ))}
                                 </select>
                             </div>
                         </div>

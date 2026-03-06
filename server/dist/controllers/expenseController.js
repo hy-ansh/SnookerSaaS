@@ -14,11 +14,13 @@ const client_1 = require("@prisma/client");
 const prisma = new client_1.PrismaClient();
 // ========== EXPENSE MANAGEMENT ==========
 const recordExpense = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    var _a, _b;
+    var _a, _b, _c;
     try {
-        const { amount, category, description, receiptUrl } = req.body;
-        const branchId = (_a = req.user) === null || _a === void 0 ? void 0 : _a.branchId;
+        const { amount, category, description, receiptUrl, branchId: bodyBranchId } = req.body;
+        // Fallback: use body branchId if user has no branchId (owner scenario)
+        const branchId = ((_a = req.user) === null || _a === void 0 ? void 0 : _a.branchId) || bodyBranchId;
         const recordedById = (_b = req.user) === null || _b === void 0 ? void 0 : _b.id;
+        const organizationId = (_c = req.user) === null || _c === void 0 ? void 0 : _c.storeId;
         if (!branchId || !recordedById) {
             res.status(400).json({ error: 'Branch ID and User context required' });
             return;
@@ -27,6 +29,16 @@ const recordExpense = (req, res) => __awaiter(void 0, void 0, void 0, function* 
         if (!validCategories.includes(category)) {
             res.status(400).json({ error: 'Invalid expense category' });
             return;
+        }
+        // Verify branch belongs to user's org
+        if (organizationId) {
+            const branch = yield prisma.branch.findFirst({
+                where: { id: branchId, organizationId }
+            });
+            if (!branch) {
+                res.status(403).json({ error: 'Branch not found in your organization' });
+                return;
+            }
         }
         const result = yield prisma.$transaction((tx) => __awaiter(void 0, void 0, void 0, function* () {
             // Create Expense record

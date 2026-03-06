@@ -72,11 +72,23 @@ export const authenticate = async (req: Request, res: Response, next: NextFuncti
             console.log(`[auth] Auto-provisioned DB user for ${email} (role: ${roleName})`);
         }
 
+        // Derive organizationId from branch if missing (common for Staff users)
+        let derivedOrgId = userRecord.organizationId;
+        if (!derivedOrgId && userRecord.branchId) {
+            const branch = await prisma.branch.findUnique({
+                where: { id: userRecord.branchId },
+                select: { organizationId: true }
+            });
+            if (branch) {
+                derivedOrgId = branch.organizationId;
+            }
+        }
+
         req.user = {
             id: user.id,
             email,
             role: userRecord.role?.name ?? 'PLAYER',
-            storeId: userRecord.organizationId ?? undefined,
+            storeId: derivedOrgId ?? undefined,
             branchId: userRecord.branchId ?? undefined,
         };
 

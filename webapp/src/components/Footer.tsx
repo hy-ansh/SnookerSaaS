@@ -34,7 +34,8 @@ export default function Footer() {
                     <a className="text-sm hover:text-white transition-colors" href="#">About Us</a>
                     <a className="text-sm hover:text-white transition-colors" href="#">Careers</a>
                     <a className="text-sm hover:text-white transition-colors" href="#">Customers</a>
-                    <a className="text-sm hover:text-white transition-colors" href="#">Privacy</a>
+                    <Link to="/privacy" className="text-sm hover:text-white transition-colors">Privacy</Link>
+                    <Link to="/refund" className="text-sm hover:text-white transition-colors">Refund Policy</Link>
                 </div>
 
                 <div className="flex flex-col gap-4">
@@ -57,9 +58,9 @@ export default function Footer() {
             <div className="max-w-7xl mx-auto px-6 mt-16 pt-8 border-t border-slate-800 text-xs flex flex-col md:flex-row justify-between gap-4">
                 <p>© 2024 CueManager SaaS. All rights reserved.</p>
                 <div className="flex gap-8">
-                    <a className="hover:text-white" href="#">Terms of Service</a>
-                    <a className="hover:text-white" href="#">Privacy Policy</a>
-                    <a className="hover:text-white" href="#">Cookie Settings</a>
+                    <Link to="/terms" className="hover:text-white">Terms of Service</Link>
+                    <Link to="/privacy" className="hover:text-white">Privacy Policy</Link>
+                    <Link to="/refund" className="hover:text-white">Refund Policy</Link>
                 </div>
             </div>
         </footer>

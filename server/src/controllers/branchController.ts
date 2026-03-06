@@ -49,6 +49,24 @@ export const createBranch = async (req: Request, res: Response): Promise<void> =
             return;
         }
 
+        // ── Subscription Limit Check ──
+        const subscription = await prisma.subscription.findUnique({
+            where: { organizationId },
+            include: { plan: true }
+        });
+        if (subscription?.plan) {
+            const maxBranches = subscription.plan.maxBranches || 0;
+            if (maxBranches > 0) {
+                const currentCount = await prisma.branch.count({ where: { organizationId } });
+                if (currentCount >= maxBranches) {
+                    res.status(403).json({
+                        error: `Your plan allows a maximum of ${maxBranches} branch(es). Upgrade to add more.`
+                    });
+                    return;
+                }
+            }
+        }
+
         const branch = await prisma.branch.create({
             data: { name: String(name).trim(), address: address?.trim() || null, organizationId },
             include: { _count: { select: { tables: true, sessions: true } } }

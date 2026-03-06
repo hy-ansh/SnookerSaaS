@@ -567,7 +567,8 @@ const getActiveSessions = (req, res) => __awaiter(void 0, void 0, void 0, functi
             },
             include: {
                 table: true,
-                players: { include: { player: true } }
+                players: { include: { player: true } },
+                pauses: { where: { resumedAt: null } }
             }
         });
         res.json(activeSessions);
@@ -587,7 +588,8 @@ const getSessionById = (req, res) => __awaiter(void 0, void 0, void 0, function*
             include: {
                 table: true,
                 branch: true,
-                players: { include: { player: true } }
+                players: { include: { player: true } },
+                pauses: { where: { resumedAt: null } }
             }
         });
         if (!session) {

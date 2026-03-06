@@ -34,16 +34,17 @@ const getStoreLedger = (req, res) => __awaiter(void 0, void 0, void 0, function*
             }
         });
         const mtdExpenses = Number(expenses._sum.amount || 0);
-        // Session revenue (snooker table time)
-        const sessionRevenue = yield prisma_1.default.session.aggregate({
-            _sum: { totalAmount: true },
+        // ── Revenue = actual payments received (no session.totalAmount!) ──
+        // Session payments (CASH/UPI/CARD/WALLET for table time)
+        const sessionPayments = yield prisma_1.default.payment.aggregate({
+            _sum: { amount: true },
             where: {
-                branch: { organizationId: orgId },
-                startedAt: { gte: startOfMonth },
-                status: 'COMPLETED'
+                status: 'SUCCESS',
+                payer: { organizationId: orgId },
+                createdAt: { gte: startOfMonth }
             }
         });
-        // POS inventory revenue — CASH/UPI/CARD orders (exclude DUES — those are receivables, not revenue yet)
+        // POS inventory revenue (completed orders)
         const posRevenue = yield prisma_1.default.order.aggregate({
             _sum: { totalAmount: true },
             where: {
@@ -53,19 +54,11 @@ const getStoreLedger = (req, res) => __awaiter(void 0, void 0, void 0, function*
                 paymentMethod: { in: ['CASH', 'UPI', 'CARD', 'WALLET'] }
             }
         });
-        // Settled dues collected this month (now actual cash revenue)
-        const settledDuesRevenue = yield prisma_1.default.ledgerEntry.aggregate({
-            _sum: { debit: true },
-            where: {
-                organizationId: orgId,
-                referenceType: 'DUES_SETTLEMENT',
-                createdAt: { gte: startOfMonth },
-                accountId: { in: ['CASH', 'UPI', 'CARD', 'WALLET'] }
-            }
-        });
-        const mtdRevenue = Number(sessionRevenue._sum.totalAmount || 0) +
-            Number(posRevenue._sum.totalAmount || 0) +
-            Number(settledDuesRevenue._sum.debit || 0);
+        // Revenue = payments received + POS cash sales
+        // NOTE: settled dues already create a Payment record, so they are
+        // included in sessionPayments. No need for a separate query.
+        const mtdRevenue = Number(sessionPayments._sum.amount || 0) +
+            Number(posRevenue._sum.totalAmount || 0);
         res.json({
             summary: { mtdExpenses, mtdRevenue, netProfit: mtdRevenue - mtdExpenses },
             entries
@@ -81,7 +74,7 @@ const addExpense = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
     try {
         const user = req.user;
         const orgId = user.storeId;
-        const userId = user.userId;
+        const userId = user.userId || user.id;
         const { amount, category, description, branchId, incurredAt } = req.body;
         if (!amount || !category || !branchId) {
             res.status(400).json({ error: 'amount, category and branchId are required' });
@@ -136,14 +129,14 @@ const getMonthlyTrend = (req, res) => __awaiter(void 0, void 0, void 0, function
         for (let i = 5; i >= 0; i--) {
             const start = new Date(now.getFullYear(), now.getMonth() - i, 1);
             const end = new Date(now.getFullYear(), now.getMonth() - i + 1, 0, 23, 59, 59);
-            const [sessionRev, posRev, settledDues, exp] = yield Promise.all([
-                // Snooker session revenue
-                prisma_1.default.session.aggregate({
-                    _sum: { totalAmount: true },
+            const [paymentRev, posRev, exp] = yield Promise.all([
+                // Actual payments received (includes session + dues settlements)
+                prisma_1.default.payment.aggregate({
+                    _sum: { amount: true },
                     where: {
-                        branch: { organizationId: orgId },
-                        status: 'COMPLETED',
-                        startedAt: { gte: start, lte: end }
+                        status: 'SUCCESS',
+                        payer: { organizationId: orgId },
+                        createdAt: { gte: start, lte: end }
                     }
                 }),
                 // POS inventory revenue
@@ -153,16 +146,6 @@ const getMonthlyTrend = (req, res) => __awaiter(void 0, void 0, void 0, function
                         branch: { organizationId: orgId },
                         status: 'COMPLETED',
                         paymentMethod: { in: ['CASH', 'UPI', 'CARD', 'WALLET'] },
-                        createdAt: { gte: start, lte: end }
-                    }
-                }),
-                // Settled dues collected in this month
-                prisma_1.default.ledgerEntry.aggregate({
-                    _sum: { debit: true },
-                    where: {
-                        organizationId: orgId,
-                        referenceType: 'DUES_SETTLEMENT',
-                        accountId: { in: ['CASH', 'UPI', 'CARD', 'WALLET'] },
                         createdAt: { gte: start, lte: end }
                     }
                 }),
@@ -177,9 +160,8 @@ const getMonthlyTrend = (req, res) => __awaiter(void 0, void 0, void 0, function
             ]);
             months.push({
                 label: start.toLocaleString('default', { month: 'short', year: '2-digit' }),
-                revenue: Number(sessionRev._sum.totalAmount || 0)
-                    + Number(posRev._sum.totalAmount || 0)
-                    + Number(settledDues._sum.debit || 0),
+                revenue: Number(paymentRev._sum.amount || 0)
+                    + Number(posRev._sum.totalAmount || 0),
                 expenses: Number(exp._sum.amount || 0)
             });
         }

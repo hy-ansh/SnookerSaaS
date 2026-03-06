@@ -33,7 +33,7 @@ const getStoreDues = (req, res) => __awaiter(void 0, void 0, void 0, function* (
                 player: { select: { id: true, fullName: true, email: true } },
                 session: {
                     select: {
-                        id: true, startedAt: true, totalAmount: true, gameType: true,
+                        id: true, startedAt: true, totalAmount: true, gameType: true, branchId: true,
                         table: { select: { nameOrNumber: true } }
                     }
                 }
@@ -41,7 +41,7 @@ const getStoreDues = (req, res) => __awaiter(void 0, void 0, void 0, function* (
             orderBy: { createdAt: 'desc' }
         });
         // For POS dues (no session), find the nearest matching order and embed item names
-        const enrichedDues = yield Promise.all(dues.map((due) => __awaiter(void 0, void 0, void 0, function* () {
+        let enrichedDues = yield Promise.all(dues.map((due) => __awaiter(void 0, void 0, void 0, function* () {
             if (due.sessionId)
                 return Object.assign(Object.assign({}, due), { posOrder: null });
             // Find the closest order for this player within 60 seconds of due creation
@@ -63,6 +63,18 @@ const getStoreDues = (req, res) => __awaiter(void 0, void 0, void 0, function* (
             });
             return Object.assign(Object.assign({}, due), { posOrder: order });
         })));
+        // Scope by branchId if user is STAFF or restricted to a branch
+        if (user.role !== 'SUPER_ADMIN' && user.role !== 'STORE_OWNER' && user.branchId) {
+            enrichedDues = enrichedDues.filter(d => {
+                var _a;
+                if (d.sessionId)
+                    return ((_a = d.session) === null || _a === void 0 ? void 0 : _a.branchId) === user.branchId;
+                if (d.posOrder)
+                    return d.posOrder.branchId === user.branchId;
+                // If we can't determine the branch for a POS due, hide it from branch-restricted staff
+                return false;
+            });
+        }
         res.json({ dues: enrichedDues });
     }
     catch (err) {
@@ -107,13 +119,43 @@ const settlePlayerDues = (req, res) => __awaiter(void 0, void 0, void 0, functio
         const user = req.user;
         const { method = 'CASH' } = req.body;
         // Scope by player.organizationId instead of session.branch so POS dues are included
-        const duesToSettle = yield prisma_1.default.due.findMany({
+        let duesToSettle = yield prisma_1.default.due.findMany({
             where: {
                 playerId: playerId,
                 status: 'PENDING',
                 player: { organizationId: user.storeId }
+            },
+            include: {
+                session: {
+                    select: { branchId: true }
+                }
             }
         });
+        // Filter by branchId if user is STAFF
+        if (user.role !== 'SUPER_ADMIN' && user.role !== 'STORE_OWNER' && user.branchId) {
+            const enriched = yield Promise.all(duesToSettle.map((d) => __awaiter(void 0, void 0, void 0, function* () {
+                if (d.sessionId)
+                    return Object.assign(Object.assign({}, d), { posOrder: null });
+                const order = yield prisma_1.default.order.findFirst({
+                    where: {
+                        playerId: d.playerId,
+                        createdAt: {
+                            gte: new Date(d.createdAt.getTime() - 60000),
+                            lte: new Date(d.createdAt.getTime() + 60000)
+                        }
+                    }
+                });
+                return Object.assign(Object.assign({}, d), { posOrder: order });
+            })));
+            duesToSettle = enriched.filter(d => {
+                var _a;
+                if (d.sessionId)
+                    return ((_a = d.session) === null || _a === void 0 ? void 0 : _a.branchId) === user.branchId;
+                if (d.posOrder)
+                    return d.posOrder.branchId === user.branchId;
+                return false;
+            });
+        }
         if (duesToSettle.length === 0) {
             res.status(404).json({ error: 'No pending dues found for this player in your organization.' });
             return;
@@ -164,7 +206,7 @@ const settlePlayerDues = (req, res) => __awaiter(void 0, void 0, void 0, functio
 exports.settlePlayerDues = settlePlayerDues;
 // ── Settle a SPECIFIC due (partial/individual) ───────────────────────────────
 const settleSpecificDue = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    var _a, _b, _c;
+    var _a, _b, _c, _d;
     try {
         const { dueId } = req.params;
         const dueIdStr = Array.isArray(dueId) ? dueId[0] : dueId;
@@ -187,6 +229,30 @@ const settleSpecificDue = (req, res) => __awaiter(void 0, void 0, void 0, functi
         if (dueOrg !== user.storeId && user.role !== 'SUPER_ADMIN') {
             res.status(403).json({ error: 'Forbidden' });
             return;
+        }
+        // Check branch scope for Staff
+        if (user.role !== 'SUPER_ADMIN' && user.role !== 'STORE_OWNER' && user.branchId) {
+            let matchesBranch = false;
+            if (due.sessionId) {
+                matchesBranch = ((_d = due.session) === null || _d === void 0 ? void 0 : _d.branchId) === user.branchId;
+            }
+            else {
+                const order = yield prisma_1.default.order.findFirst({
+                    where: {
+                        playerId: due.playerId,
+                        createdAt: {
+                            gte: new Date(due.createdAt.getTime() - 60000),
+                            lte: new Date(due.createdAt.getTime() + 60000)
+                        }
+                    }
+                });
+                if ((order === null || order === void 0 ? void 0 : order.branchId) === user.branchId)
+                    matchesBranch = true;
+            }
+            if (!matchesBranch) {
+                res.status(403).json({ error: 'Forbidden: Due belongs to a different branch' });
+                return;
+            }
         }
         if (due.status === 'SETTLED') {
             res.status(400).json({ error: 'Due is already settled' });

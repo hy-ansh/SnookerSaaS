@@ -1,0 +1,12 @@
+﻿src/controllers/adController.ts(74,60): error TS2322: Type 'string | string[]' is not assignable to type 'string | StringFilter<"AdPlacement"> | undefined'.
+  Type 'string[]' is not assignable to type 'string | StringFilter<"AdPlacement"> | undefined'.
+src/controllers/adController.ts(77,65): error TS2322: Type 'string | string[]' is not assignable to type 'string | StringFilter<"AdPlanVisibility"> | undefined'.
+  Type 'string[]' is not assignable to type 'string | StringFilter<"AdPlanVisibility"> | undefined'.
+src/controllers/adController.ts(81,22): error TS2322: Type 'string | string[]' is not assignable to type 'string | undefined'.
+  Type 'string[]' is not assignable to type 'string'.
+src/controllers/adController.ts(121,54): error TS2322: Type 'string | string[]' is not assignable to type 'string | undefined'.
+  Type 'string[]' is not assignable to type 'string'.
+src/middleware/requireFeature.ts(21,36): error TS2353: Object literal may only specify known properties, and 'createdAt' does not exist in type 'SubscriptionOrderByWithRelationInput | SubscriptionOrderByWithRelationInput[]'.
+src/middleware/requireFeature.ts(35,22): error TS2551: Property 'subscriptions' does not exist on type '{ id: string; name: string; subscriptionTier: string; isActive: boolean; featureFlags: JsonValue; createdAt: Date; updatedAt: Date; }'. Did you mean 'subscriptionTier'?
+src/middleware/requireFeature.ts(35,43): error TS2551: Property 'subscriptions' does not exist on type '{ id: string; name: string; subscriptionTier: string; isActive: boolean; featureFlags: JsonValue; createdAt: Date; updatedAt: Date; }'. Did you mean 'subscriptionTier'?
+src/middleware/requireFeature.ts(53,36): error TS2551: Property 'subscriptions' does not exist on type '{ id: string; name: string; subscriptionTier: string; isActive: boolean; featureFlags: JsonValue; createdAt: Date; updatedAt: Date; }'. Did you mean 'subscriptionTier'?

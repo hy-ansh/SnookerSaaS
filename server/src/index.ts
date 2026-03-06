@@ -35,6 +35,7 @@ import pricingRoutes from './routes/pricingRoutes';
 import accountingRoutes from './routes/accountingRoutes';
 import assetMaintenanceRoutes from './routes/assetMaintenanceRoutes';
 import ownerRoutes from './routes/ownerRoutes';
+import upiRoutes from './routes/upiRoutes';
 import { runFraudDetectionSweep } from './services/fraudService';
 
 // Import routes mapped for MVP
@@ -58,6 +59,7 @@ app.use('/accounting', accountingRoutes);
 app.use('/maintenance', assetMaintenanceRoutes);
 app.use('/pricing', pricingRoutes);
 app.use('/owner', ownerRoutes);
+app.use('/upi', upiRoutes);
 
 app.listen(PORT, () => {
     console.log(`🚀 Server running on http://localhost:${PORT}`);

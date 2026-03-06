@@ -20,7 +20,7 @@ const prisma_1 = __importDefault(require("../config/prisma"));
 // Returns the enriched profile (DB role, orgId, branchId) for the current JWT user.
 // Called by AuthContext on every login to get the real DB role.
 const getMe = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k;
+    var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q;
     try {
         const authHeader = req.headers.authorization;
         if (!(authHeader === null || authHeader === void 0 ? void 0 : authHeader.startsWith('Bearer '))) {
@@ -49,6 +49,7 @@ const getMe = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
                 organizationName: null,
                 orgIsActive: true,
                 branchId: null,
+                allowedPaymentMethods: ['CASH', 'UPI', 'CARD', 'WALLET'],
             });
             return;
         }
@@ -60,7 +61,9 @@ const getMe = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
             organizationId: (_e = record.organizationId) !== null && _e !== void 0 ? _e : null,
             organizationName: (_g = (_f = record.organization) === null || _f === void 0 ? void 0 : _f.name) !== null && _g !== void 0 ? _g : null,
             orgIsActive: (_j = (_h = record.organization) === null || _h === void 0 ? void 0 : _h.isActive) !== null && _j !== void 0 ? _j : true,
-            branchId: (_k = record.branchId) !== null && _k !== void 0 ? _k : null,
+            orgCreatedAt: (_m = (_l = (_k = record.organization) === null || _k === void 0 ? void 0 : _k.createdAt) === null || _l === void 0 ? void 0 : _l.toISOString()) !== null && _m !== void 0 ? _m : null,
+            branchId: (_o = record.branchId) !== null && _o !== void 0 ? _o : null,
+            allowedPaymentMethods: (_q = (_p = record.organization) === null || _p === void 0 ? void 0 : _p.allowedPaymentMethods) !== null && _q !== void 0 ? _q : ['CASH', 'UPI', 'CARD', 'WALLET'],
         });
     }
     catch (err) {

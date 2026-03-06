@@ -2,6 +2,8 @@ import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { apiFetch } from '../../api/apiClient';
 import FeatureGate from '../../components/FeatureGate';
+import { UpiQrCode } from '../../components/Shared/UpiQrCode';
+import { CheckoutPaymentModal } from '../../components/Shared/CheckoutPaymentModal';
 
 interface InventoryItem {
     id: string;
@@ -27,7 +29,10 @@ function InventoryPOSContent() {
     // POS Active sessions & Payment tracking
     const [selectedSessionId, setSelectedSessionId] = useState<string>('');
     const [selectedPlayerId, setSelectedPlayerId] = useState<string>('');
-    const [paymentMethod, setPaymentMethod] = useState<'CASH' | 'CARD' | 'UPI' | 'WALLET' | 'DUES'>('CASH');
+
+    // Modal States
+    const [showCartModal, setShowCartModal] = useState(false);
+    const [showPaymentModal, setShowPaymentModal] = useState(false);
 
     // For adding new Item
     const [isAddingItem, setIsAddingItem] = useState(false);
@@ -65,6 +70,7 @@ function InventoryPOSContent() {
             setCart([]);
             setSelectedSessionId('');
             setSelectedPlayerId('');
+            setShowPaymentModal(false);
             setSuccessMsg('Order placed successfully!');
             setTimeout(() => setSuccessMsg(''), 3000);
         },
@@ -154,8 +160,13 @@ function InventoryPOSContent() {
         }));
     };
 
-    const handleCheckout = () => {
+    const handleProceedToPayment = () => {
         if (cart.length === 0) return;
+        setShowCartModal(false);
+        setShowPaymentModal(true);
+    };
+
+    const handleConfirmPayment = async (payload: any) => {
         const items = cart.map(c => ({
             inventoryItemId: c.product.id,
             quantity: c.quantity
@@ -165,7 +176,8 @@ function InventoryPOSContent() {
             items,
             sessionId: selectedSessionId || undefined,
             playerId: selectedPlayerId || undefined,
-            paymentMethod: paymentMethod
+            paymentMethod: payload.paymentMethod,
+            splitPayments: payload.splitPayments
         });
     };
 
@@ -365,129 +377,117 @@ function InventoryPOSContent() {
                 </div>
             </div>
 
-            {/* Right Column: POS / Bill Area */}
-            <aside className="w-full xl:w-[400px] shrink-0 xl:sticky xl:top-0 xl:h-[calc(100vh-140px)] bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl flex flex-col shadow-sm overflow-hidden">
-                <div className="p-5 border-b border-slate-200 dark:border-slate-800 shrink-0">
-                    <div className="flex items-center justify-between">
-                        <h2 className="text-xl font-black text-slate-900 dark:text-white tracking-tight">Current Cart</h2>
-                        <span className="bg-primary/10 text-primary text-xs font-black px-3 py-1.5 rounded-full uppercase tracking-widest">POS Walk-In</span>
-                    </div>
-                </div>
-
-                <div className="flex-1 overflow-y-auto min-h-0 p-3">
-                    {cart.length === 0 ? (
-                        <div className="h-full flex flex-col items-center justify-center text-slate-400 p-6 text-center">
-                            <span className="material-symbols-outlined text-6xl mb-4 opacity-30">shopping_cart</span>
-                            <p className="font-bold">Your cart is empty.</p>
-                            <p className="text-sm font-medium opacity-60 mt-1">Select items from the catalog.</p>
+            {/* Floating Cart Button */}
+            {cart.length > 0 && (
+                <div className="fixed bottom-6 right-6 z-40">
+                    <button onClick={() => setShowCartModal(true)}
+                        className="flex items-center gap-3 px-6 py-4 bg-primary text-white font-bold rounded-2xl shadow-xl shadow-primary/30 hover:bg-primary/90 transition-all hover:-translate-y-1">
+                        <div className="relative">
+                            <span className="material-symbols-outlined text-[24px]">shopping_cart</span>
+                            <span className="absolute -top-2 -right-2 bg-rose-500 text-white text-[10px] font-black w-5 h-5 flex items-center justify-center rounded-full border-2 border-primary">{cart.reduce((s, c) => s + c.quantity, 0)}</span>
                         </div>
-                    ) : (
-                        <div className="space-y-2">
-                            {cart.map(c => (
-                                <div key={c.product.id} className="flex flex-col gap-2 p-3 bg-slate-50 dark:bg-slate-800/40 rounded-xl border border-slate-100 dark:border-slate-700/50 relative group">
-                                    <div className="flex justify-between items-start pr-6">
-                                        <p className="text-sm font-bold text-slate-900 dark:text-white leading-tight">{c.product.name}</p>
-                                        <p className="text-sm font-black text-primary whitespace-nowrap">₹{(Number(c.product.price) * c.quantity).toFixed(2)}</p>
-                                    </div>
-                                    <div className="flex items-center justify-between">
-                                        <p className="text-xs font-medium text-slate-400">₹{Number(c.product.price).toFixed(2)} × </p>
-                                        <div className="flex items-center bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg p-0.5 shadow-sm">
-                                            <button onClick={() => updateQuantity(c.product.id, -1)} className="size-6 flex items-center justify-center text-slate-500 hover:text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-500/10 rounded-md transition-colors">
-                                                <span className="material-symbols-outlined text-[16px]">remove</span>
-                                            </button>
-                                            <span className="w-8 text-center text-sm font-black">{c.quantity}</span>
-                                            <button onClick={() => updateQuantity(c.product.id, 1)} className="size-6 flex items-center justify-center text-slate-500 hover:text-emerald-500 hover:bg-emerald-50 dark:hover:bg-emerald-500/10 rounded-md transition-colors">
-                                                <span className="material-symbols-outlined text-[16px]">add</span>
-                                            </button>
+                        <div className="flex flex-col items-start border-l border-white/20 pl-3">
+                            <span className="text-xs text-primary-50 uppercase tracking-wider">View Cart</span>
+                            <span className="text-lg leading-tight">₹{total.toFixed(2)}</span>
+                        </div>
+                    </button>
+                </div>
+            )}
+
+            {/* Cart Modal */}
+            {showCartModal && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+                    <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={() => setShowCartModal(false)} />
+                    <div className="relative bg-white dark:bg-slate-900 rounded-3xl shadow-2xl border border-slate-200 dark:border-slate-800 w-full max-w-lg flex flex-col max-h-[90vh]">
+                        <div className="p-5 border-b border-slate-200 dark:border-slate-800 shrink-0 flex items-center justify-between">
+                            <h2 className="text-xl font-black text-slate-900 dark:text-white flex items-center gap-2">
+                                <span className="material-symbols-outlined text-primary">shopping_cart</span>
+                                Current Cart
+                            </h2>
+                            <button onClick={() => setShowCartModal(false)} className="text-slate-400 hover:text-slate-600 transition-colors">
+                                <span className="material-symbols-outlined">close</span>
+                            </button>
+                        </div>
+
+                        <div className="flex-1 overflow-y-auto p-4 space-y-4">
+                            {/* Items */}
+                            <div className="space-y-2">
+                                {cart.map(c => (
+                                    <div key={c.product.id} className="flex flex-col gap-2 p-3 bg-slate-50 dark:bg-slate-800/40 rounded-xl border border-slate-100 dark:border-slate-700/50 relative group">
+                                        <div className="flex justify-between items-start pr-6">
+                                            <p className="text-sm font-bold text-slate-900 dark:text-white leading-tight">{c.product.name}</p>
+                                            <p className="text-sm font-black text-primary whitespace-nowrap">₹{(Number(c.product.price) * c.quantity).toFixed(2)}</p>
                                         </div>
+                                        <div className="flex items-center justify-between">
+                                            <p className="text-xs font-medium text-slate-400">₹{Number(c.product.price).toFixed(2)} × </p>
+                                            <div className="flex items-center bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg p-0.5 shadow-sm">
+                                                <button onClick={() => updateQuantity(c.product.id, -1)} className="size-6 flex items-center justify-center text-slate-500 hover:text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-500/10 rounded-md transition-colors">
+                                                    <span className="material-symbols-outlined text-[16px]">remove</span>
+                                                </button>
+                                                <span className="w-8 text-center text-sm font-black">{c.quantity}</span>
+                                                <button onClick={() => updateQuantity(c.product.id, 1)} className="size-6 flex items-center justify-center text-slate-500 hover:text-emerald-500 hover:bg-emerald-50 dark:hover:bg-emerald-500/10 rounded-md transition-colors">
+                                                    <span className="material-symbols-outlined text-[16px]">add</span>
+                                                </button>
+                                            </div>
+                                        </div>
+                                        <button onClick={() => removeFromCart(c.product.id)} className="absolute top-2 right-2 text-slate-300 hover:text-rose-500 transition-colors">
+                                            <span className="material-symbols-outlined text-[16px]">delete</span>
+                                        </button>
                                     </div>
-                                    <button onClick={() => removeFromCart(c.product.id)} className="absolute top-2 right-2 text-slate-300 hover:text-rose-500 opacity-0 group-hover:opacity-100 transition-opacity">
-                                        <span className="material-symbols-outlined text-[16px]">close</span>
-                                    </button>
-                                </div>
-                            ))}
-                        </div>
-                    )}
-                </div>
-
-                <div className="shrink-0 max-h-[55%] overflow-y-auto border-t border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/20">
-                    <div className="p-4 space-y-3">
-                        <div className="flex flex-col gap-2">
-                            <label className="text-xs font-bold text-slate-500 uppercase">Payment Method</label>
-                            <div className="grid grid-cols-3 gap-2">
-                                {([
-                                    { value: 'CASH', label: 'Cash', icon: 'payments', color: 'text-emerald-600' },
-                                    { value: 'CARD', label: 'Card', icon: 'credit_card', color: 'text-blue-600' },
-                                    { value: 'UPI', label: 'UPI', icon: 'qr_code_scanner', color: 'text-violet-600' },
-                                    { value: 'WALLET', label: 'Wallet', icon: 'account_balance_wallet', color: 'text-amber-600' },
-                                    { value: 'DUES', label: 'Add to Dues', icon: 'account_balance', color: 'text-red-500' },
-                                ] as { value: 'CASH' | 'CARD' | 'UPI' | 'WALLET' | 'DUES'; label: string; icon: string; color: string }[]).map(opt => (
-                                    <button key={opt.value} type="button"
-                                        onClick={() => setPaymentMethod(opt.value)}
-                                        className={`flex flex-col items-center justify-center p-3 rounded-2xl border-2 transition-all gap-1.5 ${paymentMethod === opt.value
-                                            ? 'border-primary bg-primary/5 shadow-sm shadow-primary/20'
-                                            : 'border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50 hover:border-slate-300'
-                                            }`}>
-                                        <span className={`material-symbols-outlined text-2xl ${paymentMethod === opt.value ? 'text-primary' : opt.color}`}>{opt.icon}</span>
-                                        <span className={`text-[10px] font-bold uppercase tracking-wide leading-tight text-center ${paymentMethod === opt.value ? 'text-primary' : 'text-slate-600 dark:text-slate-400'}`}>{opt.label}</span>
-                                    </button>
                                 ))}
                             </div>
-                            {paymentMethod === 'DUES' && (
-                                <div className="flex items-start gap-2 p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl text-xs text-red-600 dark:text-red-400 mt-1">
-                                    <span className="material-symbols-outlined text-[16px] shrink-0 mt-0.5">warning</span>
-                                    <span>This will create a pending due for the assigned player.</span>
-                                </div>
-                            )}
-                            {paymentMethod === 'WALLET' && !selectedPlayerId && (
-                                <div className="flex items-start gap-2 p-3 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-xl text-xs text-amber-700 dark:text-amber-400 mt-1">
-                                    <span className="material-symbols-outlined text-[16px] shrink-0 mt-0.5">info</span>
-                                    <span>Assign to a player to deduct from their wallet.</span>
-                                </div>
-                            )}
-                        </div>
-                        <div className="flex flex-col gap-2">
-                            <label className="text-xs font-bold text-slate-500 uppercase">Assign to Active Table (Optional)</label>
-                            <select value={selectedSessionId} onChange={e => setSelectedSessionId(e.target.value)} className="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-primary outline-none text-slate-600 dark:text-slate-300 font-medium">
-                                <option value="">-- No Assignment --</option>
-                                {activeSessions?.map((s: any) => (
-                                    <option key={s.id} value={s.id}>
-                                        Table {s.table?.nameOrNumber} ({s.id.slice(0, 4)})
-                                    </option>
-                                ))}
-                            </select>
-                        </div>
-                        <div className="flex flex-col gap-2">
-                            <label className="text-xs font-bold text-slate-500 uppercase">Assign to Player (Optional)</label>
-                            <select value={selectedPlayerId} onChange={e => setSelectedPlayerId(e.target.value)} className="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-primary outline-none text-slate-600 dark:text-slate-300 font-medium">
-                                <option value="">-- No Assignment --</option>
-                                {playersList?.map((p: any) => (
-                                    <option key={p.id} value={p.id}>
-                                        {p.fullName || p.email} ({p.profile?.nickname || 'Player'})
-                                    </option>
-                                ))}
-                            </select>
-                        </div>
-                        <div className="flex justify-between text-slate-500 text-sm font-bold items-end pt-3 border-t border-slate-200 dark:border-slate-700">
-                            <span>Total Due</span>
-                            <span className="text-2xl font-black text-primary">₹{total.toFixed(2)}</span>
-                        </div>
-                    </div>
-                </div>
 
-                {/* Checkout Buttons — always visible at bottom */}
-                <div className="shrink-0 p-4 border-t border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900">
-                    <div className="grid grid-cols-2 gap-3">
-                        <button className="flex items-center justify-center gap-2 py-3.5 rounded-xl border-2 border-slate-200 dark:border-slate-700 font-bold text-sm hover:border-slate-300 transition-all text-slate-700 dark:text-slate-300">
-                            <span className="material-symbols-outlined text-[18px]">print</span> Print
-                        </button>
-                        <button onClick={handleCheckout} disabled={cart.length === 0 || createOrderMutation.isPending} className="flex items-center justify-center gap-2 py-3.5 rounded-xl bg-primary text-white font-bold text-sm shadow-lg shadow-primary/25 hover:opacity-90 disabled:opacity-50 disabled:shadow-none transition-all">
-                            <span className="material-symbols-outlined text-[18px]">{createOrderMutation.isPending ? 'hourglass_empty' : 'payments'}</span>
-                            {createOrderMutation.isPending ? 'Processing' : 'Checkout'}
-                        </button>
+                            {/* Assignments */}
+                            <div className="border-t border-slate-100 dark:border-slate-800 pt-4 space-y-3">
+                                <div className="flex flex-col gap-2">
+                                    <label className="text-xs font-bold text-slate-500 uppercase">Assign to Active Table (Optional)</label>
+                                    <select value={selectedSessionId} onChange={e => setSelectedSessionId(e.target.value)} className="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-primary outline-none text-slate-600 dark:text-slate-300 font-medium">
+                                        <option value="">-- No Assignment (Walk-In) --</option>
+                                        {activeSessions?.map((s: any) => (
+                                            <option key={s.id} value={s.id}>
+                                                Table {s.table?.nameOrNumber} ({s.id.slice(0, 4)})
+                                            </option>
+                                        ))}
+                                    </select>
+                                </div>
+                                <div className="flex flex-col gap-2">
+                                    <label className="text-xs font-bold text-slate-500 uppercase">Assign to Player (Optional)</label>
+                                    <select value={selectedPlayerId} onChange={e => setSelectedPlayerId(e.target.value)} className="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-primary outline-none text-slate-600 dark:text-slate-300 font-medium">
+                                        <option value="">-- No Assignment (Guest) --</option>
+                                        {playersList?.map((p: any) => (
+                                            <option key={p.id} value={p.id}>
+                                                {p.fullName || p.email} ({p.profile?.nickname || 'Player'})
+                                            </option>
+                                        ))}
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="p-4 border-t border-slate-200 dark:border-slate-800 shrink-0 bg-slate-50 dark:bg-slate-800/20">
+                            <div className="flex justify-between items-center mb-3 text-sm">
+                                <span className="font-bold text-slate-500">Total</span>
+                                <span className="text-xl font-black text-primary">₹{total.toFixed(2)}</span>
+                            </div>
+                            <button onClick={handleProceedToPayment} className="w-full flex items-center justify-center gap-2 py-3.5 rounded-xl bg-primary text-white font-bold text-sm shadow-lg shadow-primary/25 hover:opacity-90 transition-all">
+                                Proceed to Payment <span className="material-symbols-outlined text-[18px]">arrow_forward</span>
+                            </button>
+                        </div>
                     </div>
                 </div>
-            </aside>
+            )}
+
+            {/* Checkout Payment Modal */}
+            <CheckoutPaymentModal
+                isOpen={showPaymentModal}
+                onClose={() => setShowPaymentModal(false)}
+                totalAmount={total}
+                title="Complete Purchase"
+                subtitle={`${cart.reduce((s, c) => s + c.quantity, 0)} items in cart`}
+                players={selectedPlayerId ? [{ id: selectedPlayerId, fullName: playersList?.find((p: any) => p.id === selectedPlayerId)?.fullName }] : []}
+                onConfirm={handleConfirmPayment}
+            />
+
         </div>
     );
 }
