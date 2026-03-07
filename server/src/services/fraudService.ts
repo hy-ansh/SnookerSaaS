@@ -1,6 +1,5 @@
-import { PrismaClient, AlertSeverity } from '@prisma/client';
-
-const prisma = new PrismaClient();
+import { AlertSeverity } from '@prisma/client';
+import prisma from '../config/prisma';
 
 /**
  * Sweeps recently completed or cancelled sessions to look for anomalies.
