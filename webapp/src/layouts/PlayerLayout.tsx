@@ -45,9 +45,9 @@ export default function PlayerLayout() {
                             <Link to="/player/dues" className={`${isActive('/player/dues') ? 'text-primary' : 'text-slate-500 hover:text-slate-900 dark:hover:text-white'} transition-colors flex items-center gap-2`}>
                                 <span className="material-symbols-outlined text-sm shrink-0">receipt_long</span> Dues
                             </Link>
-                            <Link to="/player/wallet" className={`${isActive('/player/wallet') ? 'text-primary' : 'text-slate-500 hover:text-slate-900 dark:hover:text-white'} transition-colors flex items-center gap-2`}>
+                            {/* <Link to="/player/wallet" className={`${isActive('/player/wallet') ? 'text-primary' : 'text-slate-500 hover:text-slate-900 dark:hover:text-white'} transition-colors flex items-center gap-2`}>
                                 <span className="material-symbols-outlined text-sm shrink-0">account_balance_wallet</span> Wallet
-                            </Link>
+                            </Link> */}
                         </nav>
                     </div>
 

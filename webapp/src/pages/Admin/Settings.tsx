@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { apiFetch } from '../../api/apiClient';
 
@@ -103,8 +104,8 @@ export default function AdminSettings() {
                         onClick={handleSaveGlobalSettings}
                         disabled={savingSettings || (settings?.freeTrialDays === freeTrialDays)}
                         className={`px-6 py-2.5 text-sm font-bold rounded-xl flex items-center gap-2 transition-all ${savingSettings || (settings?.freeTrialDays === freeTrialDays)
-                                ? 'bg-slate-100 text-slate-400 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 cursor-not-allowed'
-                                : 'bg-primary text-white hover:-translate-y-0.5 shadow-md shadow-primary/20'
+                            ? 'bg-slate-100 text-slate-400 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 cursor-not-allowed'
+                            : 'bg-primary text-white hover:-translate-y-0.5 shadow-md shadow-primary/20'
                             }`}
                     >
                         {savingSettings ? (

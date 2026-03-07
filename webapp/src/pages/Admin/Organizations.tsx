@@ -229,7 +229,7 @@ export default function AdminOrganizations() {
                                         {/* MRR */}
                                         <td className="p-4">
                                             <span className="text-sm font-black text-slate-900 dark:text-white">
-                                                ${currentPlan ? Number(currentPlan.price).toFixed(2) : '0.00'}
+                                                ₹{currentPlan ? Number(currentPlan.price).toFixed(2) : '0.00'}
                                             </span>
                                         </td>
 
@@ -295,7 +295,7 @@ export default function AdminOrganizations() {
                                 >
                                     <option value="" disabled>Select a plan</option>
                                     {plans.map(p => (
-                                        <option key={p.id} value={p.id}>{p.name} (${Number(p.price)}/mo)</option>
+                                        <option key={p.id} value={p.id}>{p.name} (₹{Number(p.price)}/mo)</option>
                                     ))}
                                 </select>
                                 <span className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 material-symbols-outlined pointer-events-none text-sm">expand_more</span>

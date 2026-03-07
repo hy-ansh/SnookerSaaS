@@ -1,6 +1,8 @@
 import { useState, useEffect, useCallback } from 'react';
 import { apiFetch } from '../../api/apiClient';
 import FeatureGate from '../../components/FeatureGate';
+import { useAuth } from '../../contexts/AuthContext';
+import { UpiQrCode } from '../../components/Shared/UpiQrCode';
 
 type SettleMode = 'FULL' | 'HALF' | 'CUSTOM';
 
@@ -13,10 +15,19 @@ function SettlePanel({
     onClose: () => void;
     onSuccess: () => void;
 }) {
+    const { appUser } = useAuth();
     const [activeTab, setActiveTab] = useState<'all' | 'individual'>('all');
     const [processing, setProcessing] = useState(false);
     const [error, setError] = useState('');
-    const [method, setMethod] = useState<'CASH' | 'UPI' | 'CARD' | 'WALLET'>('CASH');
+
+    // Dynamic payment methods from org settings, filtering out WALLET (disabled for now)
+    const allowedMethods = (appUser?.allowedPaymentMethods || ['CASH', 'UPI', 'CARD']).filter((m: string) => m !== 'WALLET');
+    const PAY_OPTIONS: { value: string; label: string; icon: string; color: string }[] = [];
+    if (allowedMethods.includes('CASH')) PAY_OPTIONS.push({ value: 'CASH', label: 'Cash', icon: 'payments', color: 'text-emerald-600' });
+    if (allowedMethods.includes('CARD')) PAY_OPTIONS.push({ value: 'CARD', label: 'Card', icon: 'credit_card', color: 'text-blue-600' });
+    if (allowedMethods.includes('UPI')) PAY_OPTIONS.push({ value: 'UPI', label: 'UPI', icon: 'qr_code_scanner', color: 'text-violet-600' });
+
+    const [method, setMethod] = useState<string>(PAY_OPTIONS[0]?.value || 'CASH');
 
     // Per-due state for individual settlement
     const [dueSettings, setDueSettings] = useState<Record<string, { mode: SettleMode; custom: string }>>(() =>
@@ -89,16 +100,11 @@ function SettlePanel({
             </div>
 
             <div className="flex-1 overflow-y-auto p-6 space-y-4">
-                {/* Payment method */}
+                {/* Payment method — dynamic from org settings */}
                 <div>
                     <p className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Payment Method</p>
-                    <div className="grid grid-cols-4 gap-2">
-                        {([
-                            { value: 'CASH', label: 'Cash', icon: 'payments', color: 'text-emerald-600' },
-                            { value: 'CARD', label: 'Card', icon: 'credit_card', color: 'text-blue-600' },
-                            { value: 'UPI', label: 'UPI', icon: 'qr_code_scanner', color: 'text-violet-600' },
-                            { value: 'WALLET', label: 'Wallet', icon: 'account_balance_wallet', color: 'text-amber-600' },
-                        ] as { value: 'CASH' | 'CARD' | 'UPI' | 'WALLET'; label: string; icon: string; color: string }[]).map(opt => (
+                    <div className={`grid gap-2 ${PAY_OPTIONS.length <= 3 ? 'grid-cols-3' : 'grid-cols-4'}`}>
+                        {PAY_OPTIONS.map(opt => (
                             <button key={opt.value} type="button"
                                 onClick={() => setMethod(opt.value)}
                                 className={`flex flex-col items-center justify-center py-3 rounded-2xl border-2 transition-all gap-1 ${method === opt.value
@@ -111,6 +117,13 @@ function SettlePanel({
                         ))}
                     </div>
                 </div>
+
+                {/* UPI QR Code */}
+                {method === 'UPI' && (
+                    <div className="mt-1">
+                        <UpiQrCode amount={activeTab === 'all' ? player.pending : undefined} />
+                    </div>
+                )}
 
                 {activeTab === 'all' ? (
                     <>

@@ -30,8 +30,8 @@ export function CheckoutPaymentModal({
 }: CheckoutPaymentModalProps) {
     const { appUser } = useAuth();
 
-    // Fallback to default methods if not specified by org
-    const allowedMethods = appUser?.allowedPaymentMethods || ['CASH', 'UPI', 'CARD', 'WALLET'];
+    // Fallback to default methods if not specified by org — filter out WALLET (disabled for now)
+    const allowedMethods = (appUser?.allowedPaymentMethods || ['CASH', 'UPI', 'CARD']).filter((m: string) => m !== 'WALLET');
 
     // Always include DUES, and maybe SPLIT
     const isSplitEligible = players.length > 1;
@@ -42,7 +42,7 @@ export function CheckoutPaymentModal({
     if (allowedMethods.includes('CASH')) PAY_OPTIONS.push({ value: 'CASH', label: 'Cash', icon: 'payments', color: 'text-emerald-600' });
     if (allowedMethods.includes('CARD')) PAY_OPTIONS.push({ value: 'CARD', label: 'Card', icon: 'credit_card', color: 'text-blue-600' });
     if (allowedMethods.includes('UPI')) PAY_OPTIONS.push({ value: 'UPI', label: 'UPI', icon: 'qr_code_scanner', color: 'text-violet-600' });
-    if (allowedMethods.includes('WALLET')) PAY_OPTIONS.push({ value: 'WALLET', label: 'Wallet', icon: 'account_balance_wallet', color: 'text-amber-600' });
+    // WALLET disabled for now — will be re-enabled once wallet system is implemented
 
     // Add DUES for player tracking
     PAY_OPTIONS.push({ value: 'DUES', label: 'Add to Dues', icon: 'account_balance', color: 'text-red-500' });

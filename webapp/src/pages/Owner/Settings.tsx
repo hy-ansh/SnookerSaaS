@@ -143,33 +143,46 @@ export default function OwnerSettings() {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
                     {PAYMENT_METHODS.map(method => {
-                        const isEnabled = allowedMethods.includes(method.id);
+                        const isWallet = method.id === 'WALLET';
+                        const isEnabled = !isWallet && allowedMethods.includes(method.id);
                         return (
                             <button
                                 key={method.id}
-                                onClick={() => toggleMethod(method.id)}
-                                className={`flex items-center gap-4 p-5 rounded-2xl border-2 text-left transition-all duration-200 group ${isEnabled
-                                    ? 'border-primary bg-primary/5 dark:bg-primary/10 shadow-sm shadow-primary/10'
-                                    : 'border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:border-primary/50'
+                                onClick={() => !isWallet && toggleMethod(method.id)}
+                                disabled={isWallet}
+                                className={`flex items-center gap-4 p-5 rounded-2xl border-2 text-left transition-all duration-200 group ${isWallet
+                                    ? 'border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 opacity-50 cursor-not-allowed'
+                                    : isEnabled
+                                        ? 'border-primary bg-primary/5 dark:bg-primary/10 shadow-sm shadow-primary/10'
+                                        : 'border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:border-primary/50'
                                     }`}
                             >
-                                <div className={`flex-shrink-0 w-12 h-12 rounded-xl flex items-center justify-center transition-colors ${isEnabled ? 'bg-primary text-white shadow-md' : 'bg-slate-100 dark:bg-slate-700 text-slate-500 dark:text-slate-400 group-hover:bg-primary/20 group-hover:text-primary'
+                                <div className={`flex-shrink-0 w-12 h-12 rounded-xl flex items-center justify-center transition-colors ${isWallet
+                                    ? 'bg-slate-200 dark:bg-slate-700 text-slate-400'
+                                    : isEnabled ? 'bg-primary text-white shadow-md' : 'bg-slate-100 dark:bg-slate-700 text-slate-500 dark:text-slate-400 group-hover:bg-primary/20 group-hover:text-primary'
                                     }`}>
                                     <span className="material-symbols-outlined text-2xl">{method.icon}</span>
                                 </div>
                                 <div className="flex-1 min-w-0">
                                     <div className="flex items-center justify-between gap-2">
-                                        <p className={`font-bold text-base truncate ${isEnabled ? 'text-primary dark:text-primary' : 'text-slate-900 dark:text-white'}`}>
-                                            {method.label}
-                                        </p>
-                                        <div className={`w-10 h-6 rounded-full flex items-center p-1 transition-colors duration-300 flex-shrink-0 ${isEnabled ? 'bg-primary' : 'bg-slate-300 dark:bg-slate-600'
-                                            }`}>
-                                            <div className={`w-4 h-4 rounded-full bg-white shadow-sm transform transition-transform duration-300 ${isEnabled ? 'translate-x-4' : 'translate-x-0'
-                                                }`} />
+                                        <div className="flex items-center gap-2">
+                                            <p className={`font-bold text-base truncate ${isWallet ? 'text-slate-400' : isEnabled ? 'text-primary dark:text-primary' : 'text-slate-900 dark:text-white'}`}>
+                                                {method.label}
+                                            </p>
+                                            {isWallet && (
+                                                <span className="px-2 py-0.5 bg-amber-100 dark:bg-amber-500/20 text-amber-700 dark:text-amber-400 text-[9px] font-black uppercase tracking-wider rounded-full">Coming Soon</span>
+                                            )}
                                         </div>
+                                        {!isWallet && (
+                                            <div className={`w-10 h-6 rounded-full flex items-center p-1 transition-colors duration-300 flex-shrink-0 ${isEnabled ? 'bg-primary' : 'bg-slate-300 dark:bg-slate-600'
+                                                }`}>
+                                                <div className={`w-4 h-4 rounded-full bg-white shadow-sm transform transition-transform duration-300 ${isEnabled ? 'translate-x-4' : 'translate-x-0'
+                                                    }`} />
+                                            </div>
+                                        )}
                                     </div>
                                     <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 pr-6 leading-relaxed">
-                                        {method.desc}
+                                        {isWallet ? 'Player wallet system — will be available in a future update' : method.desc}
                                     </p>
                                 </div>
                             </button>

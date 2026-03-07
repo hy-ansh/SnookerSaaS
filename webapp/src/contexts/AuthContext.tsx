@@ -43,7 +43,7 @@ const AuthContext = createContext<AuthContextType>({
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
-const API = 'http://localhost:8000';
+const API = import.meta.env.VITE_API_URL || 'http://localhost:8000';
 
 async function fetchProfile(accessToken: string): Promise<AppUser | null> {
     try {

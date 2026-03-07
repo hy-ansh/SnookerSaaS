@@ -54,7 +54,8 @@ export default function Login() {
             if (!token) throw new Error('No session after login');
 
             // Fetch enriched profile to get role
-            const res = await fetch('http://localhost:8000/auth/me', {
+            const API = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+            const res = await fetch(`${API}/auth/me`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
             const profile = res.ok ? await res.json() : null;

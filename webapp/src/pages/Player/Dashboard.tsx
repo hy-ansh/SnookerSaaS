@@ -121,7 +121,7 @@ export default function PlayerDashboard() {
                     </div>
                 </div>
 
-                <div className="bg-slate-900 dark:bg-black p-6 rounded-xl border border-slate-800 shadow-xl shadow-slate-900/10 group">
+                {/* <div className="bg-slate-900 dark:bg-black p-6 rounded-xl border border-slate-800 shadow-xl shadow-slate-900/10 group">
                     <div className="flex items-center gap-4 mb-4">
                         <div className="size-12 rounded-lg bg-primary text-white flex items-center justify-center">
                             <span className="material-symbols-outlined">account_balance_wallet</span>
@@ -148,8 +148,8 @@ export default function PlayerDashboard() {
                                 PAY DUES
                             </Link>
                         </div>
-                    </div>
-                </div>
+                    </div> 
+                </div>*/}
             </div>
 
             {/* Split Content Area */}

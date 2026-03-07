@@ -11,7 +11,6 @@ export default function AdminDashboard() {
     const [metrics, setMetrics] = useState<GlobalMetrics | null>(null);
     const [fraudAlerts, setFraudAlerts] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
-    console.log("Help")
     useEffect(() => {
         async function fetchAdminData() {
             try {
@@ -86,7 +85,7 @@ export default function AdminDashboard() {
                     </div>
                     <div>
                         <p className="text-sm font-bold text-slate-500 uppercase tracking-wider mb-1">Monthly Recurring Revenue</p>
-                        <p className="text-4xl font-black text-slate-900 dark:text-white">${metrics?.monthlyRecurringRevenue?.toFixed(2) || '0.00'}</p>
+                        <p className="text-4xl font-black text-slate-900 dark:text-white">₹{metrics?.monthlyRecurringRevenue?.toFixed(2) || '0.00'}</p>
                     </div>
                 </div>
             </div>

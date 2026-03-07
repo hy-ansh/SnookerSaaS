@@ -1,7 +1,4 @@
-import { Request, Response } from 'express';
-import { PrismaClient } from '@prisma/client';
-
-const prisma = new PrismaClient();
+import prisma from '../config/prisma';
 
 // Get Subscription Details for a Tenant
 export const getSubscription = async (req: Request, res: Response): Promise<void> => {

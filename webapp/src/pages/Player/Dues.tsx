@@ -75,13 +75,13 @@ export default function PlayerDues() {
                 <div className="md:col-span-1 bg-rose-50 dark:bg-rose-500/10 p-6 rounded-2xl border border-rose-100 dark:border-rose-500/20 flex flex-col justify-center">
                     <p className="text-sm font-bold text-rose-500 uppercase tracking-widest mb-1">Total Pending</p>
                     <p className="text-4xl font-black text-slate-900 dark:text-white mb-4">₹{totalPending.toFixed(2)}</p>
-                    <button
+                    {/* <button
                         onClick={handlePayAll}
                         disabled={totalPending <= 0}
                         className="w-full bg-rose-500 hover:bg-rose-600 disabled:opacity-50 text-white py-3 rounded-xl font-bold flex items-center justify-center gap-2 transition-colors">
                         <span className="material-symbols-outlined">payments</span>
                         Pay All Dues
-                    </button>
+                    </button> */}
                 </div>
 
                 <div className="md:col-span-2 bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm flex flex-col justify-center">
@@ -140,11 +140,11 @@ export default function PlayerDues() {
                                         <p className="text-xl font-black text-rose-500">₹{Number(due.amount).toFixed(2)}</p>
                                         <p className="text-xs font-bold text-rose-500 uppercase tracking-widest">Pending</p>
                                     </div>
-                                    <button
+                                    {/* <button
                                         onClick={() => handlePayIndividual(due.id, Number(due.amount))}
                                         className="h-10 px-4 bg-slate-900 hover:bg-black text-white dark:bg-white dark:hover:bg-slate-200 dark:text-black rounded-lg font-bold text-sm transition-colors cursor-pointer flex items-center gap-2">
                                         Pay
-                                    </button>
+                                    </button> */}
                                 </div>
                             </div>
                         ))}
