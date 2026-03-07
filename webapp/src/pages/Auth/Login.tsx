@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../contexts/AuthContext';
+import { API_BASE_URL } from '../../config';
 
 function roleToPath(role: string): string {
     if (role === 'ADMIN' || role === 'SUPER_ADMIN') return '/admin';
@@ -54,8 +55,7 @@ export default function Login() {
             if (!token) throw new Error('No session after login');
 
             // Fetch enriched profile to get role
-            const API = import.meta.env.VITE_API_URL || 'http://localhost:8000';
-            const res = await fetch(`${API}/auth/me`, {
+            const res = await fetch(`${API_BASE_URL}/auth/me`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
             const profile = res.ok ? await res.json() : null;

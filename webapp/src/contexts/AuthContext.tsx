@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useEffect, useState, useCallback } from 'react';
 import type { Session, User } from '@supabase/supabase-js';
 import { supabase } from '../lib/supabase';
+import { API_BASE_URL } from '../config';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -43,11 +44,11 @@ const AuthContext = createContext<AuthContextType>({
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
-const API = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+
 
 async function fetchProfile(accessToken: string): Promise<AppUser | null> {
     try {
-        const res = await fetch(`${API}/auth/me`, {
+        const res = await fetch(`${API_BASE_URL}/auth/me`, {
             headers: { Authorization: `Bearer ${accessToken}` },
         });
         if (!res.ok) return null;

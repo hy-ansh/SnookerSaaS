@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../contexts/AuthContext';
+import { API_BASE_URL } from '../../config';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -19,7 +20,7 @@ interface FormData {
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
-const API = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+
 
 function roleToPath(role: string): string {
     if (role === 'STORE_OWNER') return '/owner';
@@ -93,7 +94,7 @@ export default function Register() {
         setLoading(true);
         try {
             // 1. Call backend to create Supabase user + DB records
-            const res = await fetch(`${API}/auth/register`, {
+            const res = await fetch(`${API_BASE_URL}/auth/register`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
