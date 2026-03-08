@@ -8,10 +8,13 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.runFraudDetectionSweep = void 0;
 const client_1 = require("@prisma/client");
-const prisma = new client_1.PrismaClient();
+const prisma_1 = __importDefault(require("../config/prisma"));
 /**
  * Sweeps recently completed or cancelled sessions to look for anomalies.
  * If found, generates a Fraud Alert for the Super Admin.
@@ -23,7 +26,7 @@ const runFraudDetectionSweep = () => __awaiter(void 0, void 0, void 0, function*
         // Let's get all cancelled sessions in the last 24h grouped by branch
         const yesterday = new Date();
         yesterday.setDate(yesterday.getDate() - 1);
-        const recentCancellations = yield prisma.session.findMany({
+        const recentCancellations = yield prisma_1.default.session.findMany({
             where: {
                 status: 'CANCELLED',
                 startedAt: { gte: yesterday }
@@ -43,7 +46,7 @@ const runFraudDetectionSweep = () => __awaiter(void 0, void 0, void 0, function*
         for (const orgId in orgCancellationCounts) {
             if (orgCancellationCounts[orgId].count >= 5) {
                 // Check if alert already exists today to prevent spam
-                const existingAlert = yield prisma.fraudAlert.findFirst({
+                const existingAlert = yield prisma_1.default.fraudAlert.findFirst({
                     where: {
                         organizationId: orgId,
                         description: { contains: 'High number of session cancellations' },
@@ -51,7 +54,7 @@ const runFraudDetectionSweep = () => __awaiter(void 0, void 0, void 0, function*
                     }
                 });
                 if (!existingAlert) {
-                    yield prisma.fraudAlert.create({
+                    yield prisma_1.default.fraudAlert.create({
                         data: {
                             organizationId: orgId,
                             branchId: orgCancellationCounts[orgId].branchId,

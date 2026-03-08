@@ -12,6 +12,16 @@ interface SubscriptionPlan {
 
 import { AdBanner } from '../../components/Ads/AdBanner';
 
+const loadRazorpayScript = () => {
+    return new Promise((resolve) => {
+        const script = document.createElement('script');
+        script.src = 'https://checkout.razorpay.com/v1/checkout.js';
+        script.onload = () => resolve(true);
+        script.onerror = () => resolve(false);
+        document.body.appendChild(script);
+    });
+};
+
 export default function OwnerSubscription() {
     const [isUpgradeModalOpen, setIsUpgradeModalOpen] = useState(false);
     const [availablePlans, setAvailablePlans] = useState<SubscriptionPlan[]>([]);
@@ -39,16 +49,76 @@ export default function OwnerSubscription() {
     const handleSelectPlan = async (planId: string) => {
         setProcessingPlanId(planId);
         try {
-            // We will create this PUT endpoint next
-            await apiFetch('/owner/subscription/change', {
-                method: 'PUT',
+            const res = await loadRazorpayScript();
+            if (!res) {
+                alert('Razorpay SDK failed to load. Are you online?');
+                setProcessingPlanId(null);
+                return;
+            }
+
+            // 1. Create order on the backend
+            const orderOptions = {
+                method: 'POST',
                 body: JSON.stringify({ planId })
+            };
+            const orderResult = await apiFetch('/owner/subscription/create-order', orderOptions);
+
+            if (!orderResult.order_id) {
+                alert('Failed to generate order.');
+                setProcessingPlanId(null);
+                return;
+            }
+
+            // 2. Setup Razorpay options
+            const options = {
+                key: import.meta.env.VITE_RAZORPAY_KEY_ID || 'dummy_key_for_testing',
+                amount: orderResult.amount,
+                currency: orderResult.currency || 'INR',
+                name: 'SnookerSaaS',
+                description: 'Subscription Upgrade',
+                order_id: orderResult.order_id,
+                handler: async function (response: any) {
+                    try {
+                        setProcessingPlanId(planId); // Keep spinner active during verification
+                        // 3. Verify Payment
+                        await apiFetch('/owner/subscription/verify-payment', {
+                            method: 'POST',
+                            body: JSON.stringify({
+                                razorpay_order_id: response.razorpay_order_id,
+                                razorpay_payment_id: response.razorpay_payment_id,
+                                razorpay_signature: response.razorpay_signature,
+                                planId: planId
+                            })
+                        });
+
+                        alert('Payment successful! Your subscription has been activated.');
+                        await refetch();
+                        setIsUpgradeModalOpen(false);
+                    } catch (err: any) {
+                        alert(err.message || 'Payment verification failed on server.');
+                    } finally {
+                        setProcessingPlanId(null);
+                    }
+                },
+                prefill: {
+                    name: "Snooker Owner",
+                    email: "owner@example.com",
+                    contact: "9999999999"
+                },
+                theme: {
+                    color: '#10b981' // primary emerald color
+                }
+            };
+
+            const paymentObject = new (window as any).Razorpay(options);
+            paymentObject.on('payment.failed', function (response: any) {
+                alert(`Payment Failed: ${response.error.description}`);
             });
-            await refetch();
-            setIsUpgradeModalOpen(false);
-        } catch (error) {
-            alert('Failed to change subscription plan. Please try again or contact support.');
-        } finally {
+            paymentObject.open();
+
+        } catch (error: any) {
+            console.error('Subscription error:', error);
+            alert(error.message || 'Failed to initialize payment gateway. Please try again or contact support.');
             setProcessingPlanId(null);
         }
     };

@@ -8,10 +8,12 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.createOrder = exports.updateStock = exports.addInventoryItem = exports.getInventoryItems = void 0;
-const client_1 = require("@prisma/client");
-const prisma = new client_1.PrismaClient();
+const prisma_1 = __importDefault(require("../config/prisma"));
 // ========== INVENTORY MANAGEMENT ==========
 const getInventoryItems = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     var _a, _b, _c;
@@ -19,7 +21,7 @@ const getInventoryItems = (req, res) => __awaiter(void 0, void 0, void 0, functi
         let branchId = (_a = req.user) === null || _a === void 0 ? void 0 : _a.branchId;
         const orgId = (_b = req.user) === null || _b === void 0 ? void 0 : _b.storeId;
         if (!branchId && orgId) {
-            const fb = yield prisma.branch.findFirst({ where: { organizationId: orgId } });
+            const fb = yield prisma_1.default.branch.findFirst({ where: { organizationId: orgId } });
             if (fb)
                 branchId = fb.id;
         }
@@ -27,7 +29,7 @@ const getInventoryItems = (req, res) => __awaiter(void 0, void 0, void 0, functi
             res.status(403).json({ error: 'Branch ID required' });
             return;
         }
-        const items = yield prisma.inventoryItem.findMany({
+        const items = yield prisma_1.default.inventoryItem.findMany({
             where: branchId ? { branchId } : undefined,
             orderBy: { category: 'asc' }
         });
@@ -51,7 +53,7 @@ const addInventoryItem = (req, res) => __awaiter(void 0, void 0, void 0, functio
         let branchId = (_c = req.user) === null || _c === void 0 ? void 0 : _c.branchId;
         const orgId = (_d = req.user) === null || _d === void 0 ? void 0 : _d.storeId;
         if (!branchId && orgId) {
-            const fb = yield prisma.branch.findFirst({ where: { organizationId: orgId } });
+            const fb = yield prisma_1.default.branch.findFirst({ where: { organizationId: orgId } });
             if (fb)
                 branchId = fb.id;
         }
@@ -63,7 +65,7 @@ const addInventoryItem = (req, res) => __awaiter(void 0, void 0, void 0, functio
             res.status(400).json({ error: 'name, category and price are required' });
             return;
         }
-        const item = yield prisma.inventoryItem.create({
+        const item = yield prisma_1.default.inventoryItem.create({
             data: {
                 branchId,
                 name,
@@ -87,7 +89,7 @@ const updateStock = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
     try {
         const { id } = req.params;
         const { quantityChange } = req.body; // positive to add, negative to deduct
-        const item = yield prisma.inventoryItem.update({
+        const item = yield prisma_1.default.inventoryItem.update({
             where: { id },
             data: {
                 stockQuantity: {
@@ -111,7 +113,7 @@ const createOrder = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
         let branchId = (_a = req.user) === null || _a === void 0 ? void 0 : _a.branchId;
         const orgId = (_b = req.user) === null || _b === void 0 ? void 0 : _b.storeId;
         if (!branchId && orgId) {
-            const fb = yield prisma.branch.findFirst({ where: { organizationId: orgId } });
+            const fb = yield prisma_1.default.branch.findFirst({ where: { organizationId: orgId } });
             if (fb)
                 branchId = fb.id;
         }
@@ -124,7 +126,7 @@ const createOrder = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
             return;
         }
         // Calculate total and deduct stock inside a transaction
-        const result = yield prisma.$transaction((tx) => __awaiter(void 0, void 0, void 0, function* () {
+        const result = yield prisma_1.default.$transaction((tx) => __awaiter(void 0, void 0, void 0, function* () {
             let totalAmount = 0;
             const orderItemsData = [];
             for (const itemReq of items) {

@@ -9,6 +9,9 @@ router.use(auth_1.authenticate);
 router.get('/subscription', (0, auth_1.authorize)(['STORE_OWNER', 'SUPER_ADMIN']), organizationController_1.getOwnerSubscription);
 router.get('/plans', (0, auth_1.authorize)(['STORE_OWNER', 'SUPER_ADMIN']), organizationController_1.getAvailablePlans);
 router.put('/subscription/change', (0, auth_1.authorize)(['STORE_OWNER', 'SUPER_ADMIN']), organizationController_1.updateOwnerSubscription);
+// Razorpay endpoints
+router.post('/subscription/create-order', (0, auth_1.authorize)(['STORE_OWNER', 'SUPER_ADMIN']), organizationController_1.createRazorpayOrder);
+router.post('/subscription/verify-payment', (0, auth_1.authorize)(['STORE_OWNER', 'SUPER_ADMIN']), organizationController_1.verifyRazorpayPayment);
 router.get('/users', (0, auth_1.authorize)(['STORE_OWNER', 'SUPER_ADMIN']), organizationController_1.getOrganizationUsers);
 router.get('/ads', (0, auth_1.authorize)(['STORE_OWNER', 'SUPER_ADMIN']), adController_1.getActiveAds);
 const organizationController_2 = require("../controllers/organizationController");

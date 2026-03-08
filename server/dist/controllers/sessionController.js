@@ -55,16 +55,8 @@ const startSession = (req, res) => __awaiter(void 0, void 0, void 0, function* (
                 hourlyRate = Number(rule.hourlyRate);
             }
         }
-        // DUES SYSTEM: Check Credit Limits
-        if (player_ids && player_ids.length > 0) {
-            for (const pid of player_ids) {
-                const profile = yield prisma_1.default.playerProfile.findUnique({ where: { userId: pid } });
-                if (profile && Number(profile.walletBalance) < -500) {
-                    res.status(403).json({ error: `Player ${profile.nickname || pid} has exceeded the credit limit. Please recharge wallet.` });
-                    return;
-                }
-            }
-        }
+        // WALLET / CREDIT LIMIT CHECK — Disabled for now (future feature)
+        // Wallet logic will be re-enabled once the wallet system is implemented.
         // Create Session & Update Table cleanly in a Transaction
         const [session] = yield prisma_1.default.$transaction([
             prisma_1.default.session.create({
@@ -315,10 +307,7 @@ const endSession = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
                 const players = session.players || [];
                 const perPlayer = players.length > 0 ? totalAmount / players.length : totalAmount;
                 for (const sp of players) {
-                    yield tx.playerProfile.updateMany({
-                        where: { userId: sp.playerId },
-                        data: { walletBalance: { decrement: perPlayer } }
-                    });
+                    // Wallet balance decrement disabled (future feature)
                     yield tx.due.create({
                         data: {
                             playerId: sp.playerId,
@@ -333,10 +322,7 @@ const endSession = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
                 // Individual split payments per player
                 for (const sp of splitPayments) {
                     if (sp.method === 'DUES') {
-                        yield tx.playerProfile.updateMany({
-                            where: { userId: sp.playerId },
-                            data: { walletBalance: { decrement: sp.amount } }
-                        });
+                        // Wallet balance decrement disabled (future feature)
                         yield tx.due.create({
                             data: {
                                 playerId: sp.playerId,

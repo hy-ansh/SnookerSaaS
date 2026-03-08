@@ -8,10 +8,12 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.updateSettings = exports.getSettings = exports.deleteSubscriptionPlan = exports.updateSubscriptionPlan = exports.updateTenantSubscription = exports.updateTenantStatus = exports.resolveFraudAlert = exports.getFraudAlerts = exports.createSubscriptionPlan = exports.getSubscriptionPlans = exports.getTenants = exports.getGlobalMetrics = exports.getSubscription = void 0;
-const client_1 = require("@prisma/client");
-const prisma = new client_1.PrismaClient();
+const prisma_1 = __importDefault(require("../config/prisma"));
 // Get Subscription Details for a Tenant
 const getSubscription = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     var _a;
@@ -21,7 +23,7 @@ const getSubscription = (req, res) => __awaiter(void 0, void 0, void 0, function
             res.status(400).json({ error: 'Organization ID not found in token' });
             return;
         }
-        const subscription = yield prisma.subscription.findUnique({
+        const subscription = yield prisma_1.default.subscription.findUnique({
             where: { organizationId },
             include: {
                 plan: true,
@@ -43,12 +45,12 @@ exports.getSubscription = getSubscription;
 // Get Global SaaS Metrics
 const getGlobalMetrics = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const activeTenants = yield prisma.organization.count();
-        const activeSubscriptions = yield prisma.subscription.count({
+        const activeTenants = yield prisma_1.default.organization.count();
+        const activeSubscriptions = yield prisma_1.default.subscription.count({
             where: { status: 'ACTIVE' }
         });
         // Basic MRR calculation: Sum of active subscription plan prices
-        const subs = yield prisma.subscription.findMany({
+        const subs = yield prisma_1.default.subscription.findMany({
             where: { status: 'ACTIVE' },
             include: { plan: true }
         });
@@ -68,7 +70,7 @@ exports.getGlobalMetrics = getGlobalMetrics;
 // Get All Tenants (Organizations)
 const getTenants = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const tenants = yield prisma.organization.findMany({
+        const tenants = yield prisma_1.default.organization.findMany({
             include: {
                 subscriptions: {
                     include: { plan: true }
@@ -114,7 +116,7 @@ exports.getTenants = getTenants;
 // Get Subscription Plans
 const getSubscriptionPlans = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const plans = yield prisma.subscriptionPlan.findMany({
+        const plans = yield prisma_1.default.subscriptionPlan.findMany({
             orderBy: { price: 'asc' }
         });
         res.json(plans);
@@ -133,7 +135,7 @@ const createSubscriptionPlan = (req, res) => __awaiter(void 0, void 0, void 0, f
             res.status(400).json({ error: 'Plan name and price are required' });
             return;
         }
-        const plan = yield prisma.subscriptionPlan.create({
+        const plan = yield prisma_1.default.subscriptionPlan.create({
             data: {
                 name,
                 type: type || 'pro',
@@ -155,7 +157,7 @@ exports.createSubscriptionPlan = createSubscriptionPlan;
 // Get Active Fraud Alerts
 const getFraudAlerts = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const alerts = yield prisma.fraudAlert.findMany({
+        const alerts = yield prisma_1.default.fraudAlert.findMany({
             where: { resolved: false },
             include: {
                 organization: { select: { name: true } },
@@ -175,7 +177,7 @@ exports.getFraudAlerts = getFraudAlerts;
 const resolveFraudAlert = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { id } = req.params;
-        const alert = yield prisma.fraudAlert.update({
+        const alert = yield prisma_1.default.fraudAlert.update({
             where: { id },
             data: { resolved: true }
         });
@@ -197,9 +199,9 @@ const updateTenantStatus = (req, res) => __awaiter(void 0, void 0, void 0, funct
             return;
         }
         // Use raw SQL to bypass stale Prisma client (isActive was just added to schema)
-        yield prisma.$executeRaw `UPDATE "Organization" SET "isActive" = ${isActive}, "updatedAt" = NOW() WHERE "id" = ${id}`;
+        yield prisma_1.default.$executeRaw `UPDATE "Organization" SET "isActive" = ${isActive}, "updatedAt" = NOW() WHERE "id" = ${id}`;
         // Return the updated org (using any to bypass type-checking for new field)
-        const orgs = yield prisma.$queryRaw `SELECT * FROM "Organization" WHERE "id" = ${id} LIMIT 1`;
+        const orgs = yield prisma_1.default.$queryRaw `SELECT * FROM "Organization" WHERE "id" = ${id} LIMIT 1`;
         const org = orgs[0] || { id, isActive };
         res.json(org);
     }
@@ -219,13 +221,13 @@ const updateTenantSubscription = (req, res) => __awaiter(void 0, void 0, void 0,
             return;
         }
         // Verify plan exists
-        const plan = yield prisma.subscriptionPlan.findUnique({ where: { id: planId } });
+        const plan = yield prisma_1.default.subscriptionPlan.findUnique({ where: { id: planId } });
         if (!plan) {
             res.status(404).json({ error: 'Subscription Plan not found' });
             return;
         }
         // Upsert the tenant's Subscription record
-        const subscription = yield prisma.subscription.upsert({
+        const subscription = yield prisma_1.default.subscription.upsert({
             where: { organizationId: id },
             create: {
                 organizationId: id,
@@ -241,7 +243,7 @@ const updateTenantSubscription = (req, res) => __awaiter(void 0, void 0, void 0,
             include: { plan: true }
         });
         // Update the legacy tier string on Organization just in case anything else relies on it temporarily
-        yield prisma.organization.update({
+        yield prisma_1.default.organization.update({
             where: { id },
             data: { subscriptionTier: plan.name }
         });
@@ -273,7 +275,7 @@ const updateSubscriptionPlan = (req, res) => __awaiter(void 0, void 0, void 0, f
             updateData.adsEnabled = Boolean(adsEnabled);
         if (isActive !== undefined)
             updateData.isActive = Boolean(isActive);
-        const plan = yield prisma.subscriptionPlan.update({
+        const plan = yield prisma_1.default.subscriptionPlan.update({
             where: { id },
             data: updateData
         });
@@ -292,12 +294,12 @@ const deleteSubscriptionPlan = (req, res) => __awaiter(void 0, void 0, void 0, f
     try {
         const { id } = req.params;
         // Count active subs on this plan
-        const tiedSubs = yield prisma.subscription.count({ where: { planId: id } });
+        const tiedSubs = yield prisma_1.default.subscription.count({ where: { planId: id } });
         if (tiedSubs > 0) {
             res.status(409).json({ error: `Cannot delete plan while ${tiedSubs} organizations are actively subscribed to it.` });
             return;
         }
-        yield prisma.subscriptionPlan.delete({ where: { id } });
+        yield prisma_1.default.subscriptionPlan.delete({ where: { id } });
         res.json({ success: true, message: 'Plan deleted' });
     }
     catch (error) {
@@ -313,9 +315,9 @@ exports.deleteSubscriptionPlan = deleteSubscriptionPlan;
 // Get Global Settings (e.g., Free Trial Duration)
 const getSettings = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        let settings = yield prisma.globalSetting.findUnique({ where: { id: 'global' } });
+        let settings = yield prisma_1.default.globalSetting.findUnique({ where: { id: 'global' } });
         if (!settings) {
-            settings = yield prisma.globalSetting.create({
+            settings = yield prisma_1.default.globalSetting.create({
                 data: {
                     id: 'global',
                     freeTrialDays: 3
@@ -338,7 +340,7 @@ const updateSettings = (req, res) => __awaiter(void 0, void 0, void 0, function*
         if (freeTrialDays !== undefined) {
             updateData.freeTrialDays = Number(freeTrialDays);
         }
-        const settings = yield prisma.globalSetting.upsert({
+        const settings = yield prisma_1.default.globalSetting.upsert({
             where: { id: 'global' },
             create: Object.assign({ id: 'global' }, updateData),
             update: updateData

@@ -8,14 +8,16 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getActiveAds = exports.deleteAdvertisement = exports.updateAdvertisement = exports.createAdvertisement = exports.getAdvertisements = void 0;
-const client_1 = require("@prisma/client");
-const prisma = new client_1.PrismaClient();
+const prisma_1 = __importDefault(require("../config/prisma"));
 // Get all advertisements (Admin)
 const getAdvertisements = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const ads = yield prisma.advertisement.findMany({
+        const ads = yield prisma_1.default.advertisement.findMany({
             include: {
                 placements: true,
                 planVisibilities: {
@@ -40,7 +42,7 @@ const createAdvertisement = (req, res) => __awaiter(void 0, void 0, void 0, func
             res.status(400).json({ error: 'Title and imageUrl are required' });
             return;
         }
-        const ad = yield prisma.advertisement.create({
+        const ad = yield prisma_1.default.advertisement.create({
             data: {
                 title,
                 imageUrl,
@@ -78,12 +80,12 @@ const updateAdvertisement = (req, res) => __awaiter(void 0, void 0, void 0, func
         const { title, imageUrl, redirectUrl, isActive, startDate, endDate, priority, placements, planIds } = req.body;
         // Delete existing relations to overwrite
         if (placements !== undefined) {
-            yield prisma.adPlacement.deleteMany({ where: { advertisementId: id } });
+            yield prisma_1.default.adPlacement.deleteMany({ where: { advertisementId: id } });
         }
         if (planIds !== undefined) {
-            yield prisma.adPlanVisibility.deleteMany({ where: { advertisementId: id } });
+            yield prisma_1.default.adPlanVisibility.deleteMany({ where: { advertisementId: id } });
         }
-        const ad = yield prisma.advertisement.update({
+        const ad = yield prisma_1.default.advertisement.update({
             where: { id },
             data: Object.assign(Object.assign(Object.assign(Object.assign(Object.assign(Object.assign(Object.assign(Object.assign(Object.assign({}, (title && { title })), (imageUrl && { imageUrl })), (redirectUrl !== undefined && { redirectUrl })), (isActive !== undefined && { isActive })), (startDate !== undefined && { startDate: startDate ? new Date(startDate) : null })), (endDate !== undefined && { endDate: endDate ? new Date(endDate) : null })), (priority !== undefined && { priority: Number(priority) })), (placements !== undefined && {
                 placements: {
@@ -113,7 +115,7 @@ exports.updateAdvertisement = updateAdvertisement;
 const deleteAdvertisement = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const id = String(req.params.id);
-        yield prisma.advertisement.delete({ where: { id } });
+        yield prisma_1.default.advertisement.delete({ where: { id } });
         res.json({ success: true, message: 'Advertisement deleted successfully' });
     }
     catch (error) {
@@ -135,7 +137,7 @@ const getActiveAds = (req, res) => __awaiter(void 0, void 0, void 0, function* (
             return;
         }
         // Get organization and active plan
-        const org = yield prisma.organization.findUnique({
+        const org = yield prisma_1.default.organization.findUnique({
             where: { id: organizationId },
             include: {
                 subscriptions: {
@@ -163,7 +165,7 @@ const getActiveAds = (req, res) => __awaiter(void 0, void 0, void 0, function* (
         }
         // Fetch active ads
         const now = new Date();
-        const ads = yield prisma.advertisement.findMany({
+        const ads = yield prisma_1.default.advertisement.findMany({
             where: Object.assign(Object.assign({ isActive: true, OR: [
                     { startDate: null },
                     { startDate: { lte: now } }

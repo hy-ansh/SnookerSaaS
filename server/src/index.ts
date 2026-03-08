@@ -48,6 +48,7 @@ import accountingRoutes from './routes/accountingRoutes';
 import assetMaintenanceRoutes from './routes/assetMaintenanceRoutes';
 import ownerRoutes from './routes/ownerRoutes';
 import upiRoutes from './routes/upiRoutes';
+import webhookRoutes from './routes/webhookRoutes';
 import { runFraudDetectionSweep } from './services/fraudService';
 
 // Import routes mapped for MVP
@@ -72,6 +73,9 @@ app.use('/maintenance', assetMaintenanceRoutes);
 app.use('/pricing', pricingRoutes);
 app.use('/owner', ownerRoutes);
 app.use('/upi', upiRoutes);
+
+// Webhook routes should NOT have standard authentication
+app.use('/api/webhooks', webhookRoutes);
 
 app.listen(PORT, () => {
     console.log(`🚀 Server running on http://localhost:${PORT}`);

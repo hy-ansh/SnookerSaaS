@@ -9,7 +9,20 @@ const dotenv_1 = __importDefault(require("dotenv"));
 dotenv_1.default.config();
 const app = (0, express_1.default)();
 const PORT = process.env.PORT || 8000;
-app.use((0, cors_1.default)());
+app.use((0, cors_1.default)({
+    origin: (origin, callback) => {
+        const allowedOrigins = process.env.ALLOWED_ORIGINS
+            ? process.env.ALLOWED_ORIGINS.split(',')
+            : ['http://localhost:5173'];
+        if (!origin || allowedOrigins.includes(origin)) {
+            callback(null, true);
+        }
+        else {
+            callback(new Error('Not allowed by CORS'));
+        }
+    },
+    credentials: true,
+}));
 app.use(express_1.default.json());
 // Basic health check endpoint
 app.get('/health', (req, res) => {
@@ -36,6 +49,7 @@ const accountingRoutes_1 = __importDefault(require("./routes/accountingRoutes"))
 const assetMaintenanceRoutes_1 = __importDefault(require("./routes/assetMaintenanceRoutes"));
 const ownerRoutes_1 = __importDefault(require("./routes/ownerRoutes"));
 const upiRoutes_1 = __importDefault(require("./routes/upiRoutes"));
+const webhookRoutes_1 = __importDefault(require("./routes/webhookRoutes"));
 const fraudService_1 = require("./services/fraudService");
 // Import routes mapped for MVP
 app.use('/auth', authRoutes_1.default);
@@ -59,6 +73,8 @@ app.use('/maintenance', assetMaintenanceRoutes_1.default);
 app.use('/pricing', pricingRoutes_1.default);
 app.use('/owner', ownerRoutes_1.default);
 app.use('/upi', upiRoutes_1.default);
+// Webhook routes should NOT have standard authentication
+app.use('/api/webhooks', webhookRoutes_1.default);
 app.listen(PORT, () => {
     console.log(`🚀 Server running on http://localhost:${PORT}`);
     // Start background jobs/services

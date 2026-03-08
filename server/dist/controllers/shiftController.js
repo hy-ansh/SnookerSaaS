@@ -8,10 +8,12 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getShifts = exports.closeShift = exports.openShift = void 0;
-const client_1 = require("@prisma/client");
-const prisma = new client_1.PrismaClient();
+const prisma_1 = __importDefault(require("../config/prisma"));
 // ========== SHIFT RECONCILIATION (GALLA) ==========
 const openShift = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     var _a;
@@ -23,14 +25,14 @@ const openShift = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
             return;
         }
         // Check if a shift is already open for this staff/branch
-        const openShift = yield prisma.shiftReconciliation.findFirst({
+        const openShift = yield prisma_1.default.shiftReconciliation.findFirst({
             where: { branchId, closedAt: null }
         });
         if (openShift) {
             res.status(400).json({ error: 'A shift is already open at this branch.' });
             return;
         }
-        const shift = yield prisma.shiftReconciliation.create({
+        const shift = yield prisma_1.default.shiftReconciliation.create({
             data: {
                 branchId,
                 staffId,
@@ -50,7 +52,7 @@ const closeShift = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
     try {
         const { id } = req.params;
         const { actualCash, notes } = req.body;
-        const shift = yield prisma.shiftReconciliation.findUnique({
+        const shift = yield prisma_1.default.shiftReconciliation.findUnique({
             where: { id }
         });
         if (!shift) {
@@ -64,8 +66,8 @@ const closeShift = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
         // Calculate Expected Cash:
         // Opening Cash + Cash from Sessions + Cash from Canteen POS - Expenses Paid By Cash
         // This query requires aggregating LedgerEntries for the duration of the shift.
-        const branch = yield prisma.branch.findUnique({ where: { id: shift.branchId } });
-        const cashLedgerAggr = yield prisma.ledgerEntry.aggregate({
+        const branch = yield prisma_1.default.branch.findUnique({ where: { id: shift.branchId } });
+        const cashLedgerAggr = yield prisma_1.default.ledgerEntry.aggregate({
             where: {
                 organizationId: branch.organizationId,
                 accountId: 'CashInHand',
@@ -82,7 +84,7 @@ const closeShift = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
         const netCashCollected = (Number(cashLedgerAggr._sum.debit) || 0) - (Number(cashLedgerAggr._sum.credit) || 0);
         const expectedCash = Number(shift.openingCash) + netCashCollected;
         const discrepancy = Number(actualCash) - expectedCash;
-        const updatedShift = yield prisma.shiftReconciliation.update({
+        const updatedShift = yield prisma_1.default.shiftReconciliation.update({
             where: { id },
             data: {
                 closedAt: new Date(),
@@ -108,7 +110,7 @@ const getShifts = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
             res.status(403).json({ error: 'Unauthorized' });
             return;
         }
-        const shifts = yield prisma.shiftReconciliation.findMany({
+        const shifts = yield prisma_1.default.shiftReconciliation.findMany({
             where: branchId ? { branchId } : undefined,
             include: { staff: { select: { fullName: true, email: true } } },
             orderBy: { openedAt: 'desc' }

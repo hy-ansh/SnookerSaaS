@@ -12,8 +12,19 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getOrganizationUsers = exports.getOwnerSubscription = exports.updateOwnerSubscription = exports.getAvailablePlans = exports.updatePaymentMethods = exports.getOrganization = exports.createOrganization = void 0;
+exports.getOrganizationUsers = exports.getOwnerSubscription = exports.verifyRazorpayPayment = exports.createRazorpayOrder = exports.updateOwnerSubscription = exports.getAvailablePlans = exports.updatePaymentMethods = exports.getOrganization = exports.createOrganization = void 0;
 const prisma_1 = __importDefault(require("../config/prisma"));
+const crypto_1 = __importDefault(require("crypto"));
+const razorpay_1 = __importDefault(require("razorpay"));
+// Initialize Razorpay
+// For safety, only initialize if keys are present (prevents crash on undefined)
+let razorpay;
+if (process.env.RAZORPAY_KEY_ID && process.env.RAZORPAY_KEY_SECRET) {
+    razorpay = new razorpay_1.default({
+        key_id: process.env.RAZORPAY_KEY_ID,
+        key_secret: process.env.RAZORPAY_KEY_SECRET,
+    });
+}
 const createOrganization = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     var _a;
     try {
@@ -178,6 +189,121 @@ const updateOwnerSubscription = (req, res) => __awaiter(void 0, void 0, void 0, 
     }
 });
 exports.updateOwnerSubscription = updateOwnerSubscription;
+const createRazorpayOrder = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a;
+    try {
+        const organizationId = (_a = req.user) === null || _a === void 0 ? void 0 : _a.storeId;
+        const { planId } = req.body;
+        if (!organizationId) {
+            res.status(403).json({ error: 'No organization linked' });
+            return;
+        }
+        if (!planId) {
+            res.status(400).json({ error: 'planId is required' });
+            return;
+        }
+        if (!razorpay) {
+            res.status(500).json({ error: 'Razorpay is not configured on the server' });
+            return;
+        }
+        const plan = yield prisma_1.default.subscriptionPlan.findUnique({ where: { id: planId } });
+        if (!plan) {
+            res.status(404).json({ error: 'Subscription Plan not found' });
+            return;
+        }
+        // Razorpay works in subunits (paise for INR)
+        const amount = Math.round(Number(plan.price) * 100);
+        const options = {
+            amount: amount,
+            currency: 'INR',
+            receipt: `receipt_order_${organizationId}_${Date.now()}`,
+            notes: {
+                organizationId,
+                planId
+            }
+        };
+        const order = yield razorpay.orders.create(options);
+        // Optional: you can save the pending order in DB here, but Razorpay webhooks/callbacks handle success.
+        res.json({
+            order_id: order.id,
+            amount: order.amount,
+            currency: order.currency
+        });
+    }
+    catch (err) {
+        console.error('Error creating Razorpay order:', err);
+        res.status(500).json({ error: 'Internal server error creating order' });
+    }
+});
+exports.createRazorpayOrder = createRazorpayOrder;
+const verifyRazorpayPayment = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a;
+    try {
+        const organizationId = (_a = req.user) === null || _a === void 0 ? void 0 : _a.storeId;
+        const { razorpay_order_id, razorpay_payment_id, razorpay_signature, planId } = req.body;
+        if (!organizationId) {
+            res.status(403).json({ error: 'No organization linked' });
+            return;
+        }
+        if (!razorpay_order_id || !razorpay_payment_id || !razorpay_signature || !planId) {
+            res.status(400).json({ error: 'Missing required payment verification details' });
+            return;
+        }
+        const secret = process.env.RAZORPAY_KEY_SECRET;
+        // Verify signature
+        const generated_signature = crypto_1.default
+            .createHmac('sha256', secret)
+            .update(`${razorpay_order_id}|${razorpay_payment_id}`)
+            .digest('hex');
+        if (generated_signature !== razorpay_signature) {
+            res.status(400).json({ error: 'Invalid payment signature' });
+            return;
+        }
+        const plan = yield prisma_1.default.subscriptionPlan.findUnique({ where: { id: planId } });
+        if (!plan) {
+            res.status(404).json({ error: 'Subscription Plan not found' });
+            return;
+        }
+        // Upsert Subscription since payment is valid
+        const subscription = yield prisma_1.default.subscription.upsert({
+            where: { organizationId },
+            create: {
+                organizationId,
+                planId: plan.id,
+                status: 'ACTIVE',
+                currentPeriodStart: new Date(),
+                currentPeriodEnd: new Date(new Date().setMonth(new Date().getMonth() + 1))
+            },
+            update: {
+                planId: plan.id,
+                status: 'ACTIVE',
+                currentPeriodEnd: new Date(new Date().setMonth(new Date().getMonth() + 1))
+            },
+            include: { plan: true }
+        });
+        // Sync legacy string on Org for fallback compatibility
+        yield prisma_1.default.organization.update({
+            where: { id: organizationId },
+            data: { subscriptionTier: plan.name }
+        });
+        // Also record the invoice
+        yield prisma_1.default.invoice.create({
+            data: {
+                subscriptionId: subscription.id,
+                amount: plan.price,
+                status: 'PAID',
+                dueDate: new Date(),
+                paidAt: new Date()
+            }
+        });
+        res.json({ message: 'Payment verified and subscription activated', subscription });
+    }
+    catch (err) {
+        console.error('Error verifying Razorpay payment:', err);
+        res.status(500).json({ error: 'Internal server error verifying payment' });
+    }
+});
+exports.verifyRazorpayPayment = verifyRazorpayPayment;
 const getOwnerSubscription = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     var _a, _b, _c, _d, _e, _f, _g, _h;
     try {

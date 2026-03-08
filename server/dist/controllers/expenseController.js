@@ -8,10 +8,12 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getExpenses = exports.recordExpense = void 0;
-const client_1 = require("@prisma/client");
-const prisma = new client_1.PrismaClient();
+const prisma_1 = __importDefault(require("../config/prisma"));
 // ========== EXPENSE MANAGEMENT ==========
 const recordExpense = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     var _a, _b, _c;
@@ -32,7 +34,7 @@ const recordExpense = (req, res) => __awaiter(void 0, void 0, void 0, function* 
         }
         // Verify branch belongs to user's org
         if (organizationId) {
-            const branch = yield prisma.branch.findFirst({
+            const branch = yield prisma_1.default.branch.findFirst({
                 where: { id: branchId, organizationId }
             });
             if (!branch) {
@@ -40,7 +42,7 @@ const recordExpense = (req, res) => __awaiter(void 0, void 0, void 0, function* 
                 return;
             }
         }
-        const result = yield prisma.$transaction((tx) => __awaiter(void 0, void 0, void 0, function* () {
+        const result = yield prisma_1.default.$transaction((tx) => __awaiter(void 0, void 0, void 0, function* () {
             // Create Expense record
             const expense = yield tx.expense.create({
                 data: {
@@ -92,7 +94,7 @@ const getExpenses = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
             res.status(403).json({ error: 'Unauthorized' });
             return;
         }
-        const expenses = yield prisma.expense.findMany({
+        const expenses = yield prisma_1.default.expense.findMany({
             where: branchId ? { branchId } : undefined,
             include: { recordedBy: { select: { fullName: true } } },
             orderBy: { incurredAt: 'desc' }
