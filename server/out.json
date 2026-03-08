@@ -1,0 +1,4 @@
+{"name":"url1","status":"ERROR","error":"Tenant or user not found"}
+{"name":"url2","status":"ERROR","error":"Tenant or user not found"}
+{"name":"url3","status":"SUCCESS"}
+{"name":"url4","status":"ERROR","error":"no such user"}
