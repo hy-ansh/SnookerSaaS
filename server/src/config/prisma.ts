@@ -2,14 +2,12 @@ import { PrismaClient } from '@prisma/client';
 
 const globalForPrisma = global as unknown as { prisma: PrismaClient };
 
-// If a pooler URL is provided, we IGNORE it and force the Direct URL.
-// The Supabase Supavisor pooler is currently throwing 500/unreachable errors.
-let dbUrl = process.env.DATABASE_URL;
+let dbUrl = process.env.DATABASE_URL || process.env.DIRECT_URL;
 
-if (dbUrl && dbUrl.includes('pooler.supabase.com')) {
-    dbUrl = process.env.DIRECT_URL || "postgresql://postgres:xGyLKr2ggHICUG1R@db.xuqynbvzldxazemylpko.supabase.co:5432/postgres?connection_limit=10";
-} else if (!dbUrl) {
-    dbUrl = process.env.DIRECT_URL || "postgresql://postgres:xGyLKr2ggHICUG1R@db.xuqynbvzldxazemylpko.supabase.co:5432/postgres?connection_limit=10";
+// Ensure pgbouncer=true is appended when using the Supabase pooler
+if (dbUrl && dbUrl.includes('pooler.supabase.com') && !dbUrl.includes('pgbouncer=true')) {
+    const separator = dbUrl.includes('?') ? '&' : '?';
+    dbUrl = `${dbUrl}${separator}pgbouncer=true`;
 }
 
 const prisma =
