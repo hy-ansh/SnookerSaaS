@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { apiFetch } from '../../api/apiClient';
+import { LogoSpinner } from '../../components/Shared/LogoSpinner';
 
 interface SubscriptionPlan {
     id: string;
@@ -91,8 +92,9 @@ export default function AdminOrganizations() {
 
     if (loading) {
         return (
-            <div className="flex items-center justify-center p-20">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+            <div className="flex flex-col items-center justify-center p-20 gap-4">
+                <LogoSpinner size="size-12" />
+                <p className="text-sm font-bold text-slate-400 animate-pulse">Retrieving Organizations...</p>
             </div>
         );
     }
@@ -309,7 +311,7 @@ export default function AdminOrganizations() {
                                 disabled={!selectedPlanId || processing}
                                 className="flex-1 py-3.5 rounded-xl font-bold text-white bg-primary hover:bg-primary/90 shadow-md shadow-primary/20 transition-all disabled:opacity-50 flex items-center justify-center"
                             >
-                                {processing ? <div className="size-5 rounded-full border-2 border-white/30 border-t-white animate-spin"></div> : 'Apply Plan'}
+                                {processing ? <LogoSpinner size="size-5" light /> : 'Apply Plan'}
                             </button>
                         </div>
                     </div>

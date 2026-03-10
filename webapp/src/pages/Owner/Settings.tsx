@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import { apiFetch } from '../../api/apiClient';
+import { LogoSpinner } from '../../components/Shared/LogoSpinner';
 
 const PAYMENT_METHODS = [
     { id: 'CASH', label: 'Cash', icon: 'payments', desc: 'Accept physical cash at the counter' },
@@ -10,7 +11,7 @@ const PAYMENT_METHODS = [
 ];
 
 export default function OwnerSettings() {
-    const { appUser, checkSession } = useAuth();
+    const { appUser, refreshProfile } = useAuth();
     const [allowedMethods, setAllowedMethods] = useState<string[]>([]);
     const [saving, setSaving] = useState(false);
     const [savingUpi, setSavingUpi] = useState(false);
@@ -64,7 +65,7 @@ export default function OwnerSettings() {
                 body: JSON.stringify({ allowedPaymentMethods: allowedMethods })
             });
             // Force auth context to reload the profile to get updated payment methods throughout the app
-            await checkSession();
+            await refreshProfile();
             setSuccess('Payment methods saved successfully!');
             setTimeout(() => setSuccess(null), 3000);
         } catch (err: any) {
@@ -143,21 +144,21 @@ export default function OwnerSettings() {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
                     {PAYMENT_METHODS.map(method => {
-                        const isWallet = method.id === 'WALLET';
-                        const isEnabled = !isWallet && allowedMethods.includes(method.id);
+                        const isDisabledMethod = method.id === 'WALLET' || method.id === 'CARD';
+                        const isEnabled = !isDisabledMethod && allowedMethods.includes(method.id);
                         return (
                             <button
                                 key={method.id}
-                                onClick={() => !isWallet && toggleMethod(method.id)}
-                                disabled={isWallet}
-                                className={`flex items-center gap-4 p-5 rounded-2xl border-2 text-left transition-all duration-200 group ${isWallet
+                                onClick={() => !isDisabledMethod && toggleMethod(method.id)}
+                                disabled={isDisabledMethod}
+                                className={`flex items-center gap-4 p-5 rounded-2xl border-2 text-left transition-all duration-200 group ${isDisabledMethod
                                     ? 'border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 opacity-50 cursor-not-allowed'
                                     : isEnabled
                                         ? 'border-primary bg-primary/5 dark:bg-primary/10 shadow-sm shadow-primary/10'
                                         : 'border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:border-primary/50'
                                     }`}
                             >
-                                <div className={`flex-shrink-0 w-12 h-12 rounded-xl flex items-center justify-center transition-colors ${isWallet
+                                <div className={`flex-shrink-0 w-12 h-12 rounded-xl flex items-center justify-center transition-colors ${isDisabledMethod
                                     ? 'bg-slate-200 dark:bg-slate-700 text-slate-400'
                                     : isEnabled ? 'bg-primary text-white shadow-md' : 'bg-slate-100 dark:bg-slate-700 text-slate-500 dark:text-slate-400 group-hover:bg-primary/20 group-hover:text-primary'
                                     }`}>
@@ -166,14 +167,14 @@ export default function OwnerSettings() {
                                 <div className="flex-1 min-w-0">
                                     <div className="flex items-center justify-between gap-2">
                                         <div className="flex items-center gap-2">
-                                            <p className={`font-bold text-base truncate ${isWallet ? 'text-slate-400' : isEnabled ? 'text-primary dark:text-primary' : 'text-slate-900 dark:text-white'}`}>
+                                            <p className={`font-bold text-base truncate ${isDisabledMethod ? 'text-slate-400' : isEnabled ? 'text-primary dark:text-primary' : 'text-slate-900 dark:text-white'}`}>
                                                 {method.label}
                                             </p>
-                                            {isWallet && (
+                                            {isDisabledMethod && (
                                                 <span className="px-2 py-0.5 bg-amber-100 dark:bg-amber-500/20 text-amber-700 dark:text-amber-400 text-[9px] font-black uppercase tracking-wider rounded-full">Coming Soon</span>
                                             )}
                                         </div>
-                                        {!isWallet && (
+                                        {!isDisabledMethod && (
                                             <div className={`w-10 h-6 rounded-full flex items-center p-1 transition-colors duration-300 flex-shrink-0 ${isEnabled ? 'bg-primary' : 'bg-slate-300 dark:bg-slate-600'
                                                 }`}>
                                                 <div className={`w-4 h-4 rounded-full bg-white shadow-sm transform transition-transform duration-300 ${isEnabled ? 'translate-x-4' : 'translate-x-0'
@@ -182,7 +183,7 @@ export default function OwnerSettings() {
                                         )}
                                     </div>
                                     <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 pr-6 leading-relaxed">
-                                        {isWallet ? 'Player wallet system — will be available in a future update' : method.desc}
+                                        {isDisabledMethod ? `${method.label} integration — will be available in a future update` : method.desc}
                                     </p>
                                 </div>
                             </button>
@@ -200,10 +201,7 @@ export default function OwnerSettings() {
                             }`}
                     >
                         {saving ? (
-                            <>
-                                <span className="animate-spin material-symbols-outlined">sync</span>
-                                Saving Changes...
-                            </>
+                            <LogoSpinner size="size-5" light />
                         ) : (
                             <>
                                 <span className="material-symbols-outlined text-lg">save</span>
@@ -270,10 +268,7 @@ export default function OwnerSettings() {
                             }`}
                     >
                         {savingUpi ? (
-                            <>
-                                <span className="animate-spin material-symbols-outlined">sync</span>
-                                Saving...
-                            </>
+                            <LogoSpinner size="size-5" light />
                         ) : (
                             <>
                                 <span className="material-symbols-outlined text-lg">save</span>

@@ -2,6 +2,7 @@ import { Outlet, Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { useQuery } from '@tanstack/react-query';
 import { playerService } from '../api/player';
+import { Logo } from '../components/Shared/Logo';
 
 export default function PlayerLayout() {
     const { appUser, user, signOut } = useAuth();
@@ -22,13 +23,13 @@ export default function PlayerLayout() {
                 {/* Header */}
                 <header className="flex items-center justify-between border-b border-primary/10 bg-white/80 dark:bg-slate-950/80 backdrop-blur-md px-6 md:px-20 py-4 sticky top-0 z-50">
                     <div className="flex items-center gap-8">
-                        <Link to="/player" className="flex items-center gap-3">
-                            <div className="size-10 bg-primary rounded-lg flex items-center justify-center text-white shadow-lg shadow-primary/20">
-                                <span className="material-symbols-outlined">sports_handball</span>
-                            </div>
-                            <h2 className="text-slate-900 dark:text-slate-100 text-xl font-extrabold tracking-tight truncate max-w-[150px] sm:max-w-[200px]" title={appUser?.organizationName || 'CueFlow'}>
-                                {appUser?.organizationName || 'CueFlow'}
-                            </h2>
+                        <Link to="/player" className="flex items-center gap-3 shrink-0 relative">
+                            <Logo size="small" />
+                            {appUser?.organizationName && (
+                                <div className="hidden sm:block absolute -right-4 -bottom-2 text-[10px] font-bold text-primary bg-primary/10 px-2 py-0.5 rounded-full truncate max-w-[100px]" title={appUser.organizationName}>
+                                    {appUser.organizationName}
+                                </div>
+                            )}
                         </Link>
 
                         {/* Navigation Links */}
@@ -95,7 +96,7 @@ export default function PlayerLayout() {
                         </div>
                     </div>
                 </footer>
-            </div>
-        </div>
+            </div >
+        </div >
     );
 }

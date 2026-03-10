@@ -1,12 +1,12 @@
 import { useEffect, useState, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { sessionService, type CheckoutPayload } from '../../api/sessions';
-import { UpiQrCode } from '../../components/Shared/UpiQrCode';
 import { CheckoutPaymentModal } from '../../components/Shared/CheckoutPaymentModal';
+import SessionEndAdModal from '../../components/Ads/SessionEndAdModal';
+import { LogoSpinner } from '../../components/Shared/LogoSpinner';
 
 // ── Types ──────────────────────────────────────────────────────────────────────
 interface PlayerSearchResult { id: string; fullName: string; email: string; playerProfile?: { nickname?: string } }
-type PayMode = 'CASH' | 'CARD' | 'UPI' | 'WALLET' | 'DUES' | 'SPLIT';
 
 // ── Player Search & Add Modal ──────────────────────────────────────────────────
 function AddPlayerModal({ onAdd, onClose }: { onAdd: (player: PlayerSearchResult) => Promise<void>; onClose: () => void }) {
@@ -69,7 +69,7 @@ function AddPlayerModal({ onAdd, onClose }: { onAdd: (player: PlayerSearchResult
                             </div>
                             <button onClick={() => handleAdd(p)} disabled={!!adding}
                                 className="shrink-0 px-3 py-1.5 bg-primary text-white rounded-lg text-xs font-bold hover:bg-primary/90 disabled:opacity-60 flex items-center gap-1">
-                                {adding === p.id ? <span className="animate-spin rounded-full h-3 w-3 border-b-2 border-white" /> : <span className="material-symbols-outlined text-[14px]">person_add</span>}
+                                {adding === p.id ? <LogoSpinner size="size-3" light /> : <span className="material-symbols-outlined text-[14px]">person_add</span>}
                                 Add
                             </button>
                         </div>
@@ -199,6 +199,10 @@ export default function StaffLiveSession() {
     const [showPayment, setShowPayment] = useState(false);
     const [checkoutPayload, setCheckoutPayload] = useState<any>({});
 
+    // Session-end interstitial ad
+    const [showSessionEndAd, setShowSessionEndAd] = useState(false);
+    const [checkoutResult, setCheckoutResult] = useState<any>(null);
+
     // Live Timer
     const [elapsedSeconds, setElapsedSeconds] = useState(0);
 
@@ -249,13 +253,22 @@ export default function StaffLiveSession() {
             const res = await sessionService.endSession(session.id, payload);
             setShowPayment(false);
             setCheckoutPayload({});
-            navigate(-1);
-            // Brief notification shown to user
-            alert(`✅ Session Closed\n⏱ Duration: ${res.durationMinutes}m\n💰 Total: ₹${res.totalAmount?.toFixed(2)}`);
+            setCheckoutResult(res);
+            // Show interstitial ad before navigating away
+            setShowSessionEndAd(true);
         } catch (error: any) {
             alert('Checkout failed: ' + error.message);
         }
     };
+
+    /** Called when the session-end ad is dismissed (skip or countdown) */
+    const handleAdDismiss = useCallback(() => {
+        setShowSessionEndAd(false);
+        if (checkoutResult) {
+            alert(`✅ Session Closed\n⏱ Duration: ${checkoutResult.durationMinutes}m\n💰 Total: ₹${checkoutResult.totalAmount?.toFixed(2)}`);
+        }
+        navigate(-1);
+    }, [checkoutResult, navigate]);
 
     const handleUpdateRate = async () => {
         if (!session) return;
@@ -286,8 +299,9 @@ export default function StaffLiveSession() {
     };
 
     if (loading) return (
-        <div className="flex items-center justify-center p-20">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+        <div className="flex flex-col items-center justify-center p-20 gap-4">
+            <LogoSpinner size="size-12" />
+            <p className="text-sm font-bold text-slate-400 animate-pulse">Entering Table Flow...</p>
         </div>
     );
 
@@ -306,6 +320,9 @@ export default function StaffLiveSession() {
 
     return (
         <div className="max-w-5xl mx-auto w-full font-display">
+            {/* Session End Ad Interstitial */}
+            <SessionEndAdModal isOpen={showSessionEndAd} onDismiss={handleAdDismiss} />
+
             {/* Modals */}
             {showAddPlayer && <AddPlayerModal onAdd={handleAddPlayer} onClose={() => setShowAddPlayer(false)} />}
             {showSummary && (
@@ -347,7 +364,7 @@ export default function StaffLiveSession() {
                         <div className="flex gap-3">
                             <button onClick={() => setIsEditingRate(false)} className="flex-1 py-3 rounded-xl font-bold text-slate-600 bg-slate-100 dark:bg-slate-800">Cancel</button>
                             <button onClick={handleUpdateRate} disabled={isProcessing} className="flex-1 py-3 rounded-xl font-bold text-white bg-primary disabled:opacity-50 flex items-center justify-center">
-                                {isProcessing ? <span className="animate-spin rounded-full h-4 w-4 border-b-2 border-white" /> : 'Save Rate'}
+                                {isProcessing ? <LogoSpinner size="size-4" light /> : 'Save Rate'}
                             </button>
                         </div>
                     </div>

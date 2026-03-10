@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { apiFetch } from '../../api/apiClient';
+import { LogoSpinner } from '../../components/Shared/LogoSpinner';
 
 interface GlobalMetrics {
     activeTenants: number;
@@ -42,8 +43,9 @@ export default function AdminDashboard() {
 
     if (loading) {
         return (
-            <div className="flex items-center justify-center p-20">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+            <div className="flex flex-col items-center justify-center p-20 gap-4">
+                <LogoSpinner size="size-12" />
+                <p className="text-sm font-bold text-slate-400 animate-pulse">Scanning Platform...</p>
             </div>
         );
     }

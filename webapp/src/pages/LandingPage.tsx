@@ -1,6 +1,7 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import HeroScene from '../components/Hero';
+import { Logo } from '../components/Shared/Logo';
 
 export default function LandingPage() {
     const { session, appUser } = useAuth();
@@ -20,10 +21,8 @@ export default function LandingPage() {
             <header className="sticky top-0 z-50 bg-background-light/80 backdrop-blur-md border-b border-primary/10">
                 <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
                     <div className="flex items-center gap-2">
-                        <div className="bg-primary p-2 rounded-lg">
-                            <span className="material-symbols-outlined text-white text-2xl">pool</span>
-                        </div>
-                        <span className="text-2xl font-800 tracking-tight text-slate-900">Cue<span className="text-primary">Flow</span></span>
+                        <Logo size="large" className="transform hover:scale-105 transition duration-300" />
+                        <span className="text-2xl font-800 tracking-tight text-slate-900">Cue<span className="text-primary">Manager</span></span>
                     </div>
                     <nav className="hidden md:flex items-center gap-8">
                         <a className="text-sm font-semibold text-slate-custom hover:text-primary transition-colors" href="#features">Features</a>
@@ -297,7 +296,7 @@ export default function LandingPage() {
                 <section className="py-24 bg-primary">
                     <div className="max-w-4xl mx-auto px-6 text-center text-white">
                         <h2 className="text-4xl font-800 mb-8 leading-tight">Ready to modernize your pool hall?</h2>
-                        <p className="text-xl text-primary/10 opacity-90 mb-10 text-white/80">Join 500+ pool halls worldwide that use CueFlow to run their business more efficiently.</p>
+                        <p className="text-xl text-primary/10 opacity-90 mb-10 text-white/80">Join 500+ pool halls worldwide that use CueManager to run their business more efficiently.</p>
                         <div className="flex flex-wrap justify-center gap-4">
                             <Link to="/register" className="bg-white text-primary px-10 py-5 rounded-xl font-800 text-xl shadow-2xl hover:bg-slate-50 transition-all">
                                 Get Started Free
@@ -314,10 +313,7 @@ export default function LandingPage() {
                 <div className="max-w-7xl mx-auto px-6 grid md:grid-cols-4 gap-12">
                     <div className="col-span-2">
                         <div className="flex items-center gap-2 mb-6">
-                            <div className="bg-primary p-2 rounded-lg">
-                                <span className="material-symbols-outlined text-white text-xl">pool</span>
-                            </div>
-                            <span className="text-xl font-800 tracking-tight text-white">CueFlow</span>
+                            <Logo size="small" />
                         </div>
                         <p className="max-w-sm">The world's most advanced management software for pool halls, snooker clubs, and billiard rooms.</p>
                     </div>
@@ -341,7 +337,7 @@ export default function LandingPage() {
                     </div>
                 </div>
                 <div className="max-w-7xl mx-auto px-6 pt-16 mt-16 border-t border-white/10 flex flex-col md:flex-row justify-between items-center gap-4 text-xs">
-                    <p>© 2024 CueFlow Inc. All rights reserved.</p>
+                    <p>© 2024 CueManager Inc. All rights reserved.</p>
                     <div className="flex gap-6">
                         <a className="hover:text-primary transition-colors" href="#">Twitter</a>
                         <a className="hover:text-primary transition-colors" href="#">LinkedIn</a>

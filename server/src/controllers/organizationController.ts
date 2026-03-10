@@ -13,6 +13,7 @@ if (process.env.RAZORPAY_KEY_ID && process.env.RAZORPAY_KEY_SECRET) {
     });
 }
 
+
 export const createOrganization = async (req: Request, res: Response): Promise<void> => {
     try {
         const { name, subscriptionTier } = req.body;
@@ -174,11 +175,11 @@ export const updateOwnerSubscription = async (req: Request, res: Response): Prom
             include: { plan: true }
         });
 
-        // Sync legacy string on Org for fallback compatibility
-        await prisma.organization.update({
-            where: { id: organizationId },
-            data: { subscriptionTier: plan.name }
-        });
+        // We consciously DO NOT update the deprecated `subscriptionTier` here. Rely on Subscription relation.
+        // await prisma.organization.update({
+        //     where: { id: organizationId },
+        //     data: { subscriptionTier: plan.name }
+        // });
 
         res.json({ message: 'Subscription successfully upgraded', subscription });
     } catch (err) {
@@ -219,7 +220,7 @@ export const createRazorpayOrder = async (req: Request, res: Response): Promise<
         const options = {
             amount: amount,
             currency: 'INR',
-            receipt: `receipt_order_${organizationId}_${Date.now()}`,
+            receipt: `rcpt_${Date.now()}`,
             notes: {
                 organizationId,
                 planId
@@ -294,11 +295,11 @@ export const verifyRazorpayPayment = async (req: Request, res: Response): Promis
             include: { plan: true }
         });
 
-        // Sync legacy string on Org for fallback compatibility
-        await prisma.organization.update({
-            where: { id: organizationId },
-            data: { subscriptionTier: plan.name }
-        });
+        // We consciously DO NOT update the deprecated `subscriptionTier` here. Rely on Subscription relation.
+        // await prisma.organization.update({
+        //     where: { id: organizationId },
+        //     data: { subscriptionTier: plan.name }
+        // });
 
         // Also record the invoice
         await prisma.invoice.create({
@@ -331,7 +332,12 @@ export const getOwnerSubscription = async (req: Request, res: Response): Promise
             where: { id: organizationId },
             include: {
                 subscriptions: {
-                    include: { plan: true },
+                    include: {
+                        plan: true,
+                        invoices: {
+                            orderBy: { dueDate: 'desc' }
+                        }
+                    },
                     take: 5
                 }
             }
@@ -358,6 +364,7 @@ export const getOwnerSubscription = async (req: Request, res: Response): Promise
                 planId: activeSub.planId,
                 currentPeriodStart: activeSub.currentPeriodStart,
                 currentPeriodEnd: activeSub.currentPeriodEnd,
+                invoices: activeSub.invoices || [],
                 plan: {
                     id: activeSub.plan?.id,
                     name: activeSub.plan?.name,

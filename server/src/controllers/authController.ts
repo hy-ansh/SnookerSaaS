@@ -8,28 +8,28 @@ import prisma from '../config/prisma';
 // Called by AuthContext on every login to get the real DB role.
 export const getMe = async (req: Request, res: Response): Promise<void> => {
     try {
-        const authHeader = req.headers.authorization;
-        if (!authHeader?.startsWith('Bearer ')) {
-            res.status(401).json({ error: 'Missing token' });
+        const userContext = req.user;
+        if (!userContext) {
+            res.status(401).json({ error: 'Unauthorized: No user context' });
             return;
         }
-        const token = authHeader.split(' ')[1];
-        const { data: { user }, error } = await supabaseAdmin.auth.getUser(token);
-        if (error || !user) { res.status(401).json({ error: 'Invalid token' }); return; }
+
+        const email = userContext.email;
 
         const record = await prisma.user.findUnique({
-            where: { email: user.email! },
+            where: { email },
             include: { role: true, organization: true }
         });
 
         if (!record) {
             // User authenticated in Supabase but no DB record yet — return metadata only
-            const meta = user.user_metadata;
+            // Fallback since the authenticate middleware handles auto-provisioning
+            // This acts as a safety net
             res.json({
-                id: user.id,
-                email: user.email,
-                fullName: meta?.full_name ?? null,
-                role: meta?.role ?? 'PLAYER',
+                id: userContext.id,
+                email: email,
+                fullName: null,
+                role: userContext.role,
                 organizationId: null,
                 organizationName: null,
                 orgIsActive: true,
@@ -40,7 +40,7 @@ export const getMe = async (req: Request, res: Response): Promise<void> => {
         }
 
         res.json({
-            id: user.id,
+            id: userContext.id,
             email: record.email,
             fullName: record.fullName,
             role: record.role?.name ?? 'PLAYER',

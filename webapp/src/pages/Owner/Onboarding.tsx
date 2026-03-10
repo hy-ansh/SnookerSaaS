@@ -3,6 +3,7 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { authService } from '../../api/auth';
 import { apiFetch } from '../../api/apiClient';
 import FeatureGate from '../../components/FeatureGate';
+import { LogoSpinner } from '../../components/Shared/LogoSpinner';
 
 interface Branch {
     id: string;
@@ -86,8 +87,9 @@ function OnboardingContent() {
 
     if (loading) {
         return (
-            <div className="flex items-center justify-center p-20">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+            <div className="flex flex-col items-center justify-center p-20 gap-4">
+                <LogoSpinner size="size-12" />
+                <p className="text-sm font-bold text-slate-400 animate-pulse">Preparing Roster...</p>
             </div>
         );
     }
@@ -212,7 +214,7 @@ function OnboardingContent() {
                             >
                                 {submitting ? (
                                     <>
-                                        <div className="size-5 rounded-full border-2 border-white/30 border-t-white animate-spin" />
+                                        <LogoSpinner size="size-5" light />
                                         <span>Provisioning Account...</span>
                                     </>
                                 ) : (

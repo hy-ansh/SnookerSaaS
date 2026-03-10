@@ -1,7 +1,8 @@
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { useSubscription, type FeatureKey } from '../hooks/useSubscription';
-import { AdSidebar } from './Ads/AdSidebar';
+import { Logo } from './Shared/Logo';
+// Ad removed from sidebar — ads now live in the right panel via DashboardLayout
 
 // ── Sidebar nav items ─────────────────────────────────────────────
 interface NavItem {
@@ -116,14 +117,13 @@ export default function Sidebar() {
 
     return (
         <aside className="w-64 border-r border-slate-200 dark:border-slate-800 bg-white dark:bg-background-dark flex flex-col fixed h-full z-20">
-            {/* Logo / Brand */}
-            <div className="p-6 flex items-center gap-3">
-                <div className="bg-primary text-white p-1.5 rounded-lg flex items-center justify-center flex-shrink-0">
-                    <span className="material-symbols-outlined text-2xl">sports_pool</span>
-                </div>
-                <h2 className="text-xl font-bold tracking-tight text-slate-900 dark:text-white truncate" title={appUser?.organizationName || 'CueManager'}>
-                    {appUser?.organizationName || 'CueManager'}
-                </h2>
+            <div className="p-6 flex items-center justify-center relative">
+                <Logo size="small" />
+                {appUser?.organizationName && (
+                    <div className="absolute top-1 right-2 text-[10px] font-bold text-primary bg-primary/10 px-2 py-0.5 rounded-full truncate max-w-[100px]" title={appUser.organizationName}>
+                        {appUser.organizationName}
+                    </div>
+                )}
             </div>
 
             {/* Free trial badge */}
@@ -196,9 +196,6 @@ export default function Sidebar() {
                     <NavSection items={PLAYER_NAV} pathname={location.pathname} />
                 )}
             </nav>
-
-            {/* Sub/Free Trial Ads */}
-            <AdSidebar placement="dashboard_sidebar" className="mb-4" />
 
             {/* Footer */}
             <div className="p-4 border-t border-slate-200 dark:border-slate-800 space-y-2">

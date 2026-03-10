@@ -1,7 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { Link } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { playerService } from '../../api/player';
+import { LogoSpinner } from '../../components/Shared/LogoSpinner';
 import { apiFetch } from '../../api/apiClient';
 
 export default function PlayerDashboard() {
@@ -15,7 +15,7 @@ export default function PlayerDashboard() {
         retry: false
     });
 
-    const { data: walletData, isLoading: walletLoading } = useQuery({
+    useQuery({
         queryKey: ['walletData', user?.id],
         queryFn: () => playerService.getWallet(),
         enabled: !!user?.id,
@@ -33,6 +33,8 @@ export default function PlayerDashboard() {
         enabled: !!user?.id,
     });
 
+    // Mutation logic removed as it was only used in the disabled wallet section
+    /*
     const rechargeMutation = useMutation({
         mutationFn: playerService.rechargeWallet,
         onSuccess: (data: { orderId: string, amount: number }) => {
@@ -45,13 +47,7 @@ export default function PlayerDashboard() {
             alert('Failed to initiate recharge');
         }
     });
-
-    const handleRecharge = () => {
-        const amount = prompt("Enter amount to add to wallet (INR):", "500");
-        if (amount && !isNaN(Number(amount))) {
-            rechargeMutation.mutate(Number(amount));
-        }
-    };
+    */
 
     const winRate = stats?.matchesPlayed
         ? Math.round((stats.matchesWon / stats.matchesPlayed) * 100)
@@ -165,8 +161,9 @@ export default function PlayerDashboard() {
 
                     <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden">
                         {historyLoading ? (
-                            <div className="p-8 text-center text-slate-500">
-                                <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary mx-auto"></div>
+                            <div className="p-8 text-center flex flex-col items-center gap-3">
+                                <LogoSpinner size="size-6" />
+                                <p className="text-xs font-bold text-slate-400">Loading History...</p>
                             </div>
                         ) : recentSessions.length === 0 ? (
                             <div className="p-12 text-center">
@@ -180,7 +177,6 @@ export default function PlayerDashboard() {
                                     const sess = record.session;
                                     if (!sess) return null;
                                     const isWinner = (sess.winnerIds || []).includes(myId);
-                                    const isLTP = sess.gameType === 'LTP';
                                     const coPlayers = (sess.players || []).filter((p: any) => p.playerId !== myId);
                                     const payInfo = getPaymentInfo(sess);
 
@@ -244,8 +240,9 @@ export default function PlayerDashboard() {
 
                     <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden flex-1">
                         {leaderboardLoading ? (
-                            <div className="p-8 text-center text-slate-500">
-                                <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary mx-auto"></div>
+                            <div className="p-8 text-center flex flex-col items-center gap-3">
+                                <LogoSpinner size="size-6" />
+                                <p className="text-xs font-bold text-slate-400">Fetching Ranks...</p>
                             </div>
                         ) : leaderboard.length === 0 ? (
                             <div className="p-12 text-center text-slate-500">

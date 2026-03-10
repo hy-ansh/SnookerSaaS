@@ -107,6 +107,17 @@ export const addExpense = async (req: Request, res: Response): Promise<void> => 
                 }
             });
 
+            await tx.ledgerEntry.create({
+                data: {
+                    organizationId: orgId,
+                    accountId: 'CashInHand',
+                    debit: 0,
+                    credit: Number(amount),
+                    referenceType: 'EXPENSE',
+                    referenceId: exp.id
+                }
+            });
+
             return exp;
         });
 

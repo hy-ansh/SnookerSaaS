@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { apiFetch } from '../../api/apiClient';
+import { LogoSpinner } from '../../components/Shared/LogoSpinner';
 
 interface SubscriptionPlan {
     id: string;
@@ -125,8 +126,9 @@ export default function OwnerSubscription() {
 
     if (isLoading) {
         return (
-            <div className="flex items-center justify-center p-20 animate-pulse text-slate-400 font-bold">
-                Loading subscription data...
+            <div className="flex flex-col items-center justify-center p-20 gap-4">
+                <LogoSpinner size="size-12" />
+                <p className="text-sm font-bold text-slate-400 animate-pulse">Syncing Plan Details...</p>
             </div>
         );
     }
@@ -250,15 +252,15 @@ export default function OwnerSubscription() {
                                     </div>
                                     <div>
                                         <p className="font-bold text-slate-900 dark:text-white mb-0.5">₹{Number(invoice.amount).toFixed(2)}</p>
-                                        <p className="text-xs font-medium text-slate-500">Due {new Date(invoice.dueDate).toLocaleDateString()}</p>
+                                        <p className="text-xs font-medium text-slate-500">Paid {new Date(invoice.paidAt || invoice.dueDate).toLocaleDateString()}</p>
                                     </div>
                                 </div>
                                 <div className="flex items-center gap-6">
-                                    <span className={`px-2.5 py-1 text-[10px] font-black uppercase tracking-wider border rounded bg-transparent ₹{invoice.status === 'PAID' ? 'text-emerald-500 border-emerald-500/30' : invoice.status === 'OPEN' ? 'text-amber-500 border-amber-500/30' : 'text-slate-500 border-slate-300 dark:border-slate-700'}`}>
+                                    <span className={`px-2.5 py-1 text-[10px] font-black uppercase tracking-wider border rounded bg-transparent ${invoice.status === 'PAID' ? 'text-emerald-500 border-emerald-500/30' : invoice.status === 'OPEN' ? 'text-amber-500 border-amber-500/30' : 'text-slate-500 border-slate-300 dark:border-slate-700'}`}>
                                         {invoice.status}
                                     </span>
                                     <button className="text-primary hover:text-primary/70 font-bold text-sm flex items-center gap-1 transition-colors">
-                                        <span className="material-symbols-outlined text-[18px]">download</span> PDF
+                                        <span className="material-symbols-outlined text-[18px]">download</span> Receipt
                                     </button>
                                 </div>
                             </div>
@@ -348,7 +350,7 @@ export default function OwnerSubscription() {
                                                 }`}
                                         >
                                             {isProcessing ? (
-                                                <div className="size-5 border-2 border-current border-t-transparent rounded-full animate-spin" />
+                                                <LogoSpinner size="size-5" light />
                                             ) : isCurrent ? (
                                                 'Current Plan'
                                             ) : (

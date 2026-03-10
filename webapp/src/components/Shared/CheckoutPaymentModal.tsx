@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import { UpiQrCode } from './UpiQrCode';
+import { LogoSpinner } from './LogoSpinner';
 import type { CheckoutPayload } from '../../api/sessions';
 
 type PayMode = 'CASH' | 'CARD' | 'UPI' | 'WALLET' | 'DUES' | 'SPLIT';
@@ -167,7 +168,7 @@ export function CheckoutPaymentModal({
                         <button onClick={onClose} className="flex-1 py-3 rounded-2xl font-bold text-slate-600 dark:text-slate-300 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 transition-colors">Cancel</button>
                         <button onClick={handleConfirm} disabled={submitting}
                             className="flex-1 py-3 rounded-2xl font-bold text-white bg-primary hover:bg-primary/90 shadow-lg shadow-primary/20 transition-all disabled:opacity-60 flex items-center justify-center gap-2">
-                            {submitting ? <span className="animate-spin rounded-full h-4 w-4 border-b-2 border-white" /> : <span className="material-symbols-outlined text-[18px]">check_circle</span>}
+                            {submitting ? <LogoSpinner size="size-5" light /> : <span className="material-symbols-outlined text-[18px]">check_circle</span>}
                             Confirm Payment
                         </button>
                     </div>

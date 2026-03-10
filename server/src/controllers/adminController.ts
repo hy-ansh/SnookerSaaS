@@ -83,11 +83,14 @@ export const getTenants = async (req: Request, res: Response): Promise<void> => 
                 (u: any) => u.role?.name === 'ADMIN'
             ) || tenant.users[0];
 
+            // Dynamically derive the active plan from the subscription relation
+            const activePlan = tenant.subscriptions?.find((s: any) => s.status === 'ACTIVE')?.plan?.name;
+
             return {
                 id: tenant.id,
                 name: tenant.name,
                 isActive: tenant.isActive,
-                subscriptionTier: tenant.subscriptionTier,
+                subscriptionTier: activePlan || tenant.subscriptionTier,
                 createdAt: tenant.createdAt,
                 featureFlags: tenant.featureFlags,
                 subscriptions: tenant.subscriptions,
@@ -246,11 +249,11 @@ export const updateTenantSubscription = async (req: Request, res: Response): Pro
             include: { plan: true }
         });
 
-        // Update the legacy tier string on Organization just in case anything else relies on it temporarily
-        await prisma.organization.update({
-            where: { id },
-            data: { subscriptionTier: plan.name }
-        });
+        // We consciously DO NOT update the deprecated `subscriptionTier` here. Rely on Subscription relation.
+        // await prisma.organization.update({
+        //     where: { id },
+        //     data: { subscriptionTier: plan.name }
+        // });
 
         res.json(subscription);
     } catch (error) {

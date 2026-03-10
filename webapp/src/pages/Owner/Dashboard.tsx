@@ -4,6 +4,7 @@ import { tableService } from '../../api/tables';
 import { sessionService, type SessionData } from '../../api/sessions';
 import { dashboardService, type DashboardSummary } from '../../api/dashboard';
 import { apiFetch } from '../../api/apiClient';
+import { LogoSpinner } from '../../components/Shared/LogoSpinner';
 import { AdBanner } from '../../components/Ads/AdBanner';
 import { UpiConfigModal } from '../../components/Owner/UpiConfigModal';
 
@@ -101,7 +102,7 @@ function PricingModal({ branch, onClose }: { branch: Branch; onClose: () => void
                     <div className="flex gap-3 pt-1">
                         <button type="button" onClick={onClose} className="flex-1 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 font-bold text-sm hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors">Cancel</button>
                         <button type="submit" disabled={saving} className="flex-1 py-2.5 rounded-xl bg-primary hover:bg-primary/90 text-white font-bold text-sm shadow-lg shadow-primary/20 disabled:opacity-60 flex items-center justify-center gap-2">
-                            {saving ? <div className="size-4 rounded-full border-2 border-white/30 border-t-white animate-spin" /> : <span className="material-symbols-outlined text-[16px]">save</span>}
+                            {saving ? <LogoSpinner size="size-4" light /> : <span className="material-symbols-outlined text-[16px]">save</span>}
                             Save Rate
                         </button>
                     </div>
@@ -196,7 +197,7 @@ function BranchModal({
                             Cancel
                         </button>
                         <button type="submit" disabled={saving} className="flex-1 py-2.5 rounded-xl bg-primary hover:bg-primary/90 text-white font-bold text-sm shadow-lg shadow-primary/20 transition-all disabled:opacity-60 flex items-center justify-center gap-2">
-                            {saving ? <div className="size-4 rounded-full border-2 border-white/30 border-t-white animate-spin" /> : <span className="material-symbols-outlined text-[16px]">{mode === 'add' ? 'add_circle' : 'save'}</span>}
+                            {saving ? <LogoSpinner size="size-4" light /> : <span className="material-symbols-outlined text-[16px]">{mode === 'add' ? 'add_circle' : 'save'}</span>}
                             {mode === 'add' ? 'Add Branch' : 'Save Changes'}
                         </button>
                     </div>
@@ -316,7 +317,7 @@ function TableModal({
                             Cancel
                         </button>
                         <button type="submit" disabled={saving || branches.length === 0} className="flex-1 py-2.5 rounded-xl bg-primary hover:bg-primary/90 text-white font-bold text-sm shadow-lg shadow-primary/20 transition-all disabled:opacity-60 flex items-center justify-center gap-2">
-                            {saving ? <div className="size-4 rounded-full border-2 border-white/30 border-t-white animate-spin" /> : <span className="material-symbols-outlined text-[16px]">{table ? 'save' : 'add_circle'}</span>}
+                            {saving ? <LogoSpinner size="size-4" light /> : <span className="material-symbols-outlined text-[16px]">{table ? 'save' : 'add_circle'}</span>}
                             {table ? 'Save Changes' : 'Add Table'}
                         </button>
                     </div>
@@ -353,7 +354,7 @@ function DeleteConfirm({ label, onConfirm, onClose }: { label: string; onConfirm
                     <div className="flex gap-3 mt-6">
                         <button onClick={onClose} className="flex-1 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 font-bold text-sm hover:bg-slate-50 transition-colors">Cancel</button>
                         <button onClick={run} disabled={deleting} className="flex-1 py-2.5 rounded-xl bg-red-500 hover:bg-red-600 text-white font-bold text-sm shadow-lg shadow-red-500/20 disabled:opacity-60 flex items-center justify-center gap-2">
-                            {deleting ? <div className="size-4 rounded-full border-2 border-white/30 border-t-white animate-spin" /> : <span className="material-symbols-outlined text-[16px]">delete</span>}
+                            {deleting ? <LogoSpinner size="size-4" light /> : <span className="material-symbols-outlined text-[16px]">delete</span>}
                             Delete
                         </button>
                     </div>
@@ -491,8 +492,9 @@ export default function OwnerDashboard() {
 
     if (loading) {
         return (
-            <div className="flex items-center justify-center p-20">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+            <div className="flex flex-col items-center justify-center p-20 gap-4">
+                <LogoSpinner size="size-12" />
+                <p className="text-sm font-bold text-slate-400 animate-pulse">Updating Floor...</p>
             </div>
         );
     }
@@ -705,7 +707,7 @@ export default function OwnerDashboard() {
                                     <button onClick={() => setSelectedTable(null)} className="flex-1 py-3 rounded-xl font-bold text-slate-600 dark:text-slate-300 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 transition-colors">Cancel</button>
                                     <button onClick={handleStatusUpdate} disabled={updatingStatus || newStatus === selectedTable.status}
                                         className="flex-1 py-3 rounded-xl font-bold text-white bg-primary hover:bg-primary/90 transition-colors shadow-md shadow-primary/20 flex items-center justify-center gap-2 disabled:opacity-60">
-                                        {updatingStatus ? <span className="animate-spin rounded-full h-4 w-4 border-b-2 border-white" /> : <span className="material-symbols-outlined">save</span>}
+                                        {updatingStatus ? <LogoSpinner size="size-4" light /> : <span className="material-symbols-outlined">save</span>}
                                         {updatingStatus ? 'Saving...' : 'Save Changes'}
                                     </button>
                                 </div>

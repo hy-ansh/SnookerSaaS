@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useMemo, useRef, useEffect } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
 import { Environment, PerspectiveCamera, ContactShadows, PresentationControls } from '@react-three/drei';
 import { Physics, useSphere, usePlane } from '@react-three/cannon';
@@ -68,43 +68,56 @@ function BilliardBall({
     // Generate texture once per ball
     const texture = useMemo(() => createBallTexture(color, number, isStripe), [color, number, isStripe]);
 
+    // Track ball position in a ref (updated via a single subscription)
+    const posRef = useRef<[number, number, number]>([...startPosition]);
+
     // Apply physics
     const [ref, api] = useSphere(() => ({
-        mass: 1, // 1 kg standard mass
+        mass: 1,
         position: startPosition,
         args: [1], // radius 1
-        material: { friction: 0.1, restitution: 0.7 }, // bouncy and slightly slippery like real phenolic resin
-        linearDamping: 0.4, // Simulate table felt friction slowing the ball down
+        material: { friction: 0.1, restitution: 0.7 },
+        linearDamping: 0.6, // Slightly higher damping for smoother following
         angularDamping: 0.4
     }));
 
-    // Mouse interaction - hit the ball
+    // Subscribe ONCE to track position — clean up on unmount
+    useEffect(() => {
+        const unsub = api.position.subscribe((p) => {
+            posRef.current = [p[0], p[1], p[2]];
+        });
+        return unsub;
+    }, [api.position]);
+
+    // Mouse interaction - hit the ball on direct hover
     const handlePointerOver = () => {
-        // Apply a random energetic impulse to scatter it
-        const impulseX = (Math.random() - 0.5) * 15;
-        const impulseZ = (Math.random() - 0.5) * 15;
-        const impulseY = (Math.random() - 0.5) * 15;
+        const impulseX = (Math.random() - 0.5) * 12;
+        const impulseZ = (Math.random() - 0.5) * 12;
+        const impulseY = (Math.random() - 0.5) * 8;
         api.applyImpulse([impulseX, impulseY, impulseZ], [0, 0, 0]);
-        // Also apply some random spin
         api.applyTorque([(Math.random() - 0.5) * 5, (Math.random() - 0.5) * 5, (Math.random() - 0.5) * 5]);
     };
 
-    // Apply attraction towards mouse cursor continuously
+    // Every frame: apply a smooth attraction force towards the mouse pointer
     useFrame(({ mouse, viewport }) => {
-        const x = (mouse.x * viewport.width) / 2;
-        const y = (mouse.y * viewport.height) / 2;
-        // z target is 0
+        // Convert normalised mouse coords (-1..1) to world-space XY
+        const targetX = (mouse.x * viewport.width) / 2;
+        const targetY = (mouse.y * viewport.height) / 2;
 
-        // Calculate vector from ball to mouse
-        api.position.subscribe((p) => {
-            const dx = x - p[0];
-            const dy = y - p[1];
-            const dz = 0 - p[2];
+        const [bx, by, bz] = posRef.current;
+        const dx = targetX - bx;
+        const dy = targetY - by;
+        const dz = 0 - bz; // Pull towards z=0 plane
 
-            // Apply a small force towards the mouse pointer
-            // Tweak the multiplier to adjust attraction strength
-            api.applyForce([dx * 1.5, dy * 1.5, dz * 1.5], [0, 0, 0]);
-        })();
+        // Strength scales with distance so balls far away catch up faster
+        const dist = Math.sqrt(dx * dx + dy * dy + dz * dz);
+        const strength = Math.min(dist * 0.8, 6); // Capped so they don't overshoot
+
+        if (dist > 0.01) {
+            // Normalise direction, multiply by strength
+            const factor = strength / dist;
+            api.applyForce([dx * factor * 2.5, dy * factor * 2.5, dz * factor * 1.5], [0, 0, 0]);
+        }
     });
 
     return (
@@ -117,10 +130,10 @@ function BilliardBall({
             <sphereGeometry args={[1, 64, 64]} />
             <meshPhysicalMaterial
                 map={texture}
-                color={number ? "#ffffff" : color} // If it has a texture map, base color is white to let map show perfectly. Otherwise solid.
+                color={number ? "#ffffff" : color}
                 roughness={0.15}
                 metalness={0.0}
-                clearcoat={1.0} // Shiny glossy outer layer
+                clearcoat={1.0}
                 clearcoatRoughness={0.1}
             />
         </mesh>

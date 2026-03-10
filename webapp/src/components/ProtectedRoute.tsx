@@ -3,6 +3,7 @@ import { Navigate, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import type { AppRole } from '../contexts/AuthContext';
 import { useSubscription } from '../hooks/useSubscription';
+import { LoadingScreen } from './Shared/LogoSpinner';
 
 function roleHome(role: AppRole | null): string {
     if (role === 'ADMIN' || role === 'SUPER_ADMIN') return '/admin';
@@ -13,17 +14,7 @@ function roleHome(role: AppRole | null): string {
 
 // ── Modals & Screens ──────────────────────────────────────────────
 
-function LoadingScreen() {
-    return (
-        <div className="min-h-screen flex flex-col items-center justify-center bg-slate-50 dark:bg-slate-950 gap-4">
-            <div className="size-10 rounded-xl bg-primary flex items-center justify-center shadow-lg shadow-primary/30">
-                <span className="material-symbols-outlined text-white">sports_pool</span>
-            </div>
-            <div className="animate-spin rounded-full h-6 w-6 border-2 border-slate-300 border-t-primary" />
-            <p className="text-xs text-slate-400 font-medium">Loading session…</p>
-        </div>
-    );
-}
+// LoadingScreen is now imported from Shared/LogoSpinner
 
 function SuspendedScreen() {
     return (

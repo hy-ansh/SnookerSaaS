@@ -10,20 +10,20 @@ datasource db {
 
 // MULTI-TENANT SYSTEM
 model Organization {
-  id               String         @id @default(uuid())
-  name             String
-  subscriptionTier String         @default("FREE_TRIAL")
-  isActive         Boolean        @default(true)
-  featureFlags     Json? // E.g., { "canteenPOS": false }
-  allowedPaymentMethods Json? @default("[\"CASH\", \"UPI\", \"CARD\", \"WALLET\"]")
-  branches         Branch[]
-  users            User[] // Users associated with org
-  subscriptions    Subscription[]
-  fraudAlerts      FraudAlert[]
-  upiConfig        UpiConfig?
-  createdAt        DateTime       @default(now())
-  updatedAt        DateTime       @updatedAt
-  roles            Role[]
+  id                    String         @id @default(uuid())
+  name                  String
+  subscriptionTier      String         @default("FREE_TRIAL")
+  isActive              Boolean        @default(true)
+  featureFlags          Json? // E.g., { "canteenPOS": false }
+  allowedPaymentMethods Json?          @default("[\"CASH\", \"UPI\", \"CARD\", \"WALLET\"]")
+  branches              Branch[]
+  users                 User[] // Users associated with org
+  subscriptions         Subscription[]
+  fraudAlerts           FraudAlert[]
+  upiConfig             UpiConfig?
+  createdAt             DateTime       @default(now())
+  updatedAt             DateTime       @updatedAt
+  roles                 Role[]
 }
 
 model Branch {
@@ -489,12 +489,12 @@ model AdPlanVisibility {
 // ==========================================
 
 model UpiConfig {
-  id              String       @id @default(uuid())
-  organizationId  String       @unique
-  upiId           String       // e.g. merchant@upi
-  merchantName    String       // Display name on payment apps
-  createdAt       DateTime     @default(now())
-  updatedAt       DateTime     @updatedAt
+  id             String   @id @default(uuid())
+  organizationId String   @unique
+  upiId          String // e.g. merchant@upi
+  merchantName   String // Display name on payment apps
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
 
   organization Organization @relation(fields: [organizationId], references: [id])
 }

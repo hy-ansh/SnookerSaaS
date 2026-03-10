@@ -3,6 +3,8 @@ import { Link, useNavigate } from 'react-router-dom';
 import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../contexts/AuthContext';
 import { API_BASE_URL } from '../../config';
+import { LogoSpinner } from '../../components/Shared/LogoSpinner';
+import { Logo } from '../../components/Shared/Logo';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -139,15 +141,7 @@ export default function Register() {
             {/* ── FORM CARD ── */}
             <div className="relative z-10 w-full max-w-md">
                 {/* Logo */}
-                <div className="flex items-center gap-3 mb-8 justify-center lg:justify-start">
-                    <div className="size-10 bg-primary rounded-xl flex items-center justify-center shadow-lg shadow-primary/30">
-                        <span className="material-symbols-outlined text-white text-xl">sports_pool</span>
-                    </div>
-                    <div>
-                        <span className="font-black text-slate-900 dark:text-white text-lg tracking-tight">CueManager</span>
-                        <span className="ml-1.5 text-xs font-bold text-primary bg-primary/10 px-2 py-0.5 rounded-full">SaaS</span>
-                    </div>
-                </div>
+                <Logo size="medium" className="mx-auto lg:mx-0 lg:justify-start" />
 
                 <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-2xl shadow-slate-900/10 dark:shadow-slate-950/50 p-8 lg:p-10">
 
@@ -185,7 +179,7 @@ export default function Register() {
                                     <span className="material-symbols-outlined text-slate-300 group-hover:text-primary ml-auto transition-colors">chevron_right</span>
                                 </button>
 
-                                <button
+                                {/* <button
                                     type="button"
                                     onClick={() => handleTypeSelect('PLAYER')}
                                     className="w-full flex items-center gap-4 p-4 rounded-xl border-2 border-slate-200 dark:border-slate-700 hover:border-primary hover:bg-primary/5 transition-all text-left group"
@@ -198,7 +192,7 @@ export default function Register() {
                                         <p className="text-xs text-slate-500 mt-0.5">Track matches, wallet, ELO rating & leaderboard</p>
                                     </div>
                                     <span className="material-symbols-outlined text-slate-300 group-hover:text-primary ml-auto transition-colors">chevron_right</span>
-                                </button>
+                                </button> */}
                             </div>
 
                             <p className="mt-6 text-center text-sm text-slate-500 dark:text-slate-400">
@@ -368,7 +362,7 @@ export default function Register() {
                                 >
                                     {loading ? (
                                         <>
-                                            <div className="size-4 rounded-full border-2 border-white/30 border-t-white animate-spin" />
+                                            <LogoSpinner size="size-5" light />
                                             Creating your account...
                                         </>
                                     ) : (

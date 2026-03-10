@@ -13,18 +13,19 @@ export const requireFeature = (featureName: string) => {
 
             // Fetch the organization and their active subscription
             const org = await prisma.organization.findUnique({
-                where: { id: organizationId }
+                where: { id: organizationId },
+                include: {
+                    subscriptions: {
+                        where: { status: 'ACTIVE' },
+                        include: { plan: true }
+                    }
+                }
             });
 
             if (!org) {
                 res.status(404).json({ error: 'Organization not found' });
                 return;
             }
-
-            // Or strictly check based on string. For production, strictly evaluate the JSON.
-            // If it's a trial org, check creation date
-            // Note: In an ideal scenario we could check the attached `SubscriptionPlan`,
-            // but `requireFeature` operates at an organization string tier level right now for simplicity.
 
             const THREE_DAYS_MS = 3 * 24 * 60 * 60 * 1000;
             const createdAt = (org as any).createdAt;
@@ -36,13 +37,17 @@ export const requireFeature = (featureName: string) => {
                 return;
             }
 
-            // Check the features JSON payload
-            const features = org.featureFlags as Record<string, any>;
+            // Check features: Prefer the active subscription plan's features, fallback to legacy org featureFlags
+            const activeSub = org.subscriptions[0];
+            const activePlan = activeSub?.plan;
+
+            const features = (activePlan?.features as Record<string, any>) || (org.featureFlags as Record<string, any>);
+            const currentPlanName = activePlan?.name || (org as any).subscriptionTier || 'Free/Legacy';
 
             if (!features || !features[featureName]) {
                 res.status(403).json({
                     error: `Upgrade Required`,
-                    message: `Your current plan (${org.subscriptionTier}) does not include ${featureName}.`
+                    message: `Your current plan (${currentPlanName}) does not include ${featureName}.`
                 });
                 return;
             }

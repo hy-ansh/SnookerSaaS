@@ -49,11 +49,22 @@ export const rechargeWallet = async (req: Request, res: Response): Promise<void>
 
 export const walletWebhook = async (req: Request, res: Response): Promise<void> => {
     try {
-        // Here we verify Razorpay signature usually
         const { userId, amount, paymentId, status } = req.body;
 
         if (status !== 'SUCCESS') {
-            res.json({ message: 'Payment not successful' });
+            // For webhooks, we usually shouldn't return an error to Razorpay for failed payments, just 200 OK so it doesn't retry
+            res.status(200).json({ status: 'ignored', message: 'Payment not successful' });
+            return;
+        }
+
+        // Idempotency Check: Prevent processing the same webhook twice
+        const existingTxn = await prisma.walletTransaction.findFirst({
+            where: { referenceId: paymentId }
+        });
+
+        if (existingTxn) {
+            console.log(`[WalletWebhook] Idempotency catch: paymentId ${paymentId} already processed.`);
+            res.status(200).json({ status: 'ignored', message: 'Already processed' });
             return;
         }
 
@@ -75,7 +86,7 @@ export const walletWebhook = async (req: Request, res: Response): Promise<void> 
             });
         });
 
-        res.json({ message: 'Recharge successful' });
+        res.status(200).json({ status: 'ok', message: 'Recharge successful' });
     } catch (error) {
         console.error('Error processing webhook:', error);
         res.status(500).json({ error: 'Internal server error' });

@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { sessionService } from '../../api/sessions';
 import { apiFetch } from '../../api/apiClient';
+import { LogoSpinner } from '../../components/Shared/LogoSpinner';
 
 interface Table {
     id: string;
@@ -175,8 +176,9 @@ export default function StaffOverview() {
 
             {/* Tables Grid */}
             {loading ? (
-                <div className="flex items-center justify-center p-20">
-                    <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-primary"></div>
+                <div className="flex flex-col items-center justify-center p-20 gap-4">
+                    <LogoSpinner size="size-12" />
+                    <p className="text-sm font-bold text-slate-400 animate-pulse">Syncing Floor...</p>
                 </div>
             ) : (
                 <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-5">
@@ -377,7 +379,7 @@ export default function StaffOverview() {
                                 className="flex-1 py-3 rounded-xl font-bold text-slate-600 dark:text-slate-300 bg-slate-100 dark:bg-slate-800">Cancel</button>
                             <button onClick={handleStartSession} disabled={startingSession}
                                 className="flex-1 py-3 rounded-xl font-bold text-white bg-primary hover:bg-primary/90 shadow-md shadow-primary/20 flex items-center justify-center gap-2 disabled:opacity-60">
-                                {startingSession ? <span className="animate-spin rounded-full h-4 w-4 border-b-2 border-white" /> : <span className="material-symbols-outlined">play_circle</span>}
+                                {startingSession ? <LogoSpinner size="size-4" light /> : <span className="material-symbols-outlined">play_circle</span>}
                                 {startingSession ? 'Starting...' : `Start ${gameMode} Session`}
                             </button>
                         </div>
