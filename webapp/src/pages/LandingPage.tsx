@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import HeroScene from '../components/Hero';
@@ -6,6 +7,7 @@ import { Logo } from '../components/Shared/Logo';
 export default function LandingPage() {
     const { session, appUser } = useAuth();
     const navigate = useNavigate();
+    const [isMenuOpen, setIsMenuOpen] = useState(false);
 
     const getDashboardPath = () => {
         if (!appUser) return '/login';
@@ -24,6 +26,8 @@ export default function LandingPage() {
                         <Logo size="large" className="transform hover:scale-105 transition duration-300" />
                         <span className="text-2xl font-800 tracking-tight text-slate-900">Cue<span className="text-primary">Manager</span></span>
                     </div>
+                    
+                    {/* Desktop Nav */}
                     <nav className="hidden md:flex items-center gap-8">
                         <a className="text-sm font-semibold text-slate-custom hover:text-primary transition-colors" href="#features">Features</a>
                         <a className="text-sm font-semibold text-slate-custom hover:text-primary transition-colors" href="#dashboard">Analytics</a>
@@ -39,10 +43,36 @@ export default function LandingPage() {
                             </>
                         )}
                     </nav>
-                    <button className="md:hidden text-slate-900">
-                        <span className="material-symbols-outlined">menu</span>
+
+                    {/* Mobile Menu Button */}
+                    <button 
+                        className="md:hidden text-slate-900 p-2 hover:bg-slate-100 rounded-lg transition-colors"
+                        onClick={() => setIsMenuOpen(!isMenuOpen)}
+                    >
+                        <span className="material-symbols-outlined">{isMenuOpen ? 'close' : 'menu'}</span>
                     </button>
                 </div>
+
+                {/* Mobile Nav Dropdown */}
+                {isMenuOpen && (
+                    <div className="md:hidden absolute top-20 left-0 w-full bg-white border-b border-slate-200 shadow-xl py-4 px-6 flex flex-col gap-4 animate-in slide-in-from-top-2 duration-200 z-40">
+                        <a className="text-base font-semibold text-slate-700 py-2 border-b border-slate-100" href="#features" onClick={() => setIsMenuOpen(false)}>Features</a>
+                        <a className="text-base font-semibold text-slate-700 py-2 border-b border-slate-100" href="#dashboard" onClick={() => setIsMenuOpen(false)}>Analytics</a>
+                        <a className="text-base font-semibold text-slate-700 py-2 border-b border-slate-100" href="#pricing" onClick={() => setIsMenuOpen(false)}>Pricing</a>
+                        <div className="flex flex-col gap-3 pt-2">
+                            {session ? (
+                                <button onClick={() => { setIsMenuOpen(false); navigate(getDashboardPath()); }} className="w-full bg-primary text-white px-6 py-3 rounded-xl font-bold text-base hover:shadow-lg transition-all flex justify-center items-center gap-2">
+                                    Go to Dashboard <span className="material-symbols-outlined text-sm">arrow_forward</span>
+                                </button>
+                            ) : (
+                                <>
+                                    <Link to="/login" onClick={() => setIsMenuOpen(false)} className="w-full text-center bg-primary/10 text-primary px-5 py-3 rounded-xl font-bold text-base hover:bg-primary/20 transition-all">Login</Link>
+                                    <Link to="/register" onClick={() => setIsMenuOpen(false)} className="w-full text-center bg-primary text-white px-6 py-3 rounded-xl font-bold text-base hover:shadow-lg transition-all">Start Free Trial</Link>
+                                </>
+                            )}
+                        </div>
+                    </div>
+                )}
             </header>
 
             <main>

@@ -117,11 +117,14 @@ export default function Sidebar() {
 
     return (
         <aside className="w-64 border-r border-slate-200 dark:border-slate-800 bg-white dark:bg-background-dark flex flex-col fixed h-full z-20">
-            <div className="p-6 flex items-center justify-center relative">
+            <div className="p-6 flex flex-col items-center justify-center gap-3 cursor-pointer group" onClick={() => navigate('/owner')}>
                 <Logo size="small" />
                 {appUser?.organizationName && (
-                    <div className="absolute top-1 right-2 text-[10px] font-bold text-primary bg-primary/10 px-2 py-0.5 rounded-full truncate max-w-[100px]" title={appUser.organizationName}>
-                        {appUser.organizationName}
+                    <div className="text-center w-full px-2">
+                        <span className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest block mb-0.5">Management for</span>
+                        <span className="text-xl font-900 text-slate-900 dark:text-white bg-clip-text text-transparent bg-gradient-to-r from-slate-900 to-slate-700 dark:from-white dark:to-slate-300 truncate w-full block">
+                            {appUser.organizationName}
+                        </span>
                     </div>
                 )}
             </div>
