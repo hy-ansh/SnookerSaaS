@@ -3,14 +3,18 @@ import prisma from '../config/prisma';
 import crypto from 'crypto';
 import Razorpay from 'razorpay';
 
-// Initialize Razorpay
-// For safety, only initialize if keys are present (prevents crash on undefined)
-let razorpay: Razorpay;
-if (process.env.RAZORPAY_KEY_ID && process.env.RAZORPAY_KEY_SECRET) {
-    razorpay = new Razorpay({
-        key_id: process.env.RAZORPAY_KEY_ID as string,
-        key_secret: process.env.RAZORPAY_KEY_SECRET as string,
-    });
+// Lazy-initialize Razorpay to ensure dotenv has loaded env vars first.
+// (ES module imports are hoisted above dotenv.config(), so top-level init
+//  runs before env vars are available.)
+let razorpay: Razorpay | null = null;
+function getRazorpay(): Razorpay | null {
+    if (!razorpay && process.env.RAZORPAY_KEY_ID && process.env.RAZORPAY_KEY_SECRET) {
+        razorpay = new Razorpay({
+            key_id: process.env.RAZORPAY_KEY_ID as string,
+            key_secret: process.env.RAZORPAY_KEY_SECRET as string,
+        });
+    }
+    return razorpay;
 }
 
 
@@ -203,7 +207,7 @@ export const createRazorpayOrder = async (req: Request, res: Response): Promise<
             return;
         }
 
-        if (!razorpay) {
+        if (!getRazorpay()) {
             res.status(500).json({ error: 'Razorpay is not configured on the server' });
             return;
         }
@@ -227,7 +231,7 @@ export const createRazorpayOrder = async (req: Request, res: Response): Promise<
             }
         };
 
-        const order = await razorpay.orders.create(options);
+        const order = await getRazorpay()!.orders.create(options);
 
         // Optional: you can save the pending order in DB here, but Razorpay webhooks/callbacks handle success.
 

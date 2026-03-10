@@ -141,19 +141,32 @@ export default function Register() {
             {/* ── FORM CARD ── */}
             <div className="relative z-10 w-full max-w-md">
                 {/* Logo */}
-                <Logo size="medium" className="mx-auto lg:mx-0 lg:justify-start" />
+
 
                 <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-2xl shadow-slate-900/10 dark:shadow-slate-950/50 p-8 lg:p-10">
 
-                    {/* Step indicator */}
-                    <div className="flex items-center gap-2 mb-6">
-                        {[1, 2].map(s => (
-                            <div key={s} className="flex items-center gap-2">
-                                <div className={`size-6 rounded-full flex items-center justify-center text-[11px] font-bold transition-all ${step >= s ? 'bg-primary text-white' : 'bg-slate-100 dark:bg-slate-800 text-slate-400'
-                                    }`}>{s}</div>
-                                {s === 1 && <div className={`h-px flex-1 w-8 transition-all ${step >= 2 ? 'bg-primary' : 'bg-slate-200 dark:bg-slate-700'}`} />}
-                            </div>
-                        ))}
+                    {/* Wrapper to align items horizontally */}
+                    <div className="flex items-center justify-between mb-8">
+
+                        {/* Step indicator (Now on the left) */}
+                        <div className="flex items-center gap-2">
+                            {[1, 2].map(s => (
+                                <div key={s} className="flex items-center gap-2">
+                                    <div className={`size-6 rounded-full flex items-center justify-center text-[11px] font-bold transition-all ${step >= s ? 'bg-primary text-white' : 'bg-slate-100 dark:bg-slate-800 text-slate-400'
+                                        }`}>
+                                        {s}
+                                    </div>
+                                    {s === 1 && (
+                                        <div className={`h-px w-8 transition-all ${step >= 2 ? 'bg-primary' : 'bg-slate-200 dark:bg-slate-700'
+                                            }`} />
+                                    )}
+                                </div>
+                            ))}
+                        </div>
+
+                        {/* Logo (Now on the right) */}
+                        <Logo size="medium" className="flex-shrink-0" />
+
                     </div>
 
                     {/* ── STEP 1: Account type ── */}

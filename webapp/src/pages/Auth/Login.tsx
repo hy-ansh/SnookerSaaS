@@ -81,13 +81,30 @@ export default function Login() {
             {/* ── FORM CARD ── */}
             <div className="relative z-10 w-full max-w-md">
                 {/* Logo */}
-                <Logo size="medium" className="mx-auto lg:mx-0 lg:justify-start" />
+
 
                 <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-2xl shadow-slate-900/10 dark:shadow-slate-950/50 p-8 lg:p-10">
+
                     <div className="mb-8">
-                        <h1 className="text-2xl font-extrabold text-slate-900 dark:text-white mb-1.5">Welcome back</h1>
-                        <p className="text-sm text-slate-500 dark:text-slate-400">Sign in to manage your snooker venue.</p>
+                        {/* Added 'flex', 'items-center', and 'justify-between' */}
+                        <div className='login-logo flex items-center justify-between'>
+
+                            {/* Group text in a div so they stay on the left together */}
+                            <div>
+                                <h1 className="text-2xl font-extrabold text-slate-900 dark:text-white mb-1.5">
+                                    Welcome back
+                                </h1>
+                                <p className="text-sm text-slate-500 dark:text-slate-400">
+                                    Sign in to manage your snooker venue.
+                                </p>
+                            </div>
+
+                            {/* Logo will now naturally push to the right */}
+                            <Logo size="medium" className="flex-shrink-0" />
+
+                        </div>
                     </div>
+
 
                     {error && (
                         <div className="flex items-start gap-2.5 p-3.5 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl mb-6 animate-in slide-in-from-top-1">
@@ -184,7 +201,7 @@ export default function Login() {
                     </div>
 
                     {/* Demo credentials */}
-                    <div className="mt-4 p-3.5 bg-slate-50 dark:bg-slate-800 rounded-xl border border-slate-100 dark:border-slate-700">
+                    {/* <div className="mt-4 p-3.5 bg-slate-50 dark:bg-slate-800 rounded-xl border border-slate-100 dark:border-slate-700">
                         <p className="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2">Demo Credentials</p>
                         <div className="space-y-1">
                             {[
@@ -203,7 +220,7 @@ export default function Login() {
                                 </button>
                             ))}
                         </div>
-                    </div>
+                    </div> */}
                 </div>
             </div>
 
@@ -283,4 +300,5 @@ export default function Login() {
             </div>
         </div>
     );
+
 }
