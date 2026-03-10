@@ -207,14 +207,54 @@ export const createRazorpayOrder = async (req: Request, res: Response): Promise<
             return;
         }
 
-        if (!getRazorpay()) {
-            res.status(500).json({ error: 'Razorpay is not configured on the server' });
-            return;
-        }
-
         const plan = await prisma.subscriptionPlan.findUnique({ where: { id: planId } });
         if (!plan) {
             res.status(404).json({ error: 'Subscription Plan not found' });
+            return;
+        }
+
+        // --- Handle Free Plan Bypass ---
+        if (Number(plan.price) === 0) {
+            // Upsert Subscription directly since it's free
+            const subscription = await prisma.subscription.upsert({
+                where: { organizationId },
+                create: {
+                    organizationId,
+                    planId: plan.id,
+                    status: 'ACTIVE',
+                    currentPeriodStart: new Date(),
+                    currentPeriodEnd: new Date(new Date().setMonth(new Date().getMonth() + 1))
+                },
+                update: {
+                    planId: plan.id,
+                    status: 'ACTIVE',
+                    currentPeriodEnd: new Date(new Date().setMonth(new Date().getMonth() + 1))
+                },
+                include: { plan: true }
+            });
+
+            // Record a 0-rupee invoice
+            await prisma.invoice.create({
+                data: {
+                    subscriptionId: subscription.id,
+                    amount: 0,
+                    status: 'PAID',
+                    dueDate: new Date(),
+                    paidAt: new Date()
+                }
+            });
+
+            // Return freeTrack flag so frontend doesn't load Razorpay JS
+            res.json({
+                freeTrack: true,
+                message: 'Free plan activated successfully'
+            });
+            return;
+        }
+        // -------------------------------
+
+        if (!getRazorpay()) {
+            res.status(500).json({ error: 'Razorpay is not configured on the server' });
             return;
         }
 

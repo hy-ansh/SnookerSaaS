@@ -50,13 +50,6 @@ export default function OwnerSubscription() {
     const handleSelectPlan = async (planId: string) => {
         setProcessingPlanId(planId);
         try {
-            const res = await loadRazorpayScript();
-            if (!res) {
-                alert('Razorpay SDK failed to load. Are you online?');
-                setProcessingPlanId(null);
-                return;
-            }
-
             // 1. Create order on the backend
             const orderOptions = {
                 method: 'POST',
@@ -64,8 +57,25 @@ export default function OwnerSubscription() {
             };
             const orderResult = await apiFetch('/owner/subscription/create-order', orderOptions);
 
+            // --- Handle Free Plan Bypass ---
+            if (orderResult.freeTrack) {
+                alert('Free plan activated successfully!');
+                await refetch();
+                setIsUpgradeModalOpen(false);
+                setProcessingPlanId(null);
+                return;
+            }
+            // -------------------------------
+
             if (!orderResult.order_id) {
                 alert('Failed to generate order.');
+                setProcessingPlanId(null);
+                return;
+            }
+
+            const res = await loadRazorpayScript();
+            if (!res) {
+                alert('Razorpay SDK failed to load. Are you online?');
                 setProcessingPlanId(null);
                 return;
             }
