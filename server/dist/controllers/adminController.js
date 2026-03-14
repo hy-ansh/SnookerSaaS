@@ -86,13 +86,15 @@ const getTenants = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
         });
         // Enrich each tenant: find the primary owner user and count branches
         const enriched = tenants.map((tenant) => {
-            var _a;
+            var _a, _b, _c, _d;
             const ownerUser = tenant.users.find((u) => { var _a; return ((_a = u.role) === null || _a === void 0 ? void 0 : _a.name) === 'STORE_OWNER'; }) || tenant.users.find((u) => { var _a; return ((_a = u.role) === null || _a === void 0 ? void 0 : _a.name) === 'ADMIN'; }) || tenant.users[0];
+            // Dynamically derive the active plan from the subscription relation
+            const activePlan = (_c = (_b = (_a = tenant.subscriptions) === null || _a === void 0 ? void 0 : _a.find((s) => s.status === 'ACTIVE')) === null || _b === void 0 ? void 0 : _b.plan) === null || _c === void 0 ? void 0 : _c.name;
             return {
                 id: tenant.id,
                 name: tenant.name,
                 isActive: tenant.isActive,
-                subscriptionTier: tenant.subscriptionTier,
+                subscriptionTier: activePlan || tenant.subscriptionTier,
                 createdAt: tenant.createdAt,
                 featureFlags: tenant.featureFlags,
                 subscriptions: tenant.subscriptions,
@@ -101,7 +103,7 @@ const getTenants = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
                     id: ownerUser.id,
                     email: ownerUser.email,
                     fullName: ownerUser.fullName,
-                    role: (_a = ownerUser.role) === null || _a === void 0 ? void 0 : _a.name
+                    role: (_d = ownerUser.role) === null || _d === void 0 ? void 0 : _d.name
                 } : null
             };
         });
@@ -242,11 +244,11 @@ const updateTenantSubscription = (req, res) => __awaiter(void 0, void 0, void 0,
             },
             include: { plan: true }
         });
-        // Update the legacy tier string on Organization just in case anything else relies on it temporarily
-        yield prisma_1.default.organization.update({
-            where: { id },
-            data: { subscriptionTier: plan.name }
-        });
+        // We consciously DO NOT update the deprecated `subscriptionTier` here. Rely on Subscription relation.
+        // await prisma.organization.update({
+        //     where: { id },
+        //     data: { subscriptionTier: plan.name }
+        // });
         res.json(subscription);
     }
     catch (error) {

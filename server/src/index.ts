@@ -22,6 +22,10 @@ app.use(cors({
 }));
 app.use(express.json());
 
+app.get('/', (req: Request, res: Response) => {
+    res.send('SnookerSaaS server is running');
+});
+
 // Basic health check endpoint
 app.get('/health', (req: Request, res: Response) => {
     res.json({ status: 'healthy', timestamp: new Date() });
@@ -51,8 +55,14 @@ import upiRoutes from './routes/upiRoutes';
 import webhookRoutes from './routes/webhookRoutes';
 import { runFraudDetectionSweep } from './services/fraudService';
 
-// Import routes mapped for MVP
-app.use('/auth', authRoutes);
+import { apiLimiter, authLimiter } from './middleware/rateLimiter';
+
+// Apply rate limiting middleware
+// Auth routes get stricter limits
+app.use('/auth', authLimiter, authRoutes);
+
+// Apply general API limits to other routes
+app.use(apiLimiter);
 app.use('/organizations', organizationRoutes);
 app.use('/branches', branchRoutes);
 app.use('/tables', tableRoutes);
@@ -74,7 +84,8 @@ app.use('/pricing', pricingRoutes);
 app.use('/owner', ownerRoutes);
 app.use('/upi', upiRoutes);
 
-// Webhook routes should NOT have standard authentication
+// Webhook routes should NOT have standard authentication or strict rate limits, 
+// though you could add a specialized webhook limiter here if needed.
 app.use('/api/webhooks', webhookRoutes);
 
 app.listen(PORT, () => {

@@ -20,31 +20,27 @@ const prisma_1 = __importDefault(require("../config/prisma"));
 // Returns the enriched profile (DB role, orgId, branchId) for the current JWT user.
 // Called by AuthContext on every login to get the real DB role.
 const getMe = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q;
+    var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o;
     try {
-        const authHeader = req.headers.authorization;
-        if (!(authHeader === null || authHeader === void 0 ? void 0 : authHeader.startsWith('Bearer '))) {
-            res.status(401).json({ error: 'Missing token' });
+        const userContext = req.user;
+        if (!userContext) {
+            res.status(401).json({ error: 'Unauthorized: No user context' });
             return;
         }
-        const token = authHeader.split(' ')[1];
-        const { data: { user }, error } = yield supabase_1.supabaseAdmin.auth.getUser(token);
-        if (error || !user) {
-            res.status(401).json({ error: 'Invalid token' });
-            return;
-        }
+        const email = userContext.email;
         const record = yield prisma_1.default.user.findUnique({
-            where: { email: user.email },
+            where: { email },
             include: { role: true, organization: true }
         });
         if (!record) {
             // User authenticated in Supabase but no DB record yet — return metadata only
-            const meta = user.user_metadata;
+            // Fallback since the authenticate middleware handles auto-provisioning
+            // This acts as a safety net
             res.json({
-                id: user.id,
-                email: user.email,
-                fullName: (_a = meta === null || meta === void 0 ? void 0 : meta.full_name) !== null && _a !== void 0 ? _a : null,
-                role: (_b = meta === null || meta === void 0 ? void 0 : meta.role) !== null && _b !== void 0 ? _b : 'PLAYER',
+                id: userContext.id,
+                email: email,
+                fullName: null,
+                role: userContext.role,
                 organizationId: null,
                 organizationName: null,
                 orgIsActive: true,
@@ -54,16 +50,16 @@ const getMe = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
             return;
         }
         res.json({
-            id: user.id,
+            id: userContext.id,
             email: record.email,
             fullName: record.fullName,
-            role: (_d = (_c = record.role) === null || _c === void 0 ? void 0 : _c.name) !== null && _d !== void 0 ? _d : 'PLAYER',
-            organizationId: (_e = record.organizationId) !== null && _e !== void 0 ? _e : null,
-            organizationName: (_g = (_f = record.organization) === null || _f === void 0 ? void 0 : _f.name) !== null && _g !== void 0 ? _g : null,
-            orgIsActive: (_j = (_h = record.organization) === null || _h === void 0 ? void 0 : _h.isActive) !== null && _j !== void 0 ? _j : true,
-            orgCreatedAt: (_m = (_l = (_k = record.organization) === null || _k === void 0 ? void 0 : _k.createdAt) === null || _l === void 0 ? void 0 : _l.toISOString()) !== null && _m !== void 0 ? _m : null,
-            branchId: (_o = record.branchId) !== null && _o !== void 0 ? _o : null,
-            allowedPaymentMethods: (_q = (_p = record.organization) === null || _p === void 0 ? void 0 : _p.allowedPaymentMethods) !== null && _q !== void 0 ? _q : ['CASH', 'UPI', 'CARD', 'WALLET'],
+            role: (_b = (_a = record.role) === null || _a === void 0 ? void 0 : _a.name) !== null && _b !== void 0 ? _b : 'PLAYER',
+            organizationId: (_c = record.organizationId) !== null && _c !== void 0 ? _c : null,
+            organizationName: (_e = (_d = record.organization) === null || _d === void 0 ? void 0 : _d.name) !== null && _e !== void 0 ? _e : null,
+            orgIsActive: (_g = (_f = record.organization) === null || _f === void 0 ? void 0 : _f.isActive) !== null && _g !== void 0 ? _g : true,
+            orgCreatedAt: (_k = (_j = (_h = record.organization) === null || _h === void 0 ? void 0 : _h.createdAt) === null || _j === void 0 ? void 0 : _j.toISOString()) !== null && _k !== void 0 ? _k : null,
+            branchId: (_l = record.branchId) !== null && _l !== void 0 ? _l : null,
+            allowedPaymentMethods: (_o = (_m = record.organization) === null || _m === void 0 ? void 0 : _m.allowedPaymentMethods) !== null && _o !== void 0 ? _o : ['CASH', 'UPI', 'CARD', 'WALLET'],
         });
     }
     catch (err) {

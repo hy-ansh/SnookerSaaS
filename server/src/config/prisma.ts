@@ -10,8 +10,17 @@ if (dbUrl && dbUrl.includes('pooler.supabase.com')) {
         const separator = dbUrl.includes('?') ? '&' : '?';
         dbUrl = `${dbUrl}${separator}pgbouncer=true`;
     }
-    // Remove the strictly problematic connection_limit=1 from Supabase IPv4 URL config
-    dbUrl = dbUrl.replace('connection_limit=1', 'connection_limit=10');
+    
+    // Check if the user has explicitly set a connection limit in the URL
+    // If not, we set it to a reasonable limit per PM2 instance (e.g., 5)
+    // To avoid exhausting Supabase's global pool with multiple PM2 instances
+    if (!dbUrl.includes('connection_limit=')) {
+        const separator = dbUrl.includes('?') ? '&' : '?';
+        dbUrl = `${dbUrl}${separator}connection_limit=5`;
+    } else {
+        // Remove the restrictive strictly connection_limit=1 if found
+        dbUrl = dbUrl.replace('connection_limit=1', 'connection_limit=5');
+    }
 }
 
 const prisma =

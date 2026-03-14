@@ -110,6 +110,16 @@ const addExpense = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
                     referenceId: exp.id
                 }
             });
+            yield tx.ledgerEntry.create({
+                data: {
+                    organizationId: orgId,
+                    accountId: 'CashInHand',
+                    debit: 0,
+                    credit: Number(amount),
+                    referenceType: 'EXPENSE',
+                    referenceId: exp.id
+                }
+            });
             return exp;
         }));
         res.status(201).json({ message: 'Expense recorded', expense });

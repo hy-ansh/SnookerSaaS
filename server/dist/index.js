@@ -24,6 +24,9 @@ app.use((0, cors_1.default)({
     credentials: true,
 }));
 app.use(express_1.default.json());
+app.get('/', (req, res) => {
+    res.send('SnookerSaaS server is running');
+});
 // Basic health check endpoint
 app.get('/health', (req, res) => {
     res.json({ status: 'healthy', timestamp: new Date() });
@@ -51,8 +54,12 @@ const ownerRoutes_1 = __importDefault(require("./routes/ownerRoutes"));
 const upiRoutes_1 = __importDefault(require("./routes/upiRoutes"));
 const webhookRoutes_1 = __importDefault(require("./routes/webhookRoutes"));
 const fraudService_1 = require("./services/fraudService");
-// Import routes mapped for MVP
-app.use('/auth', authRoutes_1.default);
+const rateLimiter_1 = require("./middleware/rateLimiter");
+// Apply rate limiting middleware
+// Auth routes get stricter limits
+app.use('/auth', rateLimiter_1.authLimiter, authRoutes_1.default);
+// Apply general API limits to other routes
+app.use(rateLimiter_1.apiLimiter);
 app.use('/organizations', organizationRoutes_1.default);
 app.use('/branches', branchRoutes_1.default);
 app.use('/tables', tableRoutes_1.default);
@@ -73,7 +80,8 @@ app.use('/maintenance', assetMaintenanceRoutes_1.default);
 app.use('/pricing', pricingRoutes_1.default);
 app.use('/owner', ownerRoutes_1.default);
 app.use('/upi', upiRoutes_1.default);
-// Webhook routes should NOT have standard authentication
+// Webhook routes should NOT have standard authentication or strict rate limits, 
+// though you could add a specialized webhook limiter here if needed.
 app.use('/api/webhooks', webhookRoutes_1.default);
 app.listen(PORT, () => {
     console.log(`🚀 Server running on http://localhost:${PORT}`);

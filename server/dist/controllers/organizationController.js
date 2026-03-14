@@ -16,14 +16,18 @@ exports.getOrganizationUsers = exports.getOwnerSubscription = exports.verifyRazo
 const prisma_1 = __importDefault(require("../config/prisma"));
 const crypto_1 = __importDefault(require("crypto"));
 const razorpay_1 = __importDefault(require("razorpay"));
-// Initialize Razorpay
-// For safety, only initialize if keys are present (prevents crash on undefined)
-let razorpay;
-if (process.env.RAZORPAY_KEY_ID && process.env.RAZORPAY_KEY_SECRET) {
-    razorpay = new razorpay_1.default({
-        key_id: process.env.RAZORPAY_KEY_ID,
-        key_secret: process.env.RAZORPAY_KEY_SECRET,
-    });
+// Lazy-initialize Razorpay to ensure dotenv has loaded env vars first.
+// (ES module imports are hoisted above dotenv.config(), so top-level init
+//  runs before env vars are available.)
+let razorpay = null;
+function getRazorpay() {
+    if (!razorpay && process.env.RAZORPAY_KEY_ID && process.env.RAZORPAY_KEY_SECRET) {
+        razorpay = new razorpay_1.default({
+            key_id: process.env.RAZORPAY_KEY_ID,
+            key_secret: process.env.RAZORPAY_KEY_SECRET,
+        });
+    }
+    return razorpay;
 }
 const createOrganization = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     var _a;
@@ -176,11 +180,11 @@ const updateOwnerSubscription = (req, res) => __awaiter(void 0, void 0, void 0, 
             },
             include: { plan: true }
         });
-        // Sync legacy string on Org for fallback compatibility
-        yield prisma_1.default.organization.update({
-            where: { id: organizationId },
-            data: { subscriptionTier: plan.name }
-        });
+        // We consciously DO NOT update the deprecated `subscriptionTier` here. Rely on Subscription relation.
+        // await prisma.organization.update({
+        //     where: { id: organizationId },
+        //     data: { subscriptionTier: plan.name }
+        // });
         res.json({ message: 'Subscription successfully upgraded', subscription });
     }
     catch (err) {
@@ -202,13 +206,50 @@ const createRazorpayOrder = (req, res) => __awaiter(void 0, void 0, void 0, func
             res.status(400).json({ error: 'planId is required' });
             return;
         }
-        if (!razorpay) {
-            res.status(500).json({ error: 'Razorpay is not configured on the server' });
-            return;
-        }
         const plan = yield prisma_1.default.subscriptionPlan.findUnique({ where: { id: planId } });
         if (!plan) {
             res.status(404).json({ error: 'Subscription Plan not found' });
+            return;
+        }
+        // --- Handle Free Plan Bypass ---
+        if (Number(plan.price) === 0) {
+            // Upsert Subscription directly since it's free
+            const subscription = yield prisma_1.default.subscription.upsert({
+                where: { organizationId },
+                create: {
+                    organizationId,
+                    planId: plan.id,
+                    status: 'ACTIVE',
+                    currentPeriodStart: new Date(),
+                    currentPeriodEnd: new Date(new Date().setMonth(new Date().getMonth() + 1))
+                },
+                update: {
+                    planId: plan.id,
+                    status: 'ACTIVE',
+                    currentPeriodEnd: new Date(new Date().setMonth(new Date().getMonth() + 1))
+                },
+                include: { plan: true }
+            });
+            // Record a 0-rupee invoice
+            yield prisma_1.default.invoice.create({
+                data: {
+                    subscriptionId: subscription.id,
+                    amount: 0,
+                    status: 'PAID',
+                    dueDate: new Date(),
+                    paidAt: new Date()
+                }
+            });
+            // Return freeTrack flag so frontend doesn't load Razorpay JS
+            res.json({
+                freeTrack: true,
+                message: 'Free plan activated successfully'
+            });
+            return;
+        }
+        // -------------------------------
+        if (!getRazorpay()) {
+            res.status(500).json({ error: 'Razorpay is not configured on the server' });
             return;
         }
         // Razorpay works in subunits (paise for INR)
@@ -216,13 +257,13 @@ const createRazorpayOrder = (req, res) => __awaiter(void 0, void 0, void 0, func
         const options = {
             amount: amount,
             currency: 'INR',
-            receipt: `receipt_order_${organizationId}_${Date.now()}`,
+            receipt: `rcpt_${Date.now()}`,
             notes: {
                 organizationId,
                 planId
             }
         };
-        const order = yield razorpay.orders.create(options);
+        const order = yield getRazorpay().orders.create(options);
         // Optional: you can save the pending order in DB here, but Razorpay webhooks/callbacks handle success.
         res.json({
             order_id: order.id,
@@ -281,11 +322,11 @@ const verifyRazorpayPayment = (req, res) => __awaiter(void 0, void 0, void 0, fu
             },
             include: { plan: true }
         });
-        // Sync legacy string on Org for fallback compatibility
-        yield prisma_1.default.organization.update({
-            where: { id: organizationId },
-            data: { subscriptionTier: plan.name }
-        });
+        // We consciously DO NOT update the deprecated `subscriptionTier` here. Rely on Subscription relation.
+        // await prisma.organization.update({
+        //     where: { id: organizationId },
+        //     data: { subscriptionTier: plan.name }
+        // });
         // Also record the invoice
         yield prisma_1.default.invoice.create({
             data: {
@@ -316,7 +357,12 @@ const getOwnerSubscription = (req, res) => __awaiter(void 0, void 0, void 0, fun
             where: { id: organizationId },
             include: {
                 subscriptions: {
-                    include: { plan: true },
+                    include: {
+                        plan: true,
+                        invoices: {
+                            orderBy: { dueDate: 'desc' }
+                        }
+                    },
                     take: 5
                 }
             }
@@ -333,7 +379,7 @@ const getOwnerSubscription = (req, res) => __awaiter(void 0, void 0, void 0, fun
             orgIsActive: org.isActive !== false
         };
         if (activeSub) {
-            res.json(Object.assign(Object.assign({}, baseResponse), { status: activeSub.status, planId: activeSub.planId, currentPeriodStart: activeSub.currentPeriodStart, currentPeriodEnd: activeSub.currentPeriodEnd, plan: {
+            res.json(Object.assign(Object.assign({}, baseResponse), { status: activeSub.status, planId: activeSub.planId, currentPeriodStart: activeSub.currentPeriodStart, currentPeriodEnd: activeSub.currentPeriodEnd, invoices: activeSub.invoices || [], plan: {
                     id: (_b = activeSub.plan) === null || _b === void 0 ? void 0 : _b.id,
                     name: (_c = activeSub.plan) === null || _c === void 0 ? void 0 : _c.name,
                     price: Number((_e = (_d = activeSub.plan) === null || _d === void 0 ? void 0 : _d.price) !== null && _e !== void 0 ? _e : 0),

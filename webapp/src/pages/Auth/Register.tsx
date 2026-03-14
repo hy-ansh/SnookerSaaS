@@ -140,7 +140,7 @@ export default function Register() {
 
             {/* ── FORM CARD ── */}
             <div className="relative z-10 w-full max-w-md">
-                {/* Logo */}
+              
 
 
                 <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-2xl shadow-slate-900/10 dark:shadow-slate-950/50 p-8 lg:p-10">
