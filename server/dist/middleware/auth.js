@@ -21,7 +21,7 @@ const prisma_1 = __importDefault(require("../config/prisma"));
  * register flow), we auto-create a minimal User row so the request proceeds.
  */
 const authenticate = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k;
+    var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l;
     try {
         const authHeader = req.headers.authorization;
         if (!authHeader || !authHeader.startsWith('Bearer ')) {
@@ -36,11 +36,26 @@ const authenticate = (req, res, next) => __awaiter(void 0, void 0, void 0, funct
             return;
         }
         const email = (_a = user.email) !== null && _a !== void 0 ? _a : '';
-        // 2. Try to find the user's DB record
+        // 2. Try to find the user's DB record by email first, then by id
         let userRecord = yield prisma_1.default.user.findUnique({
             where: { email },
             include: { role: true }
         });
+        // Also try to find by Supabase user id in case email doesn't match
+        if (!userRecord) {
+            userRecord = yield prisma_1.default.user.findUnique({
+                where: { id: user.id },
+                include: { role: true }
+            });
+            // If found by id but email differs, update the email
+            if (userRecord && userRecord.email !== email) {
+                userRecord = yield prisma_1.default.user.update({
+                    where: { id: user.id },
+                    data: { email },
+                    include: { role: true }
+                });
+            }
+        }
         // 3. Auto-provision: if the Supabase user exists but has no DB row
         //    (e.g. created directly in Supabase dashboard), create one now.
         if (!userRecord) {
@@ -50,17 +65,30 @@ const authenticate = (req, res, next) => __awaiter(void 0, void 0, void 0, funct
             const roleRecord = yield prisma_1.default.role.findFirst({
                 where: { name: roleName }
             });
-            userRecord = yield prisma_1.default.user.create({
-                data: {
-                    id: user.id,
-                    email,
-                    fullName: (_e = (_d = meta.full_name) !== null && _d !== void 0 ? _d : meta.name) !== null && _e !== void 0 ? _e : null,
-                    roleId: (_f = roleRecord === null || roleRecord === void 0 ? void 0 : roleRecord.id) !== null && _f !== void 0 ? _f : null,
-                    organizationId: (_g = roleRecord === null || roleRecord === void 0 ? void 0 : roleRecord.organizationId) !== null && _g !== void 0 ? _g : null,
-                },
-                include: { role: true }
-            });
-            console.log(`[auth] Auto-provisioned DB user for ${email} (role: ${roleName})`);
+            try {
+                userRecord = yield prisma_1.default.user.create({
+                    data: {
+                        id: user.id,
+                        email,
+                        fullName: (_e = (_d = meta.full_name) !== null && _d !== void 0 ? _d : meta.name) !== null && _e !== void 0 ? _e : null,
+                        roleId: (_f = roleRecord === null || roleRecord === void 0 ? void 0 : roleRecord.id) !== null && _f !== void 0 ? _f : null,
+                        organizationId: (_g = roleRecord === null || roleRecord === void 0 ? void 0 : roleRecord.organizationId) !== null && _g !== void 0 ? _g : null,
+                    },
+                    include: { role: true }
+                });
+                console.log(`[auth] Auto-provisioned DB user for ${email} (role: ${roleName})`);
+            }
+            catch (provisionErr) {
+                // If creation fails (e.g. unique constraint), try finding again
+                console.warn(`[auth] Auto-provision failed for ${email}, retrying lookup:`, provisionErr.message);
+                userRecord = yield prisma_1.default.user.findFirst({
+                    where: { OR: [{ email }, { id: user.id }] },
+                    include: { role: true }
+                });
+                if (!userRecord) {
+                    throw provisionErr; // genuinely failed
+                }
+            }
         }
         // Derive organizationId from branch if missing (common for Staff users)
         let derivedOrgId = userRecord.organizationId;
@@ -73,17 +101,22 @@ const authenticate = (req, res, next) => __awaiter(void 0, void 0, void 0, funct
                 derivedOrgId = branch.organizationId;
             }
         }
+        // If still no orgId and role record has one, use that
+        if (!derivedOrgId && ((_h = userRecord.role) === null || _h === void 0 ? void 0 : _h.organizationId)) {
+            derivedOrgId = userRecord.role.organizationId;
+        }
         req.user = {
             id: user.id,
             email,
-            role: (_j = (_h = userRecord.role) === null || _h === void 0 ? void 0 : _h.name) !== null && _j !== void 0 ? _j : 'PLAYER',
+            role: (_k = (_j = userRecord.role) === null || _j === void 0 ? void 0 : _j.name) !== null && _k !== void 0 ? _k : 'PLAYER',
             storeId: derivedOrgId !== null && derivedOrgId !== void 0 ? derivedOrgId : undefined,
-            branchId: (_k = userRecord.branchId) !== null && _k !== void 0 ? _k : undefined,
+            branchId: (_l = userRecord.branchId) !== null && _l !== void 0 ? _l : undefined,
         };
         next();
     }
     catch (err) {
-        console.error('Authentication Error:', err);
+        console.error('Authentication Error:', (err === null || err === void 0 ? void 0 : err.message) || err);
+        console.error('Authentication Error Stack:', err === null || err === void 0 ? void 0 : err.stack);
         res.status(500).json({ error: 'Internal Server Error during authentication' });
     }
 });

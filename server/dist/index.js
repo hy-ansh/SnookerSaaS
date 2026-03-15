@@ -83,8 +83,10 @@ app.use('/upi', upiRoutes_1.default);
 // Webhook routes should NOT have standard authentication or strict rate limits, 
 // though you could add a specialized webhook limiter here if needed.
 app.use('/api/webhooks', webhookRoutes_1.default);
-app.listen(PORT, () => {
-    console.log(`🚀 Server running on http://localhost:${PORT}`);
+app.listen(Number(PORT), '0.0.0.0', () => {
+    console.log(`🚀 Server running on http://0.0.0.0:${PORT}`);
+    console.log(`🏠 Internal access: http://localhost:${PORT}`);
+    console.log(`🌐 Public machine IP: http://10.177.142.84:${PORT}`);
     // Start background jobs/services
     // E.g., Run fraud sweep every 12 hours (43200000 ms)
     setInterval(() => {

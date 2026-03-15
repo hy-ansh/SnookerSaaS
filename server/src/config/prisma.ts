@@ -26,7 +26,7 @@ if (dbUrl && dbUrl.includes('pooler.supabase.com')) {
 const prisma =
     globalForPrisma.prisma ||
     new PrismaClient({
-        log: ['error'],
+        log: ['query', 'error', 'warn'],
         datasources: {
             db: {
                 url: dbUrl,

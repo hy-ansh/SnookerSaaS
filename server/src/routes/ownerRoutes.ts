@@ -7,7 +7,7 @@ const router = Router();
 
 router.use(authenticate);
 
-router.get('/subscription', authorize(['STORE_OWNER', 'SUPER_ADMIN']), getOwnerSubscription);
+router.get('/subscription', authorize(['STORE_OWNER', 'SUPER_ADMIN', 'STAFF']), getOwnerSubscription);
 router.get('/plans', authorize(['STORE_OWNER', 'SUPER_ADMIN']), getAvailablePlans);
 router.put('/subscription/change', authorize(['STORE_OWNER', 'SUPER_ADMIN']), updateOwnerSubscription);
 

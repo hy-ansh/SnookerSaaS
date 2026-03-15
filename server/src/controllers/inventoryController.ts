@@ -252,7 +252,7 @@ export const createOrder = async (req: Request, res: Response): Promise<void> =>
         res.status(201).json(result);
 
     } catch (error: any) {
-        console.error('Error creating POS order:', error);
+        console.error('Error creating POS order:', error.message || error);
         res.status(400).json({ error: error.message || 'Failed to process order' });
     }
 };

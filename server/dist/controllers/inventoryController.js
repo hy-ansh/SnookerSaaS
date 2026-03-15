@@ -242,7 +242,7 @@ const createOrder = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
         res.status(201).json(result);
     }
     catch (error) {
-        console.error('Error creating POS order:', error);
+        console.error('Error creating POS order:', error.message || error);
         res.status(400).json({ error: error.message || 'Failed to process order' });
     }
 });

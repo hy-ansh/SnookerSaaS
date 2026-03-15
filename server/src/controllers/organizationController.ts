@@ -392,19 +392,44 @@ export const getOwnerSubscription = async (req: Request, res: Response): Promise
             return;
         }
 
+        // ── Free Trial Calculation ──
+        let freeTrialDays = 3; // default
+        try {
+            const globalSettings = await prisma.globalSetting.findUnique({ where: { id: 'global' } });
+            if (globalSettings) freeTrialDays = globalSettings.freeTrialDays;
+        } catch { /* use default */ }
+
+        const orgCreatedAt = new Date(org.createdAt);
+        const trialEndsAt = new Date(orgCreatedAt.getTime() + freeTrialDays * 24 * 60 * 60 * 1000);
+        const now = new Date();
+        const trialDaysLeft = Math.max(0, Math.ceil((trialEndsAt.getTime() - now.getTime()) / (24 * 60 * 60 * 1000)));
+        const isTrialActive = now < trialEndsAt;
+
         const orgAny = org as any;
         const allSubs: any[] = orgAny.subscriptions || [];
         const activeSub = allSubs.find((s: any) => s.status === 'ACTIVE');
 
-        const baseResponse = {
-            orgCreatedAt: org.createdAt,
-            orgIsActive: (org as any).isActive !== false
+        // Check if active sub period has expired
+        const isSubExpired = activeSub && new Date(activeSub.currentPeriodEnd) < now;
+
+        const trialInfo = {
+            freeTrialDays,
+            trialEndsAt: trialEndsAt.toISOString(),
+            trialDaysLeft,
+            isTrialActive,
         };
 
-        if (activeSub) {
+        const baseResponse = {
+            orgCreatedAt: org.createdAt,
+            orgIsActive: (org as any).isActive !== false,
+            ...trialInfo,
+        };
+
+        if (activeSub && !isSubExpired) {
             res.json({
                 ...baseResponse,
-                status: activeSub.status,
+                status: 'ACTIVE',
+                subscriptionStatus: 'ACTIVE',
                 planId: activeSub.planId,
                 currentPeriodStart: activeSub.currentPeriodStart,
                 currentPeriodEnd: activeSub.currentPeriodEnd,
@@ -421,12 +446,22 @@ export const getOwnerSubscription = async (req: Request, res: Response): Promise
             return;
         }
 
-        // No active subscription — return null plan with org metadata for trial logic
+        // Subscription expired or never existed
+        const computedStatus = isTrialActive ? 'TRIAL' : 'EXPIRED';
+
         res.json({
             ...baseResponse,
-            status: 'NO_SUB',
-            plan: null,
-            currentPeriodEnd: null
+            status: computedStatus,
+            subscriptionStatus: computedStatus,
+            plan: activeSub ? {
+                id: activeSub.plan?.id,
+                name: activeSub.plan?.name,
+                price: Number(activeSub.plan?.price ?? 0),
+                interval: 'month',
+                adsEnabled: activeSub.plan?.adsEnabled ?? true,
+                features: activeSub.plan?.features || {}
+            } : null,
+            currentPeriodEnd: activeSub?.currentPeriodEnd ?? null
         });
     } catch (err) {
         console.error('Error fetching owner sub:', err);

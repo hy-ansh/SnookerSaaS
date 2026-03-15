@@ -41,11 +41,22 @@ export const authenticate = async (req: Request, res: Response, next: NextFuncti
 
         const email = user.email ?? '';
 
-        // 2. Try to find the user's DB record
+        // 2. Try to find the user's DB record by email first, then by id
         let userRecord = await prisma.user.findUnique({
             where: { email },
             include: { role: true }
         });
+
+        // Also try to find by Supabase user id in case email doesn't match
+        if (!userRecord) {
+            userRecord = await prisma.user.findUnique({
+                where: { id: user.id },
+                include: { role: true }
+            });
+            // We intentionally do NOT auto-update the email here. 
+            // Supabase normalizes to lowercase, but the DB might have uppercase (e.g. Staff@gmail).
+            // Attempting to update it might fail due to unique constraints or other issues.
+        }
 
         // 3. Auto-provision: if the Supabase user exists but has no DB row
         //    (e.g. created directly in Supabase dashboard), create one now.
@@ -58,18 +69,29 @@ export const authenticate = async (req: Request, res: Response, next: NextFuncti
                 where: { name: roleName }
             });
 
-            userRecord = await prisma.user.create({
-                data: {
-                    id: user.id,
-                    email,
-                    fullName: meta.full_name ?? meta.name ?? null,
-                    roleId: roleRecord?.id ?? null,
-                    organizationId: roleRecord?.organizationId ?? null,
-                },
-                include: { role: true }
-            });
-
-            console.log(`[auth] Auto-provisioned DB user for ${email} (role: ${roleName})`);
+            try {
+                userRecord = await prisma.user.create({
+                    data: {
+                        id: user.id,
+                        email,
+                        fullName: meta.full_name ?? meta.name ?? null,
+                        roleId: roleRecord?.id ?? null,
+                        organizationId: roleRecord?.organizationId ?? null,
+                    },
+                    include: { role: true }
+                });
+                console.log(`[auth] Auto-provisioned DB user for ${email} (role: ${roleName})`);
+            } catch (provisionErr: any) {
+                // If creation fails (e.g. unique constraint), try finding again
+                console.warn(`[auth] Auto-provision failed for ${email}, retrying lookup:`, provisionErr.message);
+                userRecord = await prisma.user.findFirst({
+                    where: { OR: [{ email }, { id: user.id }] },
+                    include: { role: true }
+                });
+                if (!userRecord) {
+                    throw provisionErr; // genuinely failed
+                }
+            }
         }
 
         // Derive organizationId from branch if missing (common for Staff users)
@@ -84,6 +106,11 @@ export const authenticate = async (req: Request, res: Response, next: NextFuncti
             }
         }
 
+        // If still no orgId and role record has one, use that
+        if (!derivedOrgId && userRecord.role?.organizationId) {
+            derivedOrgId = userRecord.role.organizationId;
+        }
+
         req.user = {
             id: user.id,
             email,
@@ -93,8 +120,9 @@ export const authenticate = async (req: Request, res: Response, next: NextFuncti
         };
 
         next();
-    } catch (err) {
-        console.error('Authentication Error:', err);
+    } catch (err: any) {
+        console.error('Authentication Error:', err?.message || err);
+        console.error('Authentication Error Stack:', err?.stack);
         res.status(500).json({ error: 'Internal Server Error during authentication' });
     }
 };

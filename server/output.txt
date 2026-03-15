@@ -1,0 +1,145 @@
+﻿[dotenv@17.3.1] injecting env (8) from .env -- tip: ÔÜÖ´©Å  specify custom .env file path with { path: '/custom/path/.env' }
+Testing with staff email: staff1@cuemanager.demo
+Staff details: [
+  {
+    "id": "user-staff1-000000-0000-000000000001",
+    "email": "staff1@cuemanager.demo",
+    "fullName": "Vikram Patel",
+    "roleId": "role-staff-org1-00000-000000000001",
+    "organizationId": "org-royalcue-0000-0000-000000000001",
+    "branchId": "branch-royalcue-main-0000-000000000001",
+    "role": {
+      "id": "role-staff-org1-00000-000000000001",
+      "organizationId": "org-royalcue-0000-0000-000000000001",
+      "name": "STAFF",
+      "permissions": [
+        "START_SESSION",
+        "END_SESSION",
+        "PAUSE_SESSION",
+        "CREATE_ORDER"
+      ]
+    },
+    "organization": {
+      "id": "org-royalcue-0000-0000-000000000001",
+      "name": "Royal Cue Palace",
+      "subscriptionTier": "PRO",
+      "isActive": true,
+      "featureFlags": {
+        "canteenPOS": true,
+        "fraudDetection": true
+      },
+      "allowedPaymentMethods": [
+        "CASH",
+        "UPI",
+        "WALLET"
+      ],
+      "createdAt": "2026-03-05T11:59:02.802Z",
+      "updatedAt": "2026-03-08T21:41:46.512Z"
+    }
+  },
+  {
+    "id": "user-staff2-000000-0000-000000000002",
+    "email": "staff2@cuemanager.demo",
+    "fullName": "Arjun Mehta",
+    "roleId": "role-staff-org1-00000-000000000001",
+    "organizationId": "org-royalcue-0000-0000-000000000001",
+    "branchId": "branch-royalcue-east-0000-000000000002",
+    "role": {
+      "id": "role-staff-org1-00000-000000000001",
+      "organizationId": "org-royalcue-0000-0000-000000000001",
+      "name": "STAFF",
+      "permissions": [
+        "START_SESSION",
+        "END_SESSION",
+        "PAUSE_SESSION",
+        "CREATE_ORDER"
+      ]
+    },
+    "organization": {
+      "id": "org-royalcue-0000-0000-000000000001",
+      "name": "Royal Cue Palace",
+      "subscriptionTier": "PRO",
+      "isActive": true,
+      "featureFlags": {
+        "canteenPOS": true,
+        "fraudDetection": true
+      },
+      "allowedPaymentMethods": [
+        "CASH",
+        "UPI",
+        "WALLET"
+      ],
+      "createdAt": "2026-03-05T11:59:02.802Z",
+      "updatedAt": "2026-03-08T21:41:46.512Z"
+    }
+  },
+  {
+    "id": "90bc955d-0d94-49d9-b8e5-fdf23cebaf10",
+    "email": "Staff@gmail.com",
+    "fullName": "Staff_01",
+    "roleId": "672cf02b-e2cf-44de-a6b1-44e58c16f73f-role-staff",
+    "organizationId": "672cf02b-e2cf-44de-a6b1-44e58c16f73f-org",
+    "branchId": "672cf02b-e2cf-44de-a6b1-44e58c16f73f-branch",
+    "role": {
+      "id": "672cf02b-e2cf-44de-a6b1-44e58c16f73f-role-staff",
+      "organizationId": "672cf02b-e2cf-44de-a6b1-44e58c16f73f-org",
+      "name": "STAFF",
+      "permissions": [
+        "START_SESSION",
+        "END_SESSION",
+        "PAUSE_SESSION",
+        "CREATE_ORDER"
+      ]
+    },
+    "organization": {
+      "id": "672cf02b-e2cf-44de-a6b1-44e58c16f73f-org",
+      "name": "Royal Ansh Palace",
+      "subscriptionTier": "PRO",
+      "isActive": true,
+      "featureFlags": null,
+      "allowedPaymentMethods": [
+        "CASH",
+        "UPI"
+      ],
+      "createdAt": "2026-03-05T14:16:04.394Z",
+      "updatedAt": "2026-03-07T08:57:45.829Z"
+    }
+  },
+  {
+    "id": "adf72ccc-a8a5-4767-a021-3a0984f01967",
+    "email": "rahulkumar393398@gmail.com",
+    "fullName": "Rahul choudhary",
+    "roleId": "46ee94a0-f70d-4157-878f-af73a8f16a2e-role-staff",
+    "organizationId": "46ee94a0-f70d-4157-878f-af73a8f16a2e-org",
+    "branchId": "46ee94a0-f70d-4157-878f-af73a8f16a2e-branch",
+    "role": {
+      "id": "46ee94a0-f70d-4157-878f-af73a8f16a2e-role-staff",
+      "organizationId": "46ee94a0-f70d-4157-878f-af73a8f16a2e-org",
+      "name": "STAFF",
+      "permissions": [
+        "START_SESSION",
+        "END_SESSION",
+        "PAUSE_SESSION",
+        "CREATE_ORDER"
+      ]
+    },
+    "organization": {
+      "id": "46ee94a0-f70d-4157-878f-af73a8f16a2e-org",
+      "name": "Shiva billiards",
+      "subscriptionTier": "FREE_TRIAL",
+      "isActive": true,
+      "featureFlags": null,
+      "allowedPaymentMethods": [
+        "CASH",
+        "UPI",
+        "CARD",
+        "WALLET"
+      ],
+      "createdAt": "2026-03-12T08:59:48.572Z",
+      "updatedAt": "2026-03-12T08:59:48.572Z"
+    }
+  }
+]
+
+=== USERS WITHOUT ORG ===
+  id=user-superadmin-0000-0000-000000000001, email=admin@cuemanager.demo, roleId=role-admin-org1-00000-000000000001, role=ADMIN

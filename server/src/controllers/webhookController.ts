@@ -19,11 +19,6 @@ export const handleRazorpayWebhook = async (req: Request, res: Response): Promis
             return;
         }
 
-        // To verify the webhook, we must use the raw request body. 
-        // In Express, if req.body is already an object (via express.json()), 
-        // we can stringify it, BUT it's safer to use the exact string.
-        // We will assume a custom middleware has attached the raw body to req.rawBody
-        // OR we can just use JSON.stringify(req.body) and hope the formatting matches exactly.
         const payload = (req as any).rawBody || JSON.stringify(req.body);
 
         const expectedSignature = crypto
@@ -40,21 +35,66 @@ export const handleRazorpayWebhook = async (req: Request, res: Response): Promis
         const event = req.body;
 
         switch (event.event) {
-            case 'payment.captured':
-                // Event fired when payment is successfully captured
+            case 'payment.captured': {
                 const payment = event.payload.payment.entity;
                 console.log(`Webhook: Payment captured: ${payment.id}`);
-
-                // You can add logic here to process specific order types, 
-                // but since the frontend handles the immediate verification in `/verify-payment`,
-                // this webhook is mostly a fallback or for recurring subscriptions.
+                // One-time payment capture is handled by /verify-payment endpoint
                 break;
+            }
 
-            case 'subscription.charged':
-                // Handle recurring subscription successful charge
-                const sub = event.payload.subscription.entity;
-                console.log(`Webhook: Subscription charged: ${sub.id}`);
+            case 'subscription.charged': {
+                // ── Monthly Renewal: extend subscription period by 1 month ──
+                const subEntity = event.payload.subscription?.entity;
+                if (subEntity?.notes?.organizationId) {
+                    const orgId = subEntity.notes.organizationId;
+                    console.log(`Webhook: Subscription charged for org ${orgId}`);
+
+                    const existingSub = await prisma.subscription.findUnique({
+                        where: { organizationId: orgId }
+                    });
+
+                    if (existingSub) {
+                        const newPeriodEnd = new Date(existingSub.currentPeriodEnd);
+                        newPeriodEnd.setMonth(newPeriodEnd.getMonth() + 1);
+
+                        await prisma.subscription.update({
+                            where: { organizationId: orgId },
+                            data: {
+                                status: 'ACTIVE',
+                                currentPeriodEnd: newPeriodEnd
+                            }
+                        });
+
+                        // Record invoice
+                        await prisma.invoice.create({
+                            data: {
+                                subscriptionId: existingSub.id,
+                                amount: subEntity.total_count ? Number(subEntity.total_count) / 100 : 0,
+                                status: 'PAID',
+                                dueDate: new Date(),
+                                paidAt: new Date()
+                            }
+                        });
+
+                        console.log(`Webhook: Extended subscription for org ${orgId} to ${newPeriodEnd.toISOString()}`);
+                    }
+                }
                 break;
+            }
+
+            case 'payment.failed': {
+                // ── Mark subscription as PAST_DUE on payment failure ──
+                const failedPayment = event.payload.payment?.entity;
+                const failedOrgId = failedPayment?.notes?.organizationId;
+                if (failedOrgId) {
+                    console.log(`Webhook: Payment failed for org ${failedOrgId}`);
+                    await prisma.subscription.updateMany({
+                        where: { organizationId: failedOrgId, status: 'ACTIVE' },
+                        data: { status: 'PAST_DUE' }
+                    });
+                }
+                break;
+            }
 
             default:
                 console.log(`Webhook: Unhandled event ${event.event}`);
