@@ -320,14 +320,31 @@ export const endSession = async (req: Request, res: Response): Promise<void> => 
                 }
             }
 
-            // Handle payment method
-            if (paymentMethod === 'DUES') {
-                // Add to dues for each player (split equally)
-                const players = session.players || [];
-                const perPlayer = players.length > 0 ? totalAmount / players.length : totalAmount;
+            // ── GameType-Aware Payment & Dues Logic ──────────────────────────
+            const allPlayers = session.players || [];
+            const effectiveGameType = gameType || session.gameType || 'SPLIT';
 
-                for (const sp of players) {
-                    // Wallet balance decrement disabled (future feature)
+            // Determine which players are responsible for payment based on gameType
+            let payingPlayers = allPlayers;
+            if (effectiveGameType === 'LTP' && winnerIds && winnerIds.length > 0 && allPlayers.length > 1) {
+                // LTP (Loser To Pay): Only losers (non-winners) pay the full amount
+                payingPlayers = allPlayers.filter(p => !winnerIds.includes(p.playerId));
+            } else if (effectiveGameType === 'SOLO' && allPlayers.length > 0) {
+                // SOLO: Only the first player pays the full amount
+                payingPlayers = [allPlayers[0]];
+            }
+            // SPLIT (default): All players split equally — payingPlayers stays as allPlayers
+
+            console.log('[EndSession DEBUG] req.body:', JSON.stringify(req.body));
+            console.log('[EndSession DEBUG] effectiveGameType:', effectiveGameType, '| winnerIds:', winnerIds, '| allPlayers:', allPlayers.map(p => p.playerId), '| payingPlayers:', payingPlayers.map(p => p.playerId));
+
+            if (paymentMethod === 'DUES') {
+                // Create dues only for the paying players
+                const perPlayer = payingPlayers.length > 0
+                    ? Math.round((totalAmount / payingPlayers.length) * 100) / 100
+                    : totalAmount;
+
+                for (const sp of payingPlayers) {
                     await tx.due.create({
                         data: {
                             playerId: sp.playerId,
@@ -341,7 +358,6 @@ export const endSession = async (req: Request, res: Response): Promise<void> => 
                 // Individual split payments per player
                 for (const sp of splitPayments) {
                     if (sp.method === 'DUES') {
-                        // Wallet balance decrement disabled (future feature)
                         await tx.due.create({
                             data: {
                                 playerId: sp.playerId,
@@ -351,7 +367,6 @@ export const endSession = async (req: Request, res: Response): Promise<void> => 
                             }
                         });
                     } else {
-                        // Payment requires payerId — use the player's userId
                         await tx.payment.create({
                             data: {
                                 sessionId,
@@ -364,13 +379,13 @@ export const endSession = async (req: Request, res: Response): Promise<void> => 
                     }
                 }
             } else {
-                // Single payment — only record if we have a payer (first player, or skip if no players)
-                const firstPlayerId = (session.players || [])[0]?.playerId;
-                if (firstPlayerId && paymentMethod !== 'DUES') {
+                // Single payment (CASH/UPI/CARD) — record for the first paying player
+                const payerId = payingPlayers[0]?.playerId || allPlayers[0]?.playerId;
+                if (payerId) {
                     await tx.payment.create({
                         data: {
                             sessionId,
-                            payerId: firstPlayerId,
+                            payerId,
                             amount: totalAmount,
                             method: paymentMethod as any,
                             status: 'SUCCESS'

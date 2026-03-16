@@ -1,19 +1,31 @@
 import { useState, useEffect, useCallback } from 'react';
 import { apiFetch } from '../../api/apiClient';
-import { CheckoutPaymentModal } from '../../components/Shared/CheckoutPaymentModal';
+import { useAuth } from '../../contexts/AuthContext';
+import { UpiQrCode } from '../../components/Shared/UpiQrCode';
 
 type SettleMode = 'FULL' | 'HALF' | 'CUSTOM';
 
 function SettleModal({
     player,
     onClose,
-    onProceed
+    onSuccess
 }: {
     player: any;
     onClose: () => void;
-    onProceed: (payload: any) => void;
+    onSuccess: () => void;
 }) {
+    const { appUser } = useAuth();
     const [activeTab, setActiveTab] = useState<'all' | 'individual'>('all');
+    const [processing, setProcessing] = useState(false);
+    const [error, setError] = useState('');
+
+    const allowedMethods = (appUser?.allowedPaymentMethods || ['CASH', 'UPI', 'CARD']).filter((m: string) => m !== 'WALLET');
+    const PAY_OPTIONS: { value: string; label: string; icon: string; color: string }[] = [];
+    if (allowedMethods.includes('CASH')) PAY_OPTIONS.push({ value: 'CASH', label: 'Cash', icon: 'payments', color: 'text-emerald-600' });
+    if (allowedMethods.includes('CARD')) PAY_OPTIONS.push({ value: 'CARD', label: 'Card', icon: 'credit_card', color: 'text-blue-600' });
+    if (allowedMethods.includes('UPI')) PAY_OPTIONS.push({ value: 'UPI', label: 'UPI', icon: 'qr_code_scanner', color: 'text-violet-600' });
+
+    const [method, setMethod] = useState<string>(PAY_OPTIONS[0]?.value || 'CASH');
 
     const [dueSettings, setDueSettings] = useState<Record<string, { mode: SettleMode; custom: string }>>(() =>
         Object.fromEntries(player.dueItems.map((d: any) => [d.id, { mode: 'FULL' as SettleMode, custom: '' }]))
@@ -31,22 +43,34 @@ function SettleModal({
         return Number(due.amount);
     };
 
-    const handleSettleAll = () => {
-        onProceed({
-            type: 'ALL',
-            amount: player.pending,
-            playerId: player.id
-        });
+    const handleSettleAll = async () => {
+        setProcessing(true);
+        setError('');
+        try {
+            await apiFetch(`/dues/settle/${player.id}`, { method: 'POST', body: JSON.stringify({ method }) });
+            onSuccess();
+        } catch (e: any) {
+            setError(e.message || 'Failed to settle dues');
+        } finally {
+            setProcessing(false);
+        }
     };
 
-    const handleSettleIndividual = (dueId: string) => {
+    const handleSettleIndividual = async (dueId: string) => {
         const amount = getDueAmount({ id: dueId, amount: player.dueItems.find((d: any) => d.id === dueId)?.amount });
-        onProceed({
-            type: 'INDIVIDUAL',
-            dueId,
-            amount,
-            playerId: player.id
-        });
+        setProcessing(true);
+        setError('');
+        try {
+            await apiFetch(`/dues/settle-one/${dueId}`, {
+                method: 'POST',
+                body: JSON.stringify({ method, amount })
+            });
+            onSuccess();
+        } catch (e: any) {
+            setError(e.message || 'Failed to settle due');
+        } finally {
+            setProcessing(false);
+        }
     };
 
     return (
@@ -73,6 +97,31 @@ function SettleModal({
                 </div>
 
                 <div className="flex-1 overflow-y-auto p-6 space-y-4">
+                    {/* Payment method */}
+                    <div>
+                        <p className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Payment Method</p>
+                        <div className={`grid gap-2 ${PAY_OPTIONS.length <= 3 ? 'grid-cols-3' : 'grid-cols-4'}`}>
+                            {PAY_OPTIONS.map(opt => (
+                                <button key={opt.value} type="button"
+                                    onClick={() => setMethod(opt.value)}
+                                    className={`flex flex-col items-center justify-center py-3 rounded-2xl border-2 transition-all gap-1 ${method === opt.value
+                                        ? 'border-primary bg-primary/5 shadow-sm shadow-primary/20'
+                                        : 'border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50 hover:border-slate-300'
+                                        }`}>
+                                    <span className={`material-symbols-outlined text-xl ${method === opt.value ? 'text-primary' : opt.color}`}>{opt.icon}</span>
+                                    <span className={`text-[10px] font-bold uppercase tracking-wide ${method === opt.value ? 'text-primary' : 'text-slate-600 dark:text-slate-400'}`}>{opt.label}</span>
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+
+                    {/* UPI QR Code */}
+                    {method === 'UPI' && (
+                        <div className="mt-1 pb-2">
+                            <UpiQrCode amount={activeTab === 'all' ? player.pending : undefined} />
+                        </div>
+                    )}
+
                     {activeTab === 'all' ? (
                         <>
                             <div className="bg-slate-900 dark:bg-black rounded-2xl p-5 text-white">
@@ -136,22 +185,33 @@ function SettleModal({
                                                 max={Number(item.amount)}
                                                 className="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-sm font-bold focus:outline-none focus:ring-2 focus:ring-primary" />
                                         )}
-                                        <button onClick={() => handleSettleIndividual(item.id)} disabled={calcAmt <= 0}
+                                        <button onClick={() => handleSettleIndividual(item.id)} disabled={processing || calcAmt <= 0}
                                             className="w-full py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-sm font-bold disabled:opacity-40 transition-colors flex items-center justify-center gap-2">
-                                            Proceed: ₹{calcAmt.toFixed(2)} <span className="material-symbols-outlined text-[16px]">arrow_forward</span>
+                                            <span className="material-symbols-outlined text-sm">check_circle</span>
+                                            Settle ₹{calcAmt.toFixed(2)}
                                         </button>
                                     </div>
                                 );
                             })}
                         </div>
                     )}
+
+                    {error && (
+                        <div className="p-3 bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-500/20 rounded-xl text-sm text-red-700 dark:text-red-400 font-medium">
+                            {error}
+                        </div>
+                    )}
                 </div>
 
                 {activeTab === 'all' && (
                     <div className="p-6 border-t border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/20 rounded-b-3xl">
-                        <button onClick={handleSettleAll}
-                            className="w-full bg-primary text-white py-4 rounded-xl font-black text-base shadow-lg shadow-primary/20 hover:shadow-primary/30 transition-all flex items-center justify-center gap-3">
-                            <span className="material-symbols-outlined">account_balance_wallet</span> PROCEED TO PAY ₹{player.pending.toFixed(2)}
+                        <button onClick={handleSettleAll} disabled={processing}
+                            className="w-full bg-primary text-white py-4 rounded-xl font-black text-base shadow-lg shadow-primary/20 hover:shadow-primary/30 transition-all flex items-center justify-center gap-3 disabled:opacity-50">
+                            {processing ? (
+                                <><span className="material-symbols-outlined animate-spin">refresh</span> PROCESSING...</>
+                            ) : (
+                                <><span className="material-symbols-outlined">account_balance_wallet</span> SETTLE ALL ₹{player.pending.toFixed(2)}</>
+                            )}
                         </button>
                         <p className="text-center text-xs text-slate-400 mt-3">Marks all sessions above as settled and logs to ledger.</p>
                     </div>
@@ -169,9 +229,6 @@ export default function StaffDues() {
     const [successMsg, setSuccessMsg] = useState('');
     const [errorMsg, setErrorMsg] = useState('');
     const [filterOverdue, setFilterOverdue] = useState(false);
-
-    const [paymentPayload, setPaymentPayload] = useState<any>(null);
-    const [showPaymentModal, setShowPaymentModal] = useState(false);
 
     const fetchDues = useCallback(async (query = '') => {
         try {
@@ -216,38 +273,6 @@ export default function StaffDues() {
         setSelectedPlayer(null);
         fetchDues(searchQuery);
         setTimeout(() => setSuccessMsg(''), 4000);
-    };
-
-    const handleProceed = (payload: any) => {
-        setPaymentPayload(payload);
-        setSelectedPlayer(null); // Close SettleModal
-        setShowPaymentModal(true);
-    };
-
-    const handleConfirmPayment = async (checkoutData: any) => {
-        setErrorMsg('');
-        try {
-            if (paymentPayload.type === 'ALL') {
-                await apiFetch(`/dues/settle/${paymentPayload.playerId}`, {
-                    method: 'POST',
-                    body: JSON.stringify({ method: checkoutData.paymentMethod })
-                });
-            } else if (paymentPayload.type === 'INDIVIDUAL') {
-                await apiFetch(`/dues/settle-one/${paymentPayload.dueId}`, {
-                    method: 'POST',
-                    body: JSON.stringify({ method: checkoutData.paymentMethod, amount: paymentPayload.amount })
-                });
-            }
-            setShowPaymentModal(false);
-            setPaymentPayload(null);
-
-            // Find player name for success message
-            const p = dues.find(d => d.id === paymentPayload.playerId);
-            handleSuccess(p?.name || 'Player');
-        } catch (e: any) {
-            setErrorMsg(e.message || 'Failed to settle dues');
-            setShowPaymentModal(false);
-        }
     };
 
     const visible = filterOverdue ? dues.filter(p => p.overdue) : dues;
@@ -345,18 +370,9 @@ export default function StaffDues() {
                 <SettleModal
                     player={selectedPlayer}
                     onClose={() => setSelectedPlayer(null)}
-                    onProceed={handleProceed}
+                    onSuccess={() => handleSuccess(selectedPlayer.name)}
                 />
             )}
-
-            <CheckoutPaymentModal
-                isOpen={showPaymentModal}
-                onClose={() => setShowPaymentModal(false)}
-                totalAmount={paymentPayload?.amount || 0}
-                title="Settle Dues"
-                subtitle="Complete payment"
-                onConfirm={handleConfirmPayment}
-            />
         </div>
     );
 }
