@@ -53,6 +53,7 @@ import assetMaintenanceRoutes from './routes/assetMaintenanceRoutes';
 import ownerRoutes from './routes/ownerRoutes';
 import upiRoutes from './routes/upiRoutes';
 import webhookRoutes from './routes/webhookRoutes';
+import settingsRoutes from './routes/settingsRoutes';
 import { runFraudDetectionSweep } from './services/fraudService';
 
 import { apiLimiter, authLimiter } from './middleware/rateLimiter';
@@ -83,6 +84,7 @@ app.use('/maintenance', assetMaintenanceRoutes);
 app.use('/pricing', pricingRoutes);
 app.use('/owner', ownerRoutes);
 app.use('/upi', upiRoutes);
+app.use('/settings', settingsRoutes);
 
 // Webhook routes should NOT have standard authentication or strict rate limits, 
 // though you could add a specialized webhook limiter here if needed.

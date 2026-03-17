@@ -508,3 +508,13 @@ model GlobalSetting {
   freeTrialDays Int      @default(3)
   updatedAt     DateTime @updatedAt
 }
+
+model AppUpdateSettings {
+  id                 String   @id @default("global")
+  latestVersion      String   @default("1.0.0")
+  minRequiredVersion String   @default("1.0.0")
+  showUpdateModal    Boolean  @default(false)
+  updateMessage      String   @default("A new version is available. Please update to continue.")
+  actionUrl          String?
+  updatedAt          DateTime @updatedAt
+}

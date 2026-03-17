@@ -35,6 +35,7 @@ export const authenticate = async (req: Request, res: Response, next: NextFuncti
         // 1. Verify token with Supabase
         const { data: { user }, error } = await supabaseAdmin.auth.getUser(token);
         if (error || !user) {
+            console.error(`[auth] Supabase token verification failed:`, error?.message || 'No user returned');
             res.status(401).json({ error: 'Unauthorized: Invalid token' });
             return;
         }

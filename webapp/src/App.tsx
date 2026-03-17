@@ -16,6 +16,7 @@ import AdminSettings from './pages/Admin/Settings';
 import AdminOrganizations from './pages/Admin/Organizations';
 import AdminPlans from './pages/Admin/Plans';
 import AdminAds from './pages/Admin/Ads';
+import AdminAppUpdate from './pages/Admin/AppUpdate';
 
 import OwnerDashboard from './pages/Owner/Dashboard';
 import OwnerAccounting from './pages/Owner/Accounting';
@@ -71,6 +72,7 @@ function App() {
             <Route path="organizations" element={<AdminOrganizations />} />
             <Route path="plans" element={<AdminPlans />} />
             <Route path="ads" element={<AdminAds />} />
+            <Route path="app-update" element={<AdminAppUpdate />} />
             <Route path="settings" element={<AdminSettings />} />
           </Route>
         </Route>

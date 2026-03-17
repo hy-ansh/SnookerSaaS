@@ -38,6 +38,7 @@ const ADMIN_NAV: NavItem[] = [
     { to: '/admin/organizations', icon: 'corporate_fare', label: 'Organizations' },
     { to: '/admin/plans', icon: 'workspace_premium', label: 'Subscription Plans' },
     { to: '/admin/ads', icon: 'campaign', label: 'Advertisements' },
+    { to: '/admin/app-update', icon: 'system_update', label: 'App Update' },
     { to: '/admin/settings', icon: 'settings', label: 'Settings' },
 ];
 
