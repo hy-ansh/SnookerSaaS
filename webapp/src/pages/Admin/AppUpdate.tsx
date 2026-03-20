@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import api from '../../api/axios';
+import { apiFetch } from '../../api/apiClient';
 import toast from 'react-hot-toast';
 
 interface AppUpdateSettings {
@@ -27,7 +27,7 @@ export default function AppUpdate() {
 
   const fetchSettings = async () => {
     try {
-      const { data } = await api.get('/settings/app-update');
+      const data = await apiFetch('/settings/app-update');
       setSettings({
         latestVersion: data.latestVersion || '1.0.0',
         minRequiredVersion: data.minRequiredVersion || '1.0.0',
@@ -47,7 +47,10 @@ export default function AppUpdate() {
     e.preventDefault();
     setSaving(true);
     try {
-      await api.put('/settings/app-update', settings);
+      await apiFetch('/settings/app-update', {
+        method: 'PUT',
+        body: JSON.stringify(settings),
+      });
       toast.success('App Update Settings saved successfully');
     } catch (error) {
       console.error('Failed to save settings:', error);
