@@ -196,9 +196,10 @@ export const getPaymentSummary = async (req: Request, res: Response): Promise<vo
         }
 
         // Scope by payer's organizationId — more reliable than session->branch->org (session can be null)
+        // Also include open-table payments (payerId null) scoped via session → branch → org
         const paymentFilter: any = req.user?.role === 'SUPER_ADMIN'
             ? { status: 'SUCCESS', ...dateFilterQuery }
-            : { status: 'SUCCESS', payer: { organizationId }, ...dateFilterQuery };
+            : { status: 'SUCCESS', ...dateFilterQuery, OR: [{ payer: { organizationId } }, { payerId: null, session: { branch: { organizationId } } }] };
 
         // For dues, scope by playerId via player's organizationId
         const dueFilter: any = req.user?.role === 'SUPER_ADMIN'

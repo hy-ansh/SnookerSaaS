@@ -27,12 +27,16 @@ export const getStoreLedger = async (req: Request, res: Response): Promise<void>
 
         // ── Revenue = actual payments received (no session.totalAmount!) ──
         // Session payments (CASH/UPI/CARD/WALLET for table time)
+        // Include open-table payments (payerId null) via session → branch → org
         const sessionPayments = await prisma.payment.aggregate({
             _sum: { amount: true },
             where: {
                 status: 'SUCCESS',
-                payer: { organizationId: orgId },
-                createdAt: { gte: startOfMonth }
+                createdAt: { gte: startOfMonth },
+                OR: [
+                    { payer: { organizationId: orgId } },
+                    { payerId: null, session: { branch: { organizationId: orgId } } }
+                ]
             }
         });
 
@@ -141,13 +145,16 @@ export const getMonthlyTrend = async (req: Request, res: Response): Promise<void
             const end = new Date(now.getFullYear(), now.getMonth() - i + 1, 0, 23, 59, 59);
 
             const [paymentRev, posRev, exp] = await Promise.all([
-                // Actual payments received (includes session + dues settlements)
+                // Actual payments received (includes session + dues settlements + open-table)
                 prisma.payment.aggregate({
                     _sum: { amount: true },
                     where: {
                         status: 'SUCCESS',
-                        payer: { organizationId: orgId },
-                        createdAt: { gte: start, lte: end }
+                        createdAt: { gte: start, lte: end },
+                        OR: [
+                            { payer: { organizationId: orgId } },
+                            { payerId: null, session: { branch: { organizationId: orgId } } }
+                        ]
                     }
                 }),
                 // POS inventory revenue

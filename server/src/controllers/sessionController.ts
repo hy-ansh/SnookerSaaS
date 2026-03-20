@@ -338,11 +338,9 @@ export const endSession = async (req: Request, res: Response): Promise<void> => 
             console.log('[EndSession DEBUG] req.body:', JSON.stringify(req.body));
             console.log('[EndSession DEBUG] effectiveGameType:', effectiveGameType, '| winnerIds:', winnerIds, '| allPlayers:', allPlayers.map(p => p.playerId), '| payingPlayers:', payingPlayers.map(p => p.playerId));
 
-            if (paymentMethod === 'DUES') {
-                // Create dues only for the paying players
-                const perPlayer = payingPlayers.length > 0
-                    ? Math.round((totalAmount / payingPlayers.length) * 100) / 100
-                    : totalAmount;
+            if (paymentMethod === 'DUES' && payingPlayers.length > 0) {
+                // Create dues only for the paying players (requires at least one player)
+                const perPlayer = Math.round((totalAmount / payingPlayers.length) * 100) / 100;
 
                 for (const sp of payingPlayers) {
                     await tx.due.create({
@@ -379,19 +377,19 @@ export const endSession = async (req: Request, res: Response): Promise<void> => 
                     }
                 }
             } else {
-                // Single payment (CASH/UPI/CARD) — record for the first paying player
-                const payerId = payingPlayers[0]?.playerId || allPlayers[0]?.playerId;
-                if (payerId) {
-                    await tx.payment.create({
-                        data: {
-                            sessionId,
-                            payerId,
-                            amount: totalAmount,
-                            method: paymentMethod as any,
-                            status: 'SUCCESS'
-                        }
-                    });
-                }
+                // Single payment (CASH/UPI/CARD) — always record, even for open tables (no players).
+                // If DUES was selected but no players exist, fall back to CASH.
+                const payerId = payingPlayers[0]?.playerId || allPlayers[0]?.playerId || null;
+                const effectiveMethod = (paymentMethod === 'DUES' && !payerId) ? 'CASH' : paymentMethod;
+                await tx.payment.create({
+                    data: {
+                        sessionId,
+                        payerId,
+                        amount: totalAmount,
+                        method: effectiveMethod as any,
+                        status: 'SUCCESS'
+                    }
+                });
             }
 
             return ended;

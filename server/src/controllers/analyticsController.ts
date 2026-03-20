@@ -75,11 +75,12 @@ export const getAnalyticsSummary = async (req: Request, res: Response): Promise<
         // NO session.totalAmount — that causes double-counting when dues exist
         const [paymentRevAgg, posRevAgg] = await Promise.all([
             // All successful payments (includes session immediate + dues settlements + pos orders with players)
+            // Include open-table payments (payerId null) scoped via session → branch → org
             prisma.payment.aggregate({
                 _sum: { amount: true },
                 where: isSuperAdmin
                     ? { status: 'SUCCESS', ...dateFilter }
-                    : { status: 'SUCCESS', ...dateFilter, payer: { organizationId } }
+                    : { status: 'SUCCESS', ...dateFilter, OR: [{ payer: { organizationId } }, { payerId: null, session: { branch: { organizationId } } }] }
             }),
             prisma.order.aggregate({
                 _sum: { totalAmount: true },
@@ -128,7 +129,7 @@ export const getAnalyticsSummary = async (req: Request, res: Response): Promise<
                     _sum: { amount: true },
                     where: isSuperAdmin
                         ? { status: 'SUCCESS', createdAt: { gte: start, lte: end } }
-                        : { status: 'SUCCESS', createdAt: { gte: start, lte: end }, payer: { organizationId } }
+                        : { status: 'SUCCESS', createdAt: { gte: start, lte: end }, OR: [{ payer: { organizationId } }, { payerId: null, session: { branch: { organizationId } } }] }
                 }),
                 prisma.order.aggregate({
                     _sum: { totalAmount: true },
@@ -181,12 +182,12 @@ export const getOperationalStats = async (req: Request, res: Response): Promise<
                 where: { status: { in: ['ACTIVE', 'PAUSED'] }, ...branchFilter },
                 select: { tableId: true }
             }),
-            // Today's revenue: actual payments received today
+            // Today's revenue: actual payments received today (includes open-table payments)
             prisma.payment.aggregate({
                 _sum: { amount: true },
                 where: isSuperAdmin
                     ? { status: 'SUCCESS', createdAt: { gte: todayStart } }
-                    : { status: 'SUCCESS', createdAt: { gte: todayStart }, payer: { organizationId } }
+                    : { status: 'SUCCESS', createdAt: { gte: todayStart }, OR: [{ payer: { organizationId } }, { payerId: null, session: { branch: { organizationId } } }] }
             }),
             // Recent 8 sessions (any status) for the activity feed
             prisma.session.findMany({

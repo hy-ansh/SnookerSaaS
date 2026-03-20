@@ -19,7 +19,13 @@ export const getDashboardSummary = async (req: Request, res: Response): Promise<
 
         // Revenue = actual payments received, NOT session.totalAmount
         // This prevents double-counting when sessions are paid via Dues
-        const payerFilter = isSuperAdmin ? {} : { payer: { organizationId } };
+        // Include open-table payments (payerId is null) scoped via session → branch → org
+        const payerFilter = isSuperAdmin ? {} : {
+            OR: [
+                { payer: { organizationId } },
+                { payerId: null, session: { branch: { organizationId } } }
+            ]
+        };
 
         const [todayPayments, weeklyPayments, monthlyPayments, activeSessionsCount, unpaidDues] = await Promise.all([
             // Today's revenue: payments received today
