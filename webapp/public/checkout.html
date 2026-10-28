@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Securing Payment</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 50%, #16213e 100%);
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 24px;
+    }
+    .card {
+      background: rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 24px;
+      padding: 40px 28px;
+      text-align: center;
+      max-width: 420px;
+      width: 100%;
+    }
+    .spinner {
+      width: 46px;
+      height: 46px;
+      border: 3px solid rgba(255, 255, 255, 0.1);
+      border-top: 3px solid #6C5CE7;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 20px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    h1 { font-size: 20px; margin-bottom: 8px; }
+    p { font-size: 14px; color: rgba(255, 255, 255, 0.65); line-height: 1.5; }
+    .amount { font-size: 22px; font-weight: 700; color: #a78bfa; margin: 16px 0; }
+    .btn {
+      width: 100%; padding: 14px; border-radius: 12px; font-size: 15px; font-weight: 600;
+      cursor: pointer; border: none; margin-top: 16px; background: #6C5CE7; color: #fff;
+    }
+  </style>
+  <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+</head>
+<body>
+  <div class="card">
+    <div class="spinner" id="spinner"></div>
+    <h1 id="statusTitle">Connecting to Razorpay...</h1>
+    <div id="amountDisplay" class="amount"></div>
+    <p id="statusDesc">Please wait while the secure payment sheet opens.</p>
+    <button class="btn" id="retryBtn" style="display: none;" onclick="launchCheckout()">Retry Payment</button>
+  </div>
+  <form id="redirectForm" method="POST" style="display: none;"></form>
+  <script>
+    const urlParams = new URLSearchParams(window.location.search);
+    const orderId = urlParams.get('order_id') || '';
+    const paymentId = urlParams.get('payment_id') || '';
+    const rzpOrderId = urlParams.get('rzp_order_id') || '';
+    const amountPaise = parseInt(urlParams.get('amount') || '0', 10);
+    const key = urlParams.get('key') || '';
+    const name = urlParams.get('name') || 'Payment';
+    const description = urlParams.get('description') || 'Order Payment';
+    const email = urlParams.get('email') || '';
+    const phone = urlParams.get('phone') || '';
+    const callbackUrl = urlParams.get('callback_url') || '';
+    if (amountPaise > 0) {
+      document.getElementById('amountDisplay').textContent = '₹' + (amountPaise / 100).toFixed(2);
+    }
+    function launchCheckout() {
+      if (!window.Razorpay || !key || !rzpOrderId) {
+        document.getElementById('spinner').style.display = 'none';
+        document.getElementById('statusTitle').textContent = 'Payment Error';
+        document.getElementById('statusDesc').textContent = 'Missing order parameters or payment gateway script failed to load.';
+        document.getElementById('retryBtn').style.display = 'block';
+        return;
+      }
+      const options = {
+        key: key,
+        amount: amountPaise,
+        currency: 'INR',
+        name: name,
+        description: description,
+        order_id: rzpOrderId,
+        prefill: { email: email, contact: phone },
+        theme: { color: '#6C5CE7' },
+        modal: {
+          ondismiss: function () {
+            window.location.href = `getit://payment-return?order_id=${encodeURIComponent(orderId)}&payment_id=${encodeURIComponent(paymentId)}&status=cancelled&gateway=razorpay`;
+          }
+        },
+        handler: function (response) {
+          document.getElementById('statusTitle').textContent = 'Payment Successful!';
+          document.getElementById('statusDesc').textContent = 'Returning to app...';
+          if (callbackUrl) {
+            const form = document.getElementById('redirectForm');
+            form.action = callbackUrl;
+            const fields = {
+              gateway: 'razorpay',
+              order_id: orderId,
+              payment_id: paymentId,
+              razorpay_payment_id: response.razorpay_payment_id,
+              razorpay_order_id: response.razorpay_order_id,
+              razorpay_signature: response.razorpay_signature,
+              status: 'paid',
+            };
+            form.innerHTML = '';
+            for (const [k, v] of Object.entries(fields)) {
+              const input = document.createElement('input');
+              input.type = 'hidden';
+              input.name = k;
+              input.value = v;
+              form.appendChild(input);
+            }
+            setTimeout(() => {
+              window.location.href = `getit://payment-return?order_id=${encodeURIComponent(orderId)}&payment_id=${encodeURIComponent(paymentId)}&status=paid&gateway=razorpay&razorpay_payment_id=${encodeURIComponent(response.razorpay_payment_id)}`;
+            }, 3000);
+            form.submit();
+          } else {
+            window.location.href = `getit://payment-return?order_id=${encodeURIComponent(orderId)}&payment_id=${encodeURIComponent(paymentId)}&status=paid&gateway=razorpay&razorpay_payment_id=${encodeURIComponent(response.razorpay_payment_id)}`;
+          }
+        }
+      };
+      const rzp = new window.Razorpay(options);
+      rzp.on('payment.failed', function (res) {
+        document.getElementById('spinner').style.display = 'none';
+        document.getElementById('statusTitle').textContent = 'Payment Failed';
+        document.getElementById('statusDesc').textContent = res.error?.description || 'Payment was declined.';
+        document.getElementById('retryBtn').style.display = 'block';
+      });
+      rzp.open();
+    }
+    window.addEventListener('DOMContentLoaded', () => {
+      setTimeout(launchCheckout, 300);
+    });
+  </script>
+</body>
+</html>
